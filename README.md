@@ -34,7 +34,7 @@ With the prerequisites installed, you can use the designer:
 
     git clone https://github.com/SrGambiarra/KivyStudioDesigner/
 
-or download it manually from https://github.com/kivy/kivy-designer/archive/refs/heads/master.zip
+or download it manually from https://github.com/SrGambiarra/KivyStudioDesigner/archive/refs/heads/main.zip
 
 On OS X you might need to use the `kivy` command instead of `python` if you are using our portable package.
 
