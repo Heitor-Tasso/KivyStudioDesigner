@@ -2,7 +2,7 @@ import os
 import sys
 import webbrowser
 
-import six.moves.urllib
+from six.moves import urllib
 from kivy.app import App
 from kivy.core.clipboard import Clipboard
 from kivy.lang import Builder

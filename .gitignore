@@ -10,9 +10,6 @@
 *.DS_Store
 *.kpf
 .designer/
-docs/source/_static
-docs/source/_templates
-docs/build/
 build/
 .idea
 

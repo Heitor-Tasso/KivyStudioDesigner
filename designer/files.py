@@ -1,1 +1,0 @@
-init_file = __file__

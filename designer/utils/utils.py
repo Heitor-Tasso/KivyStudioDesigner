@@ -13,7 +13,7 @@ from kivy.properties import BooleanProperty, ListProperty, StringProperty
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.widget import Widget
-from files import init_file
+from __init__ import init_file
 
 class FakeSettingList(EventDispatcher):
     '''Fake Kivy Setting to use SettingList

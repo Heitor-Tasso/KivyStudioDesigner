@@ -21,7 +21,8 @@
 #:set designer_padding              '4sp'
 #:set designer_text_input_height    '30sp'
 #:set designer_action_width         200
-<DesignerButton@Button,DesignerLabel@Label>:
+
+<DesignerButton@Button+Label>:
     size_hint_y: None
     height: designer_height
 
@@ -29,7 +30,7 @@
     size_hint_x: None
     width: self.texture_size[0] + sp(32)
 
-<DesignerLabelFit@DesignerLabel>:
+<DesignerLabelFit@Label>:
     text_size: self.width - sp(32), None
 
 <DesignerListItemButton@ListItemButton>:
@@ -129,7 +130,7 @@
         Label:
             text_size: self.size
             padding: 30, 20
-            text: '    Kivy Designer is Kivy\'s tool for designing Graphical User Interfaces (GUIs) from Kivy Widgets. \nYou can compose and customize widgets, and test them. It is completely written in Python using Kivy. \nKivy Designer is integrated with Buildozer and Hanga, so you can easily develop and publish your applications to Desktop and Mobile devices.'
+            text: "    Kivy Designer is Kivy\'s tool for designing Graphical User Interfaces (GUIs) from Kivy Widgets. \nYou can compose and customize widgets, and test them. It is completely written in Python using Kivy. \nKivy Designer is integrated with Buildozer and Hanga, so you can easily develop and publish your applications to Desktop and Mobile devices.'"
             font_size: '12pt'
             valign: 'top'
         DesignerButton:
@@ -215,7 +216,7 @@
             text: 'Save'
             on_release: root.dispatch('on_save')
         DesignerButton:
-            text: 'Don\'t Save'
+            text: "Don\'t Save"
             on_release: root.dispatch('on_dont_save')
         DesignerButton:
             text: 'Cancel'
@@ -819,10 +820,10 @@
     padding_x: 20
     canvas.after:
         Color:
-            rgba: (47 / 255., 167 / 255., 212 / 255., 1.) if self.is_selected else (.2, .2, .2, 1)
+            rgba: (47/255.0, 167/255.0, 212/255.0, 1.0) if self.is_selected else (0.2, 0.2, 0.2, 1)
         Rectangle:
-            pos: self.x + 25, self.y
-            size: self.width - 50, 1
+            pos: self.x+dp(25), self.y
+            size: self.width-dp(50), 1
 
 #
 # Buildozer Spec Editor
@@ -1623,7 +1624,7 @@
         size_hint_x: None
         width: 20
         active: True
-    Label
+    Label:
         text: 'Text'
         size_hint_x: None
         padding_x: 10
@@ -1633,7 +1634,7 @@
         size_hint_x: None
         width: 20
         on_active: root.use_regex = args[1]
-    Label
+    Label:
         text: 'Regex'
         size_hint_x: None
         padding_x: 10
