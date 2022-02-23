@@ -1,0 +1,3 @@
+title=XPopup Demo
+author=ophermit
+orientation=landscape

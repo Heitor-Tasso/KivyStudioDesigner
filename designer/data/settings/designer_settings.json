@@ -1,0 +1,50 @@
+[
+    {
+        "type": "string",
+        "title": "Python Shell Path",
+        "section": "global",
+        "key": "python_shell_path"
+    },
+    {
+        "type": "numeric",
+        "title": "Number of Recent Files",
+        "section": "global",
+        "key": "num_recent_files"
+    },
+    {
+        "type": "numeric",
+        "title": "Maximum number of lines on Kivy Console",
+        "section": "global",
+        "key": "num_max_kivy_console"
+    },
+    {
+        "type": "numeric",
+        "title": "Auto Save current Project after every (in mins)",
+        "section": "global",
+        "key": "auto_save_time"
+    },
+    {
+        "type": "bool",
+        "title": "Save window size on exit",
+        "desc": "Desktop Only",
+        "section": "desktop",
+        "key": "save_window_size"
+    },
+    {
+        "type": "bool",
+        "title": "Exit application on Escape key",
+        "desc": "Desktop Only",
+        "section": "desktop",
+        "key": "exit_on_escape"
+    },
+    {
+        "id": "code_input_theme_options",
+        "type": "list",
+        "title": "Code Input Theme",
+        "desc": "Select the Code Input theme",
+        "section": "global",
+        "key": "code_input_theme",
+        "items": [],
+        "group": "code_input_theme"
+    }
+]

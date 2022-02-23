@@ -1,0 +1,1976 @@
+#:set bgcolor (0.06, 0.07, 0.08)
+#:set bordercolor (0.54, 0.59, 0.60)
+#:set titlecolor (0.34, 0.39, 0.40)
+#:import KivyLexer kivy.extras.highlight.KivyLexer
+#:import ContextMenu uix.contextual.ContextMenu
+
+#
+# Helper for keeping a consistency across the whole designer UI
+#
+# Rules:
+# - rows height are 48sp
+# - padding is 4sp
+# - spacing is 4sp
+# - button / label / widget are 40sp height
+# - TextInput with a single line is 30sp height
+# - modal with just one button(close, cancel, etc). The button must be in the left
+# - menu item width is 250
+# - in conditional modals, more positive action in the right
+#:set designer_height               '40sp'
+#:set designer_spacing              '4sp'
+#:set designer_padding              '4sp'
+#:set designer_text_input_height    '30sp'
+#:set designer_action_width         200
+<DesignerButton@Button,DesignerLabel@Label>:
+    size_hint_y: None
+    height: designer_height
+
+<DesignerButtonFit@DesignerButton>
+    size_hint_x: None
+    width: self.texture_size[0] + sp(32)
+
+<DesignerLabelFit@DesignerLabel>:
+    text_size: self.width - sp(32), None
+
+<DesignerListItemButton@ListItemButton>:
+    size_hint: 1, None
+    size: self.texture_size[0] + sp(32), designer_height
+    selected_color: 1, 1, 1, 1
+    deselected_color: .8, .8, .8, .5
+
+<DesignerTextInput@TextInput>:
+    size_hint_y: None
+    height: designer_text_input_height
+    multiline: False
+
+#
+# Dialogs
+#
+
+<HelpDialog>:
+    orientation: 'vertical'
+    rst: rst
+    padding: designer_padding
+    spacing: designer_spacing
+    RstDocument:
+        id: rst
+    DesignerButton:
+        text: 'Close'
+        size_hint: None, None
+        size: '60pt', '30pt'
+        pos_hint: {'right': 1}
+        on_release: root.dispatch('on_cancel')
+
+<InputDialog>:
+    orientation: 'vertical'
+    user_input: user_input
+    btn_confirm: btn_confirm
+    lbl_error: lbl_error
+    padding: designer_padding
+    spacing: designer_spacing
+    Label:
+        text: root.message
+        halign: 'left'
+        text_size: self.size
+        valign: 'middle'
+    Label:
+        id: lbl_error
+        text: ""
+        size_hint_x: None
+        halign: 'left'
+        color: [1, 0, 0, 1]
+    UserTextInput:
+        id: user_input
+        focus: True
+    GridLayout:
+        cols: 2
+        size_hint_y: None
+        spacing: designer_spacing
+        padding: designer_padding
+        height: self.minimum_height
+        DesignerButton:
+            id: btn_confirm
+            text: 'Confirm'
+            disabled: True
+            on_press: root.dispatch('on_confirm')
+        DesignerButton:
+            text: 'Cancel'
+            on_press: root.dispatch('on_cancel')
+
+<UserTextInput>:
+    size_hint_y: None
+    height: designer_text_input_height
+
+<AboutDialog>:
+    Image:
+        source: 'data/logo/kivy-icon-512.png'
+        pos: root.pos
+        opacity: 0.2
+    BoxLayout:
+        orientation: 'vertical'
+        pos: root.pos
+        background_color: 0, 1, 0
+        padding: designer_padding
+        Label:
+            id: title
+            text: 'Kivy Designer'
+            font_size: '26pt'
+            halign: 'center'
+            size_hint_y: None
+            height: '30pt'
+        Label:
+            id: subtitle
+            markup: True
+            text: '[i]Innovative User Interfaces, Desktop, and Mobile Development Made Easy.[/i]'
+            font_size: '10pt'
+            halign: 'center'
+            size_hint_y: None
+            height: '15pt'
+        Label:
+            text_size: self.size
+            padding: 30, 20
+            text: '    Kivy Designer is Kivy\'s tool for designing Graphical User Interfaces (GUIs) from Kivy Widgets. \nYou can compose and customize widgets, and test them. It is completely written in Python using Kivy. \nKivy Designer is integrated with Buildozer and Hanga, so you can easily develop and publish your applications to Desktop and Mobile devices.'
+            font_size: '12pt'
+            valign: 'top'
+        DesignerButton:
+            text: 'Close'
+            on_release: root.dispatch('on_close')
+
+<AddFileDialog>:
+    text_file: text_file
+    text_folder: text_folder
+    lbl_error: lbl_error
+    orientation: 'vertical'
+    padding: designer_padding
+    spacing: designer_spacing
+    Label:
+        id: lbl_error
+        size_hint_x: 1
+        color: [1, 0, 0, 1]
+    Label:
+        text: 'Select the File:'
+        size_hint_x: None
+    BoxLayout:
+        size_hint_y: None
+        height: '24pt'
+        TextInput:
+            id: text_file
+            multiline: False
+        Button:
+            size_hint_x: None
+            text: 'Open File'
+            on_press: root.open_file_btn_pressed()
+    Label:
+        text: 'Target Folder:'
+        size_hint_x: None
+    BoxLayout:
+        size_hint_y: None
+        height: '24pt'
+        TextInput:
+            id: text_folder
+            multiline: False
+            focus: True
+        Button:
+            size_hint_x: None
+            text: 'Open Folder'
+            on_press: root.open_folder_btn_pressed()
+    BoxLayout:
+        padding: designer_padding
+        spacing: designer_spacing
+        DesignerButton:
+            text: 'Add'
+            on_press: root._perform_add_file()
+        DesignerButton:
+            text: 'Cancel'
+            on_press: root.dispatch('on_cancel')
+
+<ConfirmationDialog>:
+    orientation: 'vertical'
+    padding: designer_padding
+    spacing: designer_spacing
+    Label:
+        text: root.message
+    GridLayout:
+        cols: 2
+        size_hint_y: None
+        height: self.minimum_height
+        DesignerButton:
+            text: 'Yes'
+            on_release: root.dispatch('on_ok')
+        DesignerButton:
+            text: 'No'
+            on_release: root.dispatch('on_cancel')
+
+<ConfirmationDialogSave>:
+    orientation: 'vertical'
+    padding: designer_padding
+    spacing: designer_spacing
+    Label:
+        text: root.message
+    GridLayout:
+        cols: 3
+        size_hint_y: None
+        height: self.minimum_height
+        DesignerButton:
+            text: 'Save'
+            on_release: root.dispatch('on_save')
+        DesignerButton:
+            text: 'Don\'t Save'
+            on_release: root.dispatch('on_dont_save')
+        DesignerButton:
+            text: 'Cancel'
+            on_release: root.dispatch('on_cancel')
+
+#
+# Profile Settings
+#
+
+<ProfileSettings>:
+    interface_cls: 'ProfileSettingsInterface'
+
+<-ProfileSettingsInterface>:
+    orientation: 'horizontal'
+    menu: menu
+    content: content
+    button_bar: button_bar
+    ProfileMenuSidebar:
+        id: menu
+    GridLayout:
+        id: button_bar
+        btn_delete_prof: btn_delete_prof
+        btn_select_prof: btn_select_prof
+        cols: 1
+        GridLayout:
+            cols: 2
+            size_hint_y: None
+            height: 50
+            spacing: 5
+            padding: 5
+            DesignerButton:
+                id: btn_select_prof
+                text: 'Use this Profile'
+                size_hint_x: 0.5
+            DesignerButton:
+                id: btn_delete_prof
+                disabled: True
+                text: 'Delete this Profile'
+                size_hint_x: 0.5
+        ProfileContentPanel:
+            id: content
+            current_uid: menu.selected_uid
+
+<-ProfileMenuSidebar>:
+    size_hint_x: None
+    width: '200dp'
+    buttons_layout: menu
+    close_button: button_close
+    new_button: button_new
+    ScrollView:
+        id: e_scroll
+        y: root.y + 70
+        x: root.x
+        width: root.width
+        size_hint_y: None
+        height: root.height - 75
+        GridLayout:
+            size_hint_y: None
+            height: max(e_scroll.height, self.minimum_height)
+            cols: 1
+            id: menu
+            # orientation: 'vertical'
+            padding: 5
+            spacing: 5
+            canvas.after:
+                Color:
+                    rgb: .2, .2, .2
+                Rectangle:
+                    pos: self.right - 1, self.y
+                    size: 1, self.height
+    DesignerButton:
+        text: 'New'
+        id: button_new
+        size_hint_x: None
+        width: root.width - dp(20)
+        pos: root.x + dp(10), root.y + sp(49)
+        font_size: '15sp'
+    DesignerButton:
+        text: 'Close'
+        id: button_close
+        size_hint_x: None
+        width: root.width - dp(20)
+        pos: root.x + dp(10), root.y + 5
+        font_size: '15sp'
+
+<ProfileContentPanel>:
+
+#
+# Tools
+#
+
+<SetupPyLabel@Label>:
+    text_size: self.size
+    valign: 'middle'
+    halign: 'left'
+    size_hint_y: None
+    height: '30sp'
+
+<ToolSetupPy>:
+    orientation: 'vertical'
+    padding: designer_padding
+    spacing: designer_spacing
+    BoxLayout:
+        BoxLayout:
+            spacing: designer_spacing
+            padding: designer_padding
+            size_hint_x: 0.3
+            orientation: 'vertical'
+            SetupPyLabel:
+                text: 'Package Name: '
+            SetupPyLabel:
+                text: 'Version: '
+            SetupPyLabel:
+                text: 'URL: '
+            SetupPyLabel:
+                text: 'License: '
+            SetupPyLabel:
+                text: 'Author: '
+            SetupPyLabel:
+                text: 'Author Email: '
+            SetupPyLabel:
+                text: 'Description: '
+        BoxLayout:
+            size_hint_x: 0.7
+            orientation: 'vertical'
+            spacing: designer_spacing
+            padding: designer_padding
+            DesignerTextInput:
+                id: package_name
+            DesignerTextInput:
+                id: version
+            DesignerTextInput:
+                id: url
+            DesignerTextInput:
+                id: license
+            DesignerTextInput:
+                id: author
+            DesignerTextInput:
+                id: author_email
+            DesignerTextInput:
+                id: description
+    GridLayout:
+        cols: 2
+        size_hint_y: None
+        height: self.minimum_height
+        spacing: designer_spacing
+
+        DesignerButton:
+            text: 'Create'
+            on_press: root.create()
+        DesignerButton:
+            text: 'Cancel'
+            on_press: root.dispatch('on_cancel')
+
+#
+# Menu
+#
+
+<MenuHeader>
+    color: (1, 1, 1, 1) if self.state == 'normal' else (0, 0, 0, 1)
+    font_size: '12dp'
+    shorten: True
+    text_size: self.size
+    padding: '2dp', '2dp'
+    background_normal: 'atlas://data/images/defaulttheme/action_bar'
+    background_disabled_normal: 'atlas://data/images/defaulttheme/action_item'
+    background_down: 'atlas://data/images/defaulttheme/action_item_down' if self.color[3] == 1 else 'atlas://data/images/defaulttheme/action_item'
+    background_disabled_down: 'atlas://data/images/defaulttheme/action_item_down'
+    Image:
+        source: 'atlas://data/images/defaulttheme/tree_closed'
+        size: (20, 20) if root.show_arrow else (0,0)
+        center_y: root.center_y
+        x: (self.parent.right - self.width) if self.parent else 100
+
+<ContextSubMenu>:
+    arrow_image: 'atlas://data/images/defaulttheme/tree_closed'
+    Image:
+        source: root.arrow_image
+        size: (20, 20) if root.show_arrow else (0,0)
+        y: self.parent.y + (self.parent.height/2) - (self.height/2)
+        x: self.parent.x + (self.parent.width - self.width)
+
+<MenuButton>:
+    background_normal: 'atlas://data/images/defaulttheme/action_item'
+    background_down: 'atlas://data/images/defaulttheme/action_item_down'
+    background_disabled_down: 'atlas://data/images/defaulttheme/action_item_down'
+
+<ContextMenu>:
+    tab_pos: 'bottom_right'
+    do_default_tab: False
+    tab_height: '24sp'
+
+<MenuBubble>:
+    background_image: 'atlas://data/images/defaulttheme/action_item'
+    background_color: 3, 3, 3, 1
+
+#
+# Menu - Action Items
+#
+
+<DesignerActionButton>:
+    info: info
+    background_normal: 'atlas://data/images/defaulttheme/action_bar'
+    size_hint_x: None
+    width: designer_action_width
+    canvas.before:
+        Color:
+            rgba: [1, 1, 1, .5] if self.disabled else [1, 1, 1, 1]
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: self.background_normal
+    Label:
+        pos: root.pos
+        text_size: (self.width - sp(24), self.size[1])
+        valign: 'middle'
+        size_hint_y: None
+        height: '40sp'
+        text: root.text
+    Label:
+        id: info
+        text: root.hint
+        pos: root.pos
+        size: root.size
+        opacity: 0.5
+        text_size: self.size
+        valign: 'bottom'
+        halign: 'right'
+        padding: 5, 5
+
+<DesignerActionSubMenu>:
+    text_size: (self.width - sp(24), self.size[1])
+    valign: 'middle'
+    size_hint_y: None
+    height: '40sp'
+    width: designer_action_width
+
+<ActionCheckButton>:
+    btn_layout: btn_layout
+    _label: _label
+    checkbox: checkbox
+    background_normal: 'atlas://data/images/defaulttheme/action_bar'
+    size_hint: None, None
+    height: sp(49)
+    width: designer_action_width
+    canvas.before:
+        Color:
+            rgba: 1,1,1,1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: self.background_normal
+    BoxLayout:
+        id: btn_layout
+        pos: root.pos
+        padding: 5, 0, 5, 0
+        spacing: 10
+        CheckBox:
+            id: checkbox
+            size_hint_x: None
+            width: '20sp'
+            pos: root.x + 2, root.y
+            active: root.checkbox_active
+            group: root.group
+            allow_no_selection: root.allow_no_selection
+            on_active: root.dispatch('on_active', *args)
+        Label:
+            id: _label
+            text_size: self.size
+            valign: 'middle'
+            text: root.text
+    Label:
+        id: info
+        text: root.desc
+        pos: root.pos
+        size: root.size
+        opacity: 0.3
+        text_size: self.size
+        valign: 'bottom'
+        halign: 'right'
+        padding: 5, 5
+
+<DesignerSubActionButton>:
+    size_hint: 1, None
+    width: designer_action_width
+    height: sp(48)
+    background_normal: 'atlas://data/images/defaulttheme/action_bar'
+    text_size: (self.width - sp(24), self.size[1])
+    valign: 'middle'
+
+<DesignerActionGroup>:
+    mode: 'spinner'
+    size_hint_x: None
+    dropdown_cls: ContextMenu
+#
+# Start Page
+#
+
+<RecentItem>:
+    orientation: 'vertical'
+    size_hint: 1, None
+    height: 40
+    on_touch_down: if self.collide_point(*args[1].pos): root.dispatch('on_press')
+    canvas.after:
+        Color:
+            rgb: .2, .2, .2
+        Rectangle:
+            pos: self.x + 25, self.y
+            size: self.width - 50, 1
+    Label:
+        text: root.path
+        text_size: self.size
+        valign: 'middle'
+        shorten: True
+        padding_x: 20
+
+<RecentFilesBox>:
+    grid: grid
+    cols: 1
+    padding: '2sp'
+    size_hint_x: None
+    bar_width: 10
+    scroll_type: ['bars', 'content']
+    GridLayout:
+        id: grid
+        cols: 1
+        size_hint_y: None
+        height: 1
+
+<DesignerLinkLabel>:
+    color: 0, 0, 1, 1
+    background_normal: 'atlas://data/images/defaulttheme/action_item'
+    background_disabled_normal: 'atlas://data/images/defaulttheme/action_item_disabled'
+    text_size: self.width, None
+
+<DesignerStartPage>:
+    btn_open: btn_open
+    btn_new: btn_new
+    recent_files_box: recent_files_box
+    orientation: 'vertical'
+    padding: 0, 0, 0, 20
+    Label:
+        text: 'Kivy Designer'
+        font_size: '26pt'
+        size_hint_y: None
+        height: '40pt'
+    Label:
+        markup: True
+        text: '[i]Innovative User Interfaces, Desktop, and Mobile Development Made Easy.[/i]'
+        font_size: '12pt'
+        halign: 'center'
+        size_hint_y: None
+        height: '15pt'
+    GridLayout:
+        cols: 2
+        size_hint: None, None
+        height: self.minimum_height
+        width: self.minimum_width
+        pos_hint: {'center_x': 0.5}
+        padding: 0, '15pt', 0, 0
+        spacing: '4sp'
+        DesignerButtonFit:
+            id: btn_open
+            text: 'Open Project'
+            on_release: root.dispatch('on_open_down')
+        DesignerButtonFit:
+            id: btn_new
+            text: 'New Project'
+            on_release: root.dispatch('on_new_down')
+
+    Label:
+        text: 'Getting Started'
+        font_size: '16pt'
+        bold: True
+        size_hint_y: None
+        height: '30pt'
+
+    GridLayout:
+        kivy_label: kivy_label
+        cols: 2
+        size_hint: None, None
+        height: self.minimum_height
+        width: 450
+        pos_hint: {'center_x': 0.5}
+        row_force_default: True
+        row_default_height: '40sp'
+        spacing: '4sp'
+        padding: '16sp', '0sp'
+
+        DesignerLinkLabel:
+            id: kivy_label
+            text: ' Kivy'
+            link: 'http://kivy.org'
+
+        DesignerLinkLabel:
+            text: ' Kivy Designer Help'
+            on_release: root.dispatch('on_help')
+
+        DesignerLinkLabel:
+            id: kivy_label
+            text: ' Kivy Documentation'
+            link: 'http://kivy.org/docs'
+
+        DesignerLinkLabel:
+            text: ' Kivy Designer Documentation'
+            link: 'http://kivy-designer.readthedocs.org/'
+
+    Label:
+        text: 'Recent Projects'
+        font_size: '16pt'
+        bold: True
+        size_hint_y: None
+        height: '30pt'
+
+    RecentFilesBox:
+        id: recent_files_box
+        pos_hint: {'center_x': 0.5}
+        size_hint_x: None
+        width: 600
+        canvas.before:
+            Color:
+                rgba: 1, 1, 1, 0.05
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+<InfoBubble>:
+    size_hint: None, None
+    width: '270dp'
+    height: lbl.texture_size[1] + dp(30)
+    on_touch_down: self.hide()
+    BoxLayout:
+        orientation: 'vertical'
+        padding: '5dp'
+        spacing: '2dp'
+        Label:
+            id: lbl
+            text: root.message
+            text_size: self.width, None
+
+<PyScrollView>:
+    id: scroll
+    code_input: code_input
+    line_number: line_number
+    bar_width: 10
+    scroll_type: ['bars', 'content']
+    GridLayout:
+        cols: 2
+        size_hint: 1, None
+        height: max(scroll.height, self.minimum_height)
+        TextInput:
+            id: line_number
+            size_hint: None, 1
+            readonly: True
+            background_color: 1, 1, 1, 0
+            foreground_color: 1, 1, 1, 1
+        PyCodeInput:
+            id: code_input
+            auto_indent: True
+            size_hint_y: None
+            height: max(self.minimum_height, scroll.height)
+
+<KVLangArea>:
+    auto_indent: True
+    lexer: KivyLexer()
+    canvas.after:
+        Color:
+            rgba: .9, .1, .1, (1 if self.have_error else 0)
+        Line:
+            points: [self.x, self.y, self.right, self.y, self.right, self.top, self.x, self.top]
+            close: True
+            width: 2
+
+<ProjectTemplateBox>:
+    grid: grid
+    cols: 1
+    padding: '2sp'
+    size_hint_x: None
+    bar_width: 10
+    scroll_type: ['bars', 'content']
+    GridLayout:
+        id: grid
+        cols: 1
+        size_hint_y: None
+        height: 1
+
+<NewProjectDialog>:
+    template_preview: template_preview
+    cancel_button: cancel
+    select_button: select
+    template_list: template_list
+    app_name: app_name
+    package_name: package_name
+    package_version: package_version
+    orientation: 'horizontal'
+    padding: designer_padding
+    spacing: designer_spacing
+    ProjectTemplateBox:
+        id: template_list
+        pos_hint: {'center_x': 0.5}
+        size_hint_x: 0.3
+        canvas.before:
+            Color:
+                rgba: 1, 1, 1, 0.05
+            Rectangle:
+                pos: self.pos
+                size: self.size
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint_x: 0.7
+        spacing: 20
+        BoxLayout:
+            size_hint_y: 0.1
+            orientation: 'horizontal'
+            Label:
+                size_hint_x: 0.2
+                text_size: self.width, None
+                padding_x: 10
+                halign: 'right'
+                text: 'App Name: '
+            TextInput:
+                id: app_name
+                size_hint_x: 0.7
+                multiline: False
+                padding: [15, ( self.height - self.line_height ) / 2]
+                focus: True
+        BoxLayout:
+            size_hint_y: 0.1
+            orientation: 'horizontal'
+            Label:
+                size_hint_x: 0.2
+                text_size: self.width, None
+                padding_x: 10
+                halign: 'right'
+                text: 'Package Name: '
+            TextInput:
+                id: package_name
+                size_hint_x: 0.7
+                multiline: False
+                padding: [15, ( self.height - self.line_height ) / 2]
+        BoxLayout:
+            size_hint_y: 0.1
+            orientation: 'horizontal'
+            Label:
+                size_hint_x: 0.2
+                text_size: self.width, None
+                padding_x: 10
+                halign: 'right'
+                text: 'Version: '
+            TextInput:
+                id: package_version
+                size_hint_x: 0.7
+                multiline: False
+                padding: [15, ( self.height - self.line_height ) / 2]
+        Image:
+            id: template_preview
+        GridLayout:
+            rows: 1
+            size_hint_y: None
+            height: '48sp'
+            padding: designer_padding
+            spacing: designer_spacing
+            DesignerButton:
+                id: select
+                text: 'Create New Project'
+            DesignerButton:
+                id: cancel
+                text: 'Cancel'
+
+<RecentDialog>:
+    select_button: select
+    cancel_button: cancel
+    listview: listview
+    orientation: 'vertical'
+    padding: designer_padding
+
+    BoxLayout:
+        padding: 0, 15
+        ListView:
+            id: listview
+            row_height: 40
+
+    GridLayout:
+        cols: 2
+        size_hint_y: None
+        height: self.minimum_height
+        spacing: designer_spacing
+        DesignerButton:
+            id: select
+            text: 'Open Selected'
+        DesignerButton:
+            id: cancel
+            text: 'Cancel'
+
+<RecentItemButton>:
+    selected_color: 1, 1, 1, 0.5
+    deselected_color: 0, 0, 0, 0
+    text_size: self.size
+    valign: 'middle'
+    shorten: True
+    padding_x: 20
+    canvas.after:
+        Color:
+            rgba: (47 / 255., 167 / 255., 212 / 255., 1.) if self.is_selected else (.2, .2, .2, 1)
+        Rectangle:
+            pos: self.x + 25, self.y
+            size: self.width - 50, 1
+
+#
+# Buildozer Spec Editor
+#
+
+<SpecCodeInput>:
+    text_input: text_input
+    lbl_error: lbl_error
+    orientation: 'vertical'
+    spacing: designer_spacing
+    padding: designer_padding
+    Label:
+        text: "Edit the buildozer.spec file"
+        size_hint_y: None
+        text_size: self.size
+        font_size: '11pt'
+        height: '20pt'
+    Label:
+        id: lbl_error
+        text: 'There is something wrong with your .spec file...'
+        size_hint_y: None
+        text_size: self.size
+        font_size: '11pt'
+        halign: 'center'
+        height: '0pt'
+    ScrollView:
+        id: spec_scroll
+        bar_width: 10
+        scroll_type: ['bars', 'content']
+        CodeInput:
+            id: text_input
+            size_hint_y: None
+            height: max(spec_scroll.height, self.minimum_height)
+    GridLayout:
+        cols: 2
+        size_hint_y: None
+        height: self.minimum_height
+        DesignerButton:
+            text: 'Apply Modifications'
+            on_press: root._save_spec()
+        DesignerButton:
+            text: 'Cancel Modifications'
+            on_press: root.load_spec()
+
+<BuildozerSpecEditor>:
+    interface_cls: 'SpecEditorInterface'
+
+<-SpecEditorInterface>:
+    orientation: 'horizontal'
+    menu: menu
+    content: content
+    button_bar: button_bar
+    SpecMenuSidebar:
+        id: menu
+    GridLayout:
+        id: button_bar
+        cols: 1
+        Label:
+            text: 'Buildozer Spec Editor'
+            font_size: '16pt'
+            halign: 'center'
+            size_hint_y: None
+            height: '25pt'
+        Button:
+            background_normal: 'atlas://data/images/defaulttheme/action_item'
+            background_down: 'atlas://data/images/defaulttheme/action_item'
+            text: 'GUI editor to buildozer.spec.\nRead more at http://buildozer.readthedocs.org'
+            text_size: self.size
+            font_size: '11pt'
+            halign: 'center'
+            valign: 'top'
+            size_hint_y: None
+            height: '30pt'
+            on_press: root.open_buildozer_docs()
+        SpecContentPanel:
+            id: content
+            current_uid: menu.selected_uid
+
+<-SpecMenuSidebar>:
+    size_hint_x: None
+    width: '200dp'
+    buttons_layout: menu
+    close_button: button
+    GridLayout:
+        pos: root.pos
+        cols: 1
+        id: menu
+        # orientation: 'vertical'
+        padding: 5
+        canvas.after:
+            Color:
+                rgb: .2, .2, .2
+            Rectangle:
+                pos: self.right - 1, self.y
+                size: 1, self.height
+    Button:
+        id: button
+
+<SpecContentPanel>:
+    do_scroll_x: False
+    container: content
+    GridLayout:
+        id: content
+        cols: 1
+        size_hint_y: None
+        height: max(self.minimum_height, root.height)
+
+<ModScreenContView>:
+    ActionPrevious:
+        title: "Screen"
+        width: 100
+        with_previous: True
+    ActionOverflow:
+    ActionButton:
+        text: 'Run'
+        on_release: root.on_run_press()
+    DesignerActionGroup:
+        id: module_screen_device
+        text: 'Device'
+    DesignerActionGroup:
+        id: module_screen_orientation
+        text: 'Orientation'
+        DesignerActionProfileCheck:
+            text: 'Portrait'
+            group: 'mod_screen_orientation'
+            allow_no_selection: False
+            checkbox_active: False
+            config_key: 'portrait'
+            on_active: root.on_module_settings(self)
+        DesignerActionProfileCheck:
+            text: 'Landscape'
+            group: 'mod_screen_orientation'
+            allow_no_selection: False
+            checkbox_active: False
+            config_key: 'landscape'
+            on_active: root.on_module_settings(self)
+    DesignerActionGroup:
+        id: module_screen_scale
+        text: 'Scale'
+        DesignerActionProfileCheck:
+            id: module_screen_25
+            text: '25%'
+            group: 'mod_screen_scale'
+            allow_no_selection: False
+            checkbox_active: False
+            config_key: '0.25'
+            on_active: root.on_module_settings(self)
+        DesignerActionProfileCheck:
+            id: module_screen_50
+            text: '50%'
+            group: 'mod_screen_scale'
+            allow_no_selection: False
+            checkbox_active: False
+            config_key: '0.50'
+            on_active: root.on_module_settings(self)
+        DesignerActionProfileCheck:
+            id: module_screen_100
+            text: '100%'
+            group: 'mod_screen_scale'
+            allow_no_selection: False
+            checkbox_active: False
+            config_key: '1.0'
+            on_active: root.on_module_settings(self)
+        DesignerActionProfileCheck:
+            id: module_screen_150
+            text: '150%'
+            group: 'mod_screen_scale'
+            allow_no_selection: False
+            checkbox_active: False
+            config_key: '1.5'
+            on_active: root.on_module_settings(self)
+        DesignerActionProfileCheck:
+            id: module_screen_200
+            text: '200%'
+            group: 'mod_screen_scale'
+            allow_no_selection: False
+            checkbox_active: False
+            config_key: '2.0'
+            on_active: root.on_module_settings(self)
+
+<ModulesContView>:
+    ActionPrevious:
+        title: "Modules"
+        width: 100
+        with_previous: True
+    ActionOverflow:
+    ActionButton:
+        text: 'Screen Emulation'
+        on_release: root.on_screen()
+    ActionButton:
+        text: 'Touch Ring'
+        on_release: root.dispatch('on_module', mod='touchring', data=[])
+    ActionButton:
+        text: 'Monitor'
+        on_release: root.dispatch('on_module', mod='monitor', data=[])
+    ActionButton:
+        text: 'Inspector'
+        on_release: root.dispatch('on_module', mod='inspector', data=[])
+    ActionButton:
+        text: 'Web Debugger'
+        on_release: root.on_webdebugger(self)
+
+<EditContView>:
+    ActionPrevious:
+        title: "Edit"
+        width: 100
+        with_previous: True
+    ActionOverflow:
+    ActionButton:
+        text: 'Undo'
+        on_press: root.dispatch('on_undo')
+    ActionButton:
+        text: 'Redo'
+        on_press: root.dispatch('on_redo')
+    ActionButton:
+        text: 'Cut'
+        on_press: root.dispatch('on_cut')
+    ActionButton:
+        text: 'Copy'
+        on_press: root.dispatch('on_copy')
+    ActionButton:
+        text: 'Paste'
+        on_press: root.dispatch('on_paste')
+    ActionButton:
+        text: 'Select All'
+        on_touch_up: root.dispatch('on_selectall')
+    ActionButton:
+        text: 'Delete'
+        on_press: root.dispatch('on_delete')
+
+#
+# UI Creator
+#
+
+<Playground>:
+    do_scale: False
+    do_rotation: False
+    size_hint: None, None
+    size: 550, 350
+    pos: 300, 230
+    auto_bring_to_front: False
+    canvas:
+        Color:
+            rgb: 1, 1, 1
+        Line:
+            points: [0, 0, self.width, 0, self.width, self.height, 0, self.height]
+            width: 2.
+            close: True
+
+<PlaygroundDragElement>:
+    size_hint: None, None
+    size: 100, 100
+    canvas:
+        Color:
+            rgb: (0.9, 0.9, 0.9) if self.can_place else (0.9, 0.1, 0.1)
+        Line:
+            points: [self.x, self.y, self.center_x - 20, self.y, self.center_x, self.y - 20, self.center_x + 20, self.y, self.right, self.y, self.right, self.top, self.x, self.top]
+            close: True
+            width: 1.5
+        Color:
+            rgb: bgcolor
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+    on_target: app.focus_widget(args[1])
+
+<Toolbox>:
+    accordion: accordion
+    Accordion:
+        id: accordion
+        orientation: 'vertical'
+        pos: root.pos
+        min_space: '1dp'
+        size_hint_y: None
+        height: root.height
+
+<ToolboxCategory>:
+    gridlayout: gridlayout
+    size_hint_y: None
+    height: '22pt'
+    title: self.title[0].upper() + self.title[1:]
+    ScrollView:
+        pos: root.pos
+        bar_width: 10
+        scroll_type: ['bars', 'content']
+        GridLayout:
+            id: gridlayout
+            cols: 1
+            # orientation: 'vertical'
+            padding: '5sp'
+            spacing: '3sp'
+            size_hint_y: None
+            height: max(self.parent.height, self.minimum_height)
+
+<ToolboxButton>:
+    size_hint_y: None
+    height: '22pt'
+    font_size: '10pt'
+    on_press_and_touch: app.create_draggable_element(self, self.text, args[1])
+
+<StatusBar>:
+    app: app
+    navbar: navbar
+    status_message: status_message
+    status_info: status_info
+    canvas:
+        Color:
+            rgb: bordercolor
+        Rectangle:
+            pos: self.x, self.top - 0.5
+            size: self.width, 1
+        Color:
+            rgb: bgcolor
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    ScrollView:
+        id: nav_scroll
+        size_hint_x: None
+        width: 0
+        do_scroll_y: False
+        StatusNavbar:
+            id: navbar
+            size_hint_x: None
+            width: max(nav_scroll.width, self.width)
+            on_children: root._update_content_width()
+
+    StatusMessage:
+        id: status_message
+        img: img
+        size_hint: 0.9, None
+        height: '20pt'
+        spacing: 10
+        on_message: root._update_content_width()
+        on_touch_down: if self.collide_point(*args[1].pos): root.dispatch('on_message_press')
+        Image:
+            id: img
+            size_hint: None, None
+            width: '20pt'
+            height: '20pt'
+            opacity: 0
+        Label:
+            size_hint_x: 1
+            text: status_message.message
+            text_size: self.size
+            halign: 'left'
+            valign: 'middle'
+            shorten: True
+            shorten_from: 'left'
+
+    StatusInfo:
+        id: status_info
+        size_hint_x: 0.1
+        on_touch_down: if self.collide_point(*args[1].pos): root.dispatch('on_info_press')
+        Label:
+            size_hint_x: 1
+            text: status_info.message
+            text_size: self.size
+            halign: 'center'
+            valign: 'middle'
+            shorten: True
+            shorten_from: 'left'
+
+<StatusNavBarButton>:
+    text: getattr(root.node, '__class__').__name__
+    font_size: '10pt'
+    width: self.texture_size[0] + 20
+    size_hint_x: None
+    on_release: app.focus_widget(root.node)
+
+<StatusNavBarSeparator>:
+    text: '>'
+    font_size: '10pt'
+    width: self.texture_size[0] + 20
+    size_hint_x: None
+
+<PropertyViewer>:
+    do_scroll_x: False
+    prop_list: prop_list
+
+    canvas.before:
+        Color:
+            rgb: bgcolor
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    GridLayout:
+        id: prop_list
+        cols: 2
+        padding: 3
+        size_hint_y: None
+        height: self.minimum_height
+        row_default_height: '25pt'
+
+<PropertyLabel>:
+    font_size: '10pt'
+    valign: 'middle'
+    size_hint_x: 0.5
+    text_size: self.size
+    halign: 'left'
+    valign: 'middle'
+    shorten: True
+    canvas.before:
+        Color:
+            rgb: .2, .2, .2
+        Rectangle:
+            pos: self.x, self.y - 1
+            size: self.width, 1
+
+<PropertyBase>:
+    propvalue: getattr(self.propwidget, self.propname)
+    padding: '6pt', '6pt'
+
+    canvas.after:
+        Color:
+            rgba: .9, .1, .1, (1 if self.have_error else 0)
+        Line:
+            points: [self.x, self.y, self.right, self.y, self.right, self.top, self.x, self.top]
+            close: True
+            width: 2
+    canvas.before:
+        Color:
+            rgb: .2, .2, .2
+        Rectangle:
+            pos: self.x, self.y - 1
+            size: self.width, 1
+
+<PropertyTextInput>:
+    border: 8, 8, 8, 8
+    text: str(getattr(self.propwidget, self.propname))
+    on_text: self.value_changed(args[1])
+
+<PropertyBoolean>:
+    on_active: self.set_value(args[1])
+    active: bool(getattr(self.propwidget, self.propname))
+
+<PropertyOptions>:
+    valign: 'middle'
+    halign: 'left'
+    shorten: True
+    shorten_from: 'right'
+    Image:
+        source: 'atlas://data/images/defaulttheme/tree_opened'
+        size_hint: None, None
+        size: root.height, root.height
+        pos: root.x + root.width - root.height, root.y
+
+<WidgetsTree>:
+    do_scroll_x: False
+    tree: tree
+    canvas.before:
+        Color:
+            rgb: bgcolor
+        Rectangle:
+            pos: root.pos
+            size: root.size
+
+    TreeView:
+        id: tree
+        height: self.minimum_height
+        size_hint_y: None
+        hide_root: True
+        on_selected_node: args[1] and app.focus_widget(args[1].node)
+
+<WidgetTreeElement>:
+    is_open: True
+    text: getattr(root.node, '__class__').__name__
+    font_size: '10pt'
+
+<UICreator>:
+    kv_code_input: code_input
+    splitter_kv_code_input: splitter_kv
+    grid_widget_tree: grid_widget_tree
+    splitter_property: splitter_property
+    splitter_widget_tree: splitter_widget_tree
+    propertyviewer: propertyviewer
+    playground: playground
+    widgettree: widgettree
+    error_console: error_console
+    kivy_console: kivy_console
+    tab_pannel: tab_pannel
+    eventviewer: eventviewer
+    py_console: py_console
+
+    GridLayout:
+        height: root.height
+        pos: root.pos
+        cols: 1
+        splitter_widget_tree: splitter_widget_tree
+
+        canvas.before:
+            StencilPush
+            Rectangle:
+                pos: self.pos
+                size: self.size
+            StencilUse
+        canvas.after:
+            StencilUnUse
+            Rectangle:
+                pos: self.pos
+                size: self.size
+            StencilPop
+
+        FloatLayout:
+            size_hint: 1,1
+            canvas:
+                Color:
+                    rgb: .21, .22, .22
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+            Playground:
+                id: playground
+                canvas.before:
+                    Color:
+                        rgb: 0, 0, 0
+                    Rectangle:
+                        size: self.size
+                on_show_edit: root.on_show_edit()
+
+            Splitter:
+                id: splitter_kv
+                sizable_from: 'top'
+                size_hint_y: None
+                size_hint_x: None
+                height: 200
+                min_size: 150
+                max_size: 500
+                x: root.x
+                width: root.width - splitter_widget_tree.width
+                y: root.y
+                canvas.before:
+                    Color:
+                        rgb: .21, .22, .22
+
+                    Rectangle:
+                        size: splitter_kv.size
+                        pos: splitter_kv.pos
+
+
+                DesignerTabbedPanel:
+                    id: tab_pannel
+                    do_default_tab: False
+                    DesignerTabbedPanelItem:
+                        text: 'KV Lang Area'
+                        BoxLayout:
+                            orientation: 'vertical'
+                            KVLangAreaScroll:
+                                id: scroll
+                                kv_lang_area: code_input
+                                line_number: line_number
+                                GridLayout:
+                                    cols: 2
+                                    size_hint: 1, None
+                                    height: max(scroll.height, self.minimum_height)
+                                    TextInput:
+                                        id: line_number
+                                        size_hint: None, 1
+                                        readonly: True
+                                        background_color: 1, 1, 1, 0
+                                        foreground_color: 1, 1, 1, 1
+                                    KVLangArea:
+                                        id: code_input
+                                        size_hint_y: None
+                                        height: max(scroll.height, self.minimum_height)
+                                        on_show_edit: root.on_show_edit()
+                            DesignerButton:
+                                size_hint_x: 0.2
+                                text: 'Reload Widgets'
+                                pos_hint: {'x': 0.8}
+                                on_release: root.reload_btn_pressed()
+
+                    DesignerTabbedPanelItem:
+                        text: 'Kivy Console'
+                        KivyConsole:
+                            id: kivy_console
+
+                    DesignerTabbedPanelItem:
+                        text: 'Python Shell'
+                        PythonConsole:
+                            id: py_console
+
+                    DesignerTabbedPanelItem:
+                        text: 'Error Console'
+                        ScrollView:
+                            id: e_scroll
+                            CodeInput:
+                                id: error_console
+                                size_hint_y: None
+                                height: max(e_scroll.height, self.minimum_height)
+                                text: ''
+
+            Splitter:
+                id: splitter_widget_tree
+                size_hint_x: None
+                min_size: 170
+                width: 250
+                pos_hint: {'y': 0, 'right': 1}
+
+                BoxLayout:
+                    orientation: 'vertical'
+
+                    GridLayout:
+                        id: grid_playground_settings
+                        cols: 1
+                        spacing: .5
+                        height: self.minimum_height
+                        size_hint_y: None
+
+                        canvas:
+                            Color:
+                                rgb: titlecolor
+                            Rectangle:
+                                pos: self.pos
+                                size: self.size
+
+                        Label:
+                            text: 'Playground Settings'
+                            font_size: '10pt'
+                            height: '20pt'
+                            size_hint_y: None
+
+                        BoxLayout:
+                            size_hint_y: None
+                            height: sp(48)
+
+                            canvas.before:
+                                Color:
+                                    rgb: bgcolor
+                                Rectangle:
+                                    pos: self.pos
+                                    size: self.size
+
+                            Label:
+                                text: 'Size:'
+                                size_hint_x: None
+                                width: sp(52)
+
+                            PlaygroundSizeSelector:
+                                playground: playground
+
+                        BoxLayout:
+                            size_hint_y: None
+                            height: sp(48)
+
+                            canvas.before:
+                                Color:
+                                    rgb: bgcolor
+                                Rectangle:
+                                    pos: self.pos
+                                    size: self.size
+
+                            Label:
+                                text: 'Zoom: %d%%' % (zoom_slider.value * 100)
+                                size_hint_x: None
+                                width: sp(96)
+
+                            Slider:
+                                id: zoom_slider
+                                min: 0.25
+                                max: 1.5
+                                step: 0.05
+                                value: playground.scale
+                                on_value: playground.scale = args[1]
+
+                    GridLayout:
+                        id: grid_playground_widget
+                        cols: 1
+                        spacing: .5
+                        height: self.minimum_height
+                        size_hint_y: None
+
+                        canvas:
+                            Color:
+                                rgb: titlecolor
+                            Rectangle:
+                                pos: self.pos
+                                size: self.size
+
+                        Label:
+                            text: 'Playground Widget'
+                            font_size: '10pt'
+                            height: '20pt'
+                            size_hint_y: None
+
+                        BoxLayout:
+                            size_hint_y: None
+                            height: sp(48)
+
+                            canvas.before:
+                                Color:
+                                    rgb: bgcolor
+                                Rectangle:
+                                    pos: self.pos
+                                    size: self.size
+
+                            Button:
+                                text: playground.root_name
+                                on_press: playground.on_widget_select_pressed()
+
+                    GridLayout:
+                        cols: 1
+                        spacing: .5
+
+                        canvas:
+                            Color:
+                                rgb: titlecolor
+                            Rectangle:
+                                pos: self.pos
+                                size: self.size
+
+                        GridLayout:
+                            id: grid_widget_tree
+                            cols: 1
+                            spacing: .5
+                            Label:
+                                text: 'Widget Navigator'
+                                font_size: '10pt'
+                                height: '20pt'
+                                size_hint_y: None
+
+                            WidgetsTree:
+                                id: widgettree
+                                playground: playground
+
+                        Splitter:
+                            id: splitter_property
+                            sizable_from: 'top'
+                            size_hint_y: None
+                            height: 300
+                            max_size: 500
+                            canvas.before:
+                                Color:
+                                    rgb: bgcolor
+                                Rectangle:
+                                    pos: self.pos
+                                    size: self.size
+                            DesignerTabbedPanel:
+                                do_default_tab: False
+                                DesignerTabbedPanelItem:
+                                    text: 'Properties'
+                                    PropertyViewer:
+                                        id: propertyviewer
+
+                                DesignerTabbedPanelItem:
+                                    text: 'Events'
+                                    EventViewer:
+                                        id: eventviewer
+
+
+<PlaygroundSizeSelector>:
+    markup: True
+
+<PlaygroundSizeView>:
+    accordion: accordion
+
+    BoxLayout:
+        orientation: 'vertical'
+
+        BoxLayout:
+            size_hint_y: None
+            height: sp(48)
+            Label:
+                text: 'Playground Size'
+                bold: True
+
+            Label:
+                text: 'Portrait'
+                halign: 'right'
+                valign: 'middle'
+                text_size: self.size
+            Switch:
+                size_hint_x: None
+                width: sp(128)
+                active: root.selected_orientation == 'portrait'
+                on_active: root.selected_orientation = ('portrait' if self.active else 'landscape')
+
+        Accordion:
+            id: accordion
+            min_space: '1dp'
+
+<CodeInputFind>:
+    txt_query: txt_query
+    size_hint_y: None
+    height: designer_height
+    canvas.before:
+        Color:
+            rgb: bgcolor
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    CheckBox:
+        group: 'find_mode'
+        size_hint_x: None
+        width: 20
+        active: True
+    Label
+        text: 'Text'
+        size_hint_x: None
+        padding_x: 10
+        size: self.texture_size
+    CheckBox:
+        group: 'find_mode'
+        size_hint_x: None
+        width: 20
+        on_active: root.use_regex = args[1]
+    Label
+        text: 'Regex'
+        size_hint_x: None
+        padding_x: 10
+        size: self.texture_size
+    CheckBox:
+        group: 'find_mode'
+        size_hint_x: None
+        width: 20
+        on_active: root.case_sensitive = args[1]
+    Label:
+        text: 'Case sensitive'
+        size_hint_x: None
+        padding_x: 10
+        size: self.texture_size
+    TextInput:
+        id: txt_query
+        text: ''
+        on_text: root.query = args[1]
+        multiline: False
+        on_text_validate: root.dispatch('on_next')
+    Button:
+        text: 'Find'
+        on_release: root.dispatch('on_next')
+        size_hint_x: None
+        width: 100
+    Button:
+        text: 'Find Prev'
+        on_release: root.dispatch('on_prev')
+        size_hint_x: None
+        width: 100
+    Image:
+        source: 'atlas://data/images/defaulttheme/close'
+        size_hint: None, None
+        size: designer_height, designer_height
+        on_touch_down: if self.collide_point(*args[1].pos): root.dispatch('on_close')
+
+<DesignerContent>:
+    ui_creator: ui_creator
+    tree_view: tree_view
+    tab_pannel: tab_panel
+    toolbox: toolbox
+    splitter_tree: splitter_tree
+    tree_toolbox_tab_panel: tree_toolbox_tab_panel
+    find_tool: find_tool
+
+    DesignerTabbedPanel:
+        id: tab_panel
+        size_hint: None, None
+        height: root.height
+        y: root.y
+        x: splitter_tree.width
+        width: root.width - splitter_tree.width
+        do_default_tab: False
+        tab_width: None
+        on_current_tab: root.on_current_tab(self)
+
+        DesignerTabbedPanelItem:
+            text: 'UI Creator'
+            UICreator:
+                id: ui_creator
+
+    Splitter:
+        id: splitter_tree
+        pos: root.pos
+        size_hint_x: None
+        sizable_from: 'right'
+        min_size: 220
+        width: 220
+        DesignerTabbedPanel:
+            id: tree_toolbox_tab_panel
+            do_default_tab: False
+            DesignerTabbedPanelItem:
+                text: 'Project Tree'
+                ScrollView:
+                    id: tree_scroll
+                    bar_width: 10
+                    scroll_type: ['bars', 'content']
+                    TreeView:
+                        id: tree_view
+                        size_hint: 1, None
+                        height: max(tree_scroll.height, self.minimum_height)
+            DesignerTabbedPanelItem:
+                text: 'Toolbox'
+                Toolbox:
+                    id: toolbox
+
+    CodeInputFind:
+        id: find_tool
+        y: root.y if root.in_find else -100
+        x: splitter_tree.width
+        size_hint_x: None
+        width: root.width - splitter_tree.width
+
+<DesignerCloseableTab>:
+    color: 0,0,0,0
+    disabled_color: self.color
+    # variable tab_width
+    text: root.title
+    size_hint_x: None
+    BoxLayout:
+        pos: root.pos
+        size_hint: None, None
+        size: root.size
+        padding: 3
+        Label:
+            id: lbl
+            text: root.text
+            shorten: True
+            shorten_from: 'right'
+            text_size: self.size
+            valign: 'middle'
+            halign: 'center'
+            markup: True
+        BoxLayout:
+            size_hint: None, 1
+            orientation: 'vertical'
+            width: 22
+            Image:
+                source: 'atlas://data/images/defaulttheme/close'
+                on_touch_down:
+                    if self.collide_point(*args[1].pos) : root.dispatch('on_close')
+<Designer>:
+    statusbar: statusbar
+    actionbar: actionbar
+    start_page: start_page.__self__
+    select_profile_cont_menu: select_profile_cont_menu
+    designer_git: git_tools
+
+    ActionBar:
+        id: actionbar
+        pos_hint: {'top': 1}
+        on_height: root.on_actionbar_height()
+        DesignerActionView:
+            ActionPrevious:
+                title: 'Kivy Designer'
+                with_previous: False
+            ActionOverflow:
+            DesignerActionGroup:
+                id: actn_menu_file
+                text: 'File'
+                DesignerActionButton:
+                    id: actn_btn_new_file
+                    text: 'New File'
+                    disabled: True
+                    on_press: root.action_btn_new_file_pressed()
+                DesignerActionButton:
+                    id: actn_btn_new_project
+                    text: 'New Project'
+                    on_press: root.action_btn_new_project_pressed()
+                DesignerActionButton:
+                    id: actn_btn_open_project
+                    text: 'Open Project'
+                    on_press: root.action_btn_open_pressed()
+                DesignerActionButton:
+                    id: actn_btn_save
+                    disabled: True
+                    text: 'Save'
+                    on_press: root.action_btn_save_pressed()
+                DesignerActionButton:
+                    id: actn_btn_save_as
+                    disabled: True
+                    text: 'Save As'
+                    on_press: root.action_btn_save_as_pressed()
+                DesignerActionButton:
+                    id: actn_btn_close_proj
+                    text: 'Close Project'
+                    disabled: True
+                    on_press: root.action_btn_close_proj_pressed()
+                DesignerActionButton:
+                    id: actn_btn_recent
+                    text: 'Recent Projects'
+                    on_press: root.action_btn_recent_files_pressed()
+                DesignerActionButton:
+                    id: actn_btn_settings
+                    text: 'Settings'
+                    on_press: root.action_btn_settings_pressed()
+                DesignerActionButton:
+                    id: actn_btn_quit
+                    text: 'Quit'
+                    on_press: root.action_btn_quit_pressed()
+
+            DesignerActionGroup:
+                id: actn_menu_view
+                text: 'View'
+                disabled: True
+                ActionCheckButton:
+                    id: actn_chk_proj_tree
+                    text: 'Project Tree and Toolbox'
+                    on_active: root.action_chk_btn_toolbox_active(self)
+
+                ActionCheckButton:
+                    id: actn_chk_prop_event
+                    text: 'Properties and Events'
+                    on_active: root.action_chk_btn_property_viewer_active(self)
+
+                ActionCheckButton:
+                    id: actn_chk_widget_tree
+                    text: 'Widget Tree'
+                    on_active: root.action_chk_btn_widget_tree_active(self)
+
+                ActionCheckButton:
+                    id: actn_chk_status_bar
+                    text: 'StatusBar'
+                    on_active: root.action_chk_btn_status_bar_active(self)
+
+                ActionCheckButton:
+                    id: actn_chk_kv_lang_area
+                    text: 'KV Lang Area'
+                    on_active: root.action_chk_btn_kv_area_active(self)
+                ActionCheckButton:
+                    id: actn_chk_fullscreen
+                    checkbox_active: False
+                    text: 'Fullscreen'
+                    on_active: root.toggle_fullscreen(self)
+
+            DesignerActionGroup:
+                id: actn_menu_proj
+                text: 'Project'
+                disabled: True
+                DesignerActionButton:
+                    id: actn_btn_add_file
+                    text: 'Add File'
+                    on_press: root.action_btn_add_file_pressed()
+
+                DesignerActionButton:
+                    id: actn_btn_proj_pref
+                    text: 'Project Settings'
+                    on_press: root.action_btn_project_settings_pressed()
+
+            DesignerActionGroup:
+                id: actn_menu_run
+                text: 'Run'
+                disabled: True
+                DesignerActionButton:
+                    id: actn_btn_run_proj
+                    text: 'Run'
+                    on_press: root.action_btn_run_project_pressed()
+                DesignerActionButton:
+                    id: actn_btn_run_module
+                    text: 'Run with module...'
+                    on_press: root.action_btn_run_module_pressed()
+                DesignerActionButton:
+                    id: actn_btn_stop_proj
+                    disabled: True
+                    text: 'Stop'
+                    on_press: root.action_btn_stop_project_pressed()
+                DesignerActionButton:
+                    id: actn_btn_clean_proj
+                    text: 'Clean'
+                    on_press: root.action_btn_clean_project_pressed()
+                DesignerActionButton:
+                    id: actn_btn_build_proj
+                    text: 'Build'
+                    on_press: root.action_btn_build_project_pressed()
+                DesignerActionButton:
+                    id: actn_btn_rebuild_proj
+                    text: 'Rebuild'
+                    on_press: root.action_btn_rebuild_project_pressed()
+                DesignerActionSubMenu:
+                    id: select_profile_cont_menu
+                    text: 'Select Profile'
+                    on_press: root.action_btn_select_prof_project_pressed()
+                    show_arrow: True
+                DesignerActionButton:
+                    id: actn_btn_edit_prof_proj
+                    text: 'Edit Profiles...'
+                    on_press: root.action_btn_edit_prof_project_pressed()
+
+            DesignerActionGroup:
+                id: actn_menu_tools
+                text: 'Tools'
+                disabled: True
+                DesignerActionButton:
+                    id: actn_btn_buildozer_init
+                    text: 'Buildozer Init'
+                    on_press: root.designer_tools.buildozer_init()
+                DesignerActionButton:
+                    id: actn_btn_export_png
+                    text: 'Export .png'
+                    on_press: root.designer_tools.export_png()
+                DesignerActionButton:
+                    id: actn_btn_check_pep8
+                    text: 'Check PEP 8'
+                    on_press: root.designer_tools.check_pep8()
+                DesignerActionButton:
+                    id: actn_btn_create_setup_py
+                    text: 'Create setup.py'
+                    on_press: root.designer_tools.create_setup_py()
+                DesignerActionButton:
+                    id: actn_btn_create_gitignore
+                    text: 'Create .gitignore'
+                    on_press: root.designer_tools.create_gitignore()
+                DesignerGit:
+                    id: git_tools
+                    text: 'Git'
+                    show_arrow: True
+
+            DesignerActionGroup:
+                id: actn_menu_help
+                text: 'Help'
+                DesignerActionButton:
+                    id: actn_btn_help
+                    text: 'Help'
+                    on_press: root.show_help()
+
+                DesignerActionButton:
+                    id: actn_btn_wiki
+                    text: 'Kivy Docs'
+                    on_press: root.open_docs()
+
+                DesignerActionButton:
+                    id: actn_btn_doc
+                    text: 'Kivy Designer Docs'
+                    on_press: root.open_kd_docs()
+
+                DesignerActionButton:
+                    id: actn_btn_page
+                    text: 'Kivy Designer repo'
+                    on_press: root.open_repo()
+
+                DesignerActionButton:
+                    id: actn_btn_about
+                    text: 'About ...'
+                    on_press: root.action_btn_about_pressed()
+
+    DesignerStartPage:
+        id: start_page
+        size_hint_y: None
+        height: root.height - actionbar.height - statusbar.height
+        top: root.height - actionbar.height
+        on_open_down: root.action_btn_open_pressed()
+        on_new_down: root.action_btn_new_project_pressed()
+        on_help: root.show_help()
+
+    StatusBar:
+        id: statusbar
+        size_hint_y: None
+        on_height: root.on_statusbar_height()
+        height: '20pt'
+        pos_hint: {'y': 0}

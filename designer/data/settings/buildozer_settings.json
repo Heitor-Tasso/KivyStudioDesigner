@@ -1,0 +1,8 @@
+[
+  {
+    "type": "string",
+    "title": "Buildozer Path",
+    "section": "buildozer",
+    "key": "buildozer_path"
+  }
+]

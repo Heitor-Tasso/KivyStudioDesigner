@@ -1,0 +1,138 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2016-09-13 14:06+FLE Daylight Time\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: ENCODING\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: file.py:216
+msgid "Icons"
+msgstr ""
+
+#: file.py:219
+msgid "List"
+msgstr ""
+
+#: file.py:222 file.py:231
+msgid "New folder"
+msgstr ""
+
+#: file.py:230
+msgid "Input folder name"
+msgstr ""
+
+#: file.py:241
+msgid "Folder \"%s\" is already exist. Maybe you should enter another name?"
+msgstr ""
+
+#: file.py:271
+msgid "Save"
+msgstr ""
+
+#: file.py:272
+msgid "Maybe you should enter a filename?"
+msgstr ""
+
+#: file.py:278
+msgid "Save file"
+msgstr ""
+
+#: file.py:324
+msgid "Open"
+msgstr ""
+
+#: file.py:325
+msgid "Maybe you should select a file?"
+msgstr ""
+
+#: file.py:327
+msgid "Open file"
+msgstr ""
+
+#: file.py:351
+msgid "Select"
+msgstr ""
+
+#: file.py:352
+msgid "Maybe you should select a folders?"
+msgstr ""
+
+#: file.py:354
+msgid "Choose folder"
+msgstr ""
+
+#: form.py:255
+msgid ""
+"Following fields are required:\n"
+msgstr ""
+
+#: form.py:409
+msgid "Login"
+msgstr ""
+
+#: form.py:439
+msgid "Authorization"
+msgstr ""
+
+#: form.py:460
+msgid "Login:"
+msgstr ""
+
+#: form.py:468
+msgid "Password:"
+msgstr ""
+
+#: form.py:480
+msgid "Login automatically"
+msgstr ""
+
+#: notification.py:174
+msgid "Do not show this message again"
+msgstr ""
+
+#: notification.py:248
+msgid "Something went wrong..."
+msgstr ""
+
+#: notification.py:261
+msgid "Confirmation"
+msgstr ""
+
+#: notification.py:299
+msgid "Complete"
+msgstr ""
+
+#: notification.py:346
+msgid "Loading..."
+msgstr ""
+
+#: xbase.py:103
+msgid "Ok"
+msgstr ""
+
+#: xbase.py:104
+msgid "Cancel"
+msgstr ""
+
+#: xbase.py:105
+msgid "Yes"
+msgstr ""
+
+#: xbase.py:106
+msgid "No"
+msgstr ""
+
+#: xbase.py:107
+msgid "Close"
+msgstr ""
+
