@@ -7,7 +7,106 @@ from kivy.clock import Clock
 from functools import partial
 from kivy.properties import ObjectProperty
 from kivy.uix.actionbar import ContextualActionView
+from kivy.lang.builder import Builder
 
+Builder.load_string("""
+
+<ModulesContView>:
+    ActionPrevious:
+        title: "Modules"
+        width: 100
+        with_previous: True
+    ActionOverflow:
+    ActionButton:
+        text: 'Screen Emulation'
+        on_release: root.on_screen()
+    ActionButton:
+        text: 'Touch Ring'
+        on_release: root.dispatch('on_module', mod='touchring', data=[])
+    ActionButton:
+        text: 'Monitor'
+        on_release: root.dispatch('on_module', mod='monitor', data=[])
+    ActionButton:
+        text: 'Inspector'
+        on_release: root.dispatch('on_module', mod='inspector', data=[])
+    ActionButton:
+        text: 'Web Debugger'
+        on_release: root.on_webdebugger(self)
+    
+<ModScreenContView>:
+    ActionPrevious:
+        title: "Screen"
+        width: 100
+        with_previous: True
+    ActionOverflow:
+    ActionButton:
+        text: 'Run'
+        on_release: root.on_run_press()
+    DesignerActionGroup:
+        id: module_screen_device
+        text: 'Device'
+    DesignerActionGroup:
+        id: module_screen_orientation
+        text: 'Orientation'
+        DesignerActionProfileCheck:
+            text: 'Portrait'
+            group: 'mod_screen_orientation'
+            allow_no_selection: False
+            checkbox_active: False
+            config_key: 'portrait'
+            on_active: root.on_module_settings(self)
+        DesignerActionProfileCheck:
+            text: 'Landscape'
+            group: 'mod_screen_orientation'
+            allow_no_selection: False
+            checkbox_active: False
+            config_key: 'landscape'
+            on_active: root.on_module_settings(self)
+    DesignerActionGroup:
+        id: module_screen_scale
+        text: 'Scale'
+        DesignerActionProfileCheck:
+            id: module_screen_25
+            text: '25%'
+            group: 'mod_screen_scale'
+            allow_no_selection: False
+            checkbox_active: False
+            config_key: '0.25'
+            on_active: root.on_module_settings(self)
+        DesignerActionProfileCheck:
+            id: module_screen_50
+            text: '50%'
+            group: 'mod_screen_scale'
+            allow_no_selection: False
+            checkbox_active: False
+            config_key: '0.50'
+            on_active: root.on_module_settings(self)
+        DesignerActionProfileCheck:
+            id: module_screen_100
+            text: '100%'
+            group: 'mod_screen_scale'
+            allow_no_selection: False
+            checkbox_active: False
+            config_key: '1.0'
+            on_active: root.on_module_settings(self)
+        DesignerActionProfileCheck:
+            id: module_screen_150
+            text: '150%'
+            group: 'mod_screen_scale'
+            allow_no_selection: False
+            checkbox_active: False
+            config_key: '1.5'
+            on_active: root.on_module_settings(self)
+        DesignerActionProfileCheck:
+            id: module_screen_200
+            text: '200%'
+            group: 'mod_screen_scale'
+            allow_no_selection: False
+            checkbox_active: False
+            config_key: '2.0'
+            on_active: root.on_module_settings(self)
+
+""")
 
 class ModulesContView(ContextualActionView):
 

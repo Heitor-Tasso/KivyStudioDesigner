@@ -5,6 +5,50 @@ from kivy.properties import ObjectProperty
 from kivy.uix.boxlayout import BoxLayout
 # from kivy.uix.listview import ListItemButton
 from kivy.uix.button import Button
+from kivy.lang.builder import Builder
+
+Builder.load_string("""
+
+<RecentItemButton>:
+    selected_color: 1, 1, 1, 0.5
+    deselected_color: 0, 0, 0, 0
+    text_size: self.size
+    valign: 'middle'
+    shorten: True
+    padding_x: 20
+    canvas.after:
+        Color:
+            rgba: (47/255.0, 167/255.0, 212/255.0, 1.0) if self.is_selected else (0.2, 0.2, 0.2, 1)
+        Rectangle:
+            pos: self.x+dp(25), self.y
+            size: self.width-dp(50), 1
+
+<RecentDialog>:
+    select_button: select
+    cancel_button: cancel
+    listview: listview
+    orientation: 'vertical'
+    padding: designer_padding
+
+    BoxLayout:
+        padding: 0, 15
+        ListView:
+            id: listview
+            row_height: 40
+
+    GridLayout:
+        cols: 2
+        size_hint_y: None
+        height: self.minimum_height
+        spacing: designer_spacing
+        DesignerButton:
+            id: select
+            text: 'Open Selected'
+        DesignerButton:
+            id: cancel
+            text: 'Cancel'
+
+""")
 
 class RecentItemButton(Button):
     pass

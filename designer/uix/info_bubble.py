@@ -1,9 +1,29 @@
-from kivy.animation import Animation
-from kivy.clock import Clock
-from kivy.core.window import Window
-from kivy.properties import StringProperty
-from kivy.uix.bubble import Bubble
+__all__ = ['InfoBubble', ]
 
+from kivy.properties import StringProperty
+from kivy.lang.builder import Builder
+from kivy.animation import Animation
+from kivy.core.window import Window
+from kivy.uix.bubble import Bubble
+from kivy.clock import Clock
+
+Builder.load_string("""
+
+<InfoBubble>:
+    size_hint: None, None
+    width: '270dp'
+    height: lbl.texture_size[1] + dp(30)
+    on_touch_down: self.hide()
+    BoxLayout:
+        orientation: 'vertical'
+        padding: '5dp'
+        spacing: '2dp'
+        Label:
+            id: lbl
+            text: root.message
+            text_size: self.width, None
+
+""")
 
 class InfoBubble(Bubble):
     '''Bubble to be used to display short Help Information'''
@@ -12,7 +32,6 @@ class InfoBubble(Bubble):
     '''Message to be displayed
        :data:`message` is a :class:`~kivy.properties.StringProperty`
     '''
-
     def show(self, pos, duration, width=None):
         '''Animate the bubble into position'''
         if width:
@@ -25,14 +44,14 @@ class InfoBubble(Bubble):
         '''
         def on_stop(*l):
             if duration:
-                Clock.schedule_once(self.hide, duration + .5)
+                Clock.schedule_once(self.hide, (duration+0.5))
 
         self.opacity = 0
         arrow_pos = self.arrow_pos
-        if arrow_pos[0] in ('l', 'r'):
-            pos = pos[0], pos[1] - (self.height / 2)
+        if arrow_pos[0] in {'l', 'r'}:
+            pos = (pos[0], (pos[1]-(self.height / 2)))
         else:
-            pos = pos[0] - (self.width / 2), pos[1]
+            pos = ((pos[0] - (self.width / 2)), pos[1])
 
         self.limit_to = Window
         self.pos = pos
@@ -45,10 +64,8 @@ class InfoBubble(Bubble):
 
     def hide(self, *dt):
         ''' Auto fade out the Bubble
-        '''
-        def on_stop(*l):
-            Window.remove_widget(self)
+        '''        
         anim = Animation(opacity=0, d=0.75)
-        anim.bind(on_complete=on_stop)
+        anim.bind(on_complete=lambda *l: Window.remove_widget(self))
         anim.cancel_all(self)
         anim.start(self)

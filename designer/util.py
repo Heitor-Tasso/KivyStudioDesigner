@@ -1,5 +1,8 @@
 import os
 
+def theme_atlas(theme):
+    return f'atlas://data/images/defaulttheme/{theme}'
+
 def correct_path(path_filename:str):
     bar_init = '/' if path_filename.startswith('/') else ''
     new_str = []

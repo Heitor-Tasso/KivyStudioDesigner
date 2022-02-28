@@ -38,7 +38,44 @@ from kivy.uix.scatter import ScatterPlane
 from kivy.uix.scatterlayout import ScatterLayout
 from kivy.uix.screenmanager import Screen, ScreenManager
 from kivy.uix.tabbedpanel import TabbedPanel
+from kivy.lang.builder import Builder
 
+Builder.load_string("""
+
+<Playground>:
+    do_scale: False
+    do_rotation: False
+    size_hint: None, None
+    size: 550, 350
+    pos: 300, 230
+    auto_bring_to_front: False
+    canvas:
+        Color:
+            rgb: 1, 1, 1
+        Line:
+            points: [0, 0, self.width, 0, self.width, self.height, 0, self.height]
+            width: 2.
+            close: True
+
+<PlaygroundDragElement>:
+    size_hint: None, None
+    size: 100, 100
+    canvas:
+        Color:
+            rgb: (0.9, 0.9, 0.9) if self.can_place else (0.9, 0.1, 0.1)
+        Line:
+            points: [self.x, self.y, self.center_x - 20, self.y, self.center_x, self.y - 20, self.center_x + 20, self.y, self.right, self.y, self.right, self.top, self.x, self.top]
+            close: True
+            width: 1.5
+        Color:
+            rgb: bgcolor
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+    on_target: app.focus_widget(args[1])
+
+""")
 
 class PlaygroundDragElement(BoxLayout):
     '''An instance of this class is the drag element shown when user tries to

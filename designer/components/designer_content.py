@@ -15,10 +15,100 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.popup import Popup
 from kivy.uix.tabbedpanel import TabbedPanel, TabbedPanelHeader, TabbedPanelItem
 from kivy.uix.treeview import TreeViewLabel
-
+from kivy.lang.builder import Builder
 
 SUPPORTED_EXT = ('.py', '.py2', '.kv', '.py3', '.txt', '.diff', )
 
+
+Builder.load_string("""
+
+<DesignerContent>:
+    ui_creator: ui_creator
+    tree_view: tree_view
+    tab_pannel: tab_panel
+    toolbox: toolbox
+    splitter_tree: splitter_tree
+    tree_toolbox_tab_panel: tree_toolbox_tab_panel
+    find_tool: find_tool
+
+    DesignerTabbedPanel:
+        id: tab_panel
+        size_hint: None, None
+        height: root.height
+        y: root.y
+        x: splitter_tree.width
+        width: root.width - splitter_tree.width
+        do_default_tab: False
+        tab_width: None
+        on_current_tab: root.on_current_tab(self)
+
+        DesignerTabbedPanelItem:
+            text: 'UI Creator'
+            UICreator:
+                id: ui_creator
+
+    Splitter:
+        id: splitter_tree
+        pos: root.pos
+        size_hint_x: None
+        sizable_from: 'right'
+        min_size: 220
+        width: 220
+        DesignerTabbedPanel:
+            id: tree_toolbox_tab_panel
+            do_default_tab: False
+            DesignerTabbedPanelItem:
+                text: 'Project Tree'
+                ScrollView:
+                    id: tree_scroll
+                    bar_width: 10
+                    scroll_type: ['bars', 'content']
+                    TreeView:
+                        id: tree_view
+                        size_hint: 1, None
+                        height: max(tree_scroll.height, self.minimum_height)
+            DesignerTabbedPanelItem:
+                text: 'Toolbox'
+                Toolbox:
+                    id: toolbox
+
+    CodeInputFind:
+        id: find_tool
+        y: root.y if root.in_find else -100
+        x: splitter_tree.width
+        size_hint_x: None
+        width: root.width - splitter_tree.width
+
+<DesignerCloseableTab>:
+    color: 0,0,0,0
+    disabled_color: self.color
+    # variable tab_width
+    text: root.title
+    size_hint_x: None
+    BoxLayout:
+        pos: root.pos
+        size_hint: None, None
+        size: root.size
+        padding: 3
+        Label:
+            id: lbl
+            text: root.text
+            shorten: True
+            shorten_from: 'right'
+            text_size: self.size
+            valign: 'middle'
+            halign: 'center'
+            markup: True
+        BoxLayout:
+            size_hint: None, 1
+            orientation: 'vertical'
+            width: 22
+            Image:
+                source: 'atlas://data/images/defaulttheme/close'
+                on_touch_down:
+                    if self.collide_point(*args[1].pos) : root.dispatch('on_close')
+
+""")
 
 class DesignerContent(FloatLayout):
     '''This class contains the body of the Kivy Designer. It contains,
@@ -366,7 +456,6 @@ class DesignerTabbedPanel(TabbedPanel):
 
 class DesignerTabbedPanelItem(TabbedPanelItem):
     pass
-
 
 class DesignerCloseableTab(TabbedPanelHeader):
     '''Custom TabbedPanelHeader with close button

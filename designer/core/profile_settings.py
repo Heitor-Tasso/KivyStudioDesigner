@@ -8,13 +8,93 @@ from utils.utils import get_config_dir, get_kd_data_dir
 from kivy.config import ConfigParser
 from kivy.properties import DictProperty, ObjectProperty
 from kivy.uix.popup import Popup
+from kivy.lang.builder import Builder
 from kivy.uix.settings import (
-    ContentPanel,
-    InterfaceWithSidebar,
-    MenuSidebar,
-    Settings,
+    ContentPanel, InterfaceWithSidebar,
+    MenuSidebar, Settings,
 )
 
+Builder.load_string("""
+
+<ProfileSettings>:
+    interface_cls: 'ProfileSettingsInterface'
+
+<-ProfileSettingsInterface>:
+    orientation: 'horizontal'
+    menu: menu
+    content: content
+    button_bar: button_bar
+    ProfileMenuSidebar:
+        id: menu
+    GridLayout:
+        id: button_bar
+        btn_delete_prof: btn_delete_prof
+        btn_select_prof: btn_select_prof
+        cols: 1
+        GridLayout:
+            cols: 2
+            size_hint_y: None
+            height: 50
+            spacing: 5
+            padding: 5
+            DesignerButton:
+                id: btn_select_prof
+                text: 'Use this Profile'
+                size_hint_x: 0.5
+            DesignerButton:
+                id: btn_delete_prof
+                disabled: True
+                text: 'Delete this Profile'
+                size_hint_x: 0.5
+        ProfileContentPanel:
+            id: content
+            current_uid: menu.selected_uid
+
+<-ProfileMenuSidebar>:
+    size_hint_x: None
+    width: '200dp'
+    buttons_layout: menu
+    close_button: button_close
+    new_button: button_new
+    ScrollView:
+        id: e_scroll
+        y: root.y + 70
+        x: root.x
+        width: root.width
+        size_hint_y: None
+        height: root.height - 75
+        GridLayout:
+            size_hint_y: None
+            height: max(e_scroll.height, self.minimum_height)
+            cols: 1
+            id: menu
+            # orientation: 'vertical'
+            padding: 5
+            spacing: 5
+            canvas.after:
+                Color:
+                    rgb: .2, .2, .2
+                Rectangle:
+                    pos: self.right - 1, self.y
+                    size: 1, self.height
+    DesignerButton:
+        text: 'New'
+        id: button_new
+        size_hint_x: None
+        width: root.width - dp(20)
+        pos: root.x + dp(10), root.y + sp(49)
+        font_size: '15sp'
+    DesignerButton:
+        text: 'Close'
+        id: button_close
+        size_hint_x: None
+        width: root.width - dp(20)
+        pos: root.x + dp(10), root.y + 5
+        font_size: '15sp'
+
+<ProfileContentPanel>:
+    current_uid: 0
+""")
 
 class ProfileContentPanel(ContentPanel):
     ''' ContentPanel with a custom design and custom events

@@ -1,27 +1,24 @@
-import code
-import sys
-import threading
+__all__ = [
+    'PseudoFile', 'Shell', 'InteractiveThread',
+    'InteractiveShellInput', 'PythonConsole']
 
 from utils.utils import show_message
-from kivy.base import runTouchApp
+
 from kivy.clock import Clock
 from kivy.lang import Builder
-from functools import partial
-from kivy.properties import (
-    ListProperty, NumericProperty,
-    ObjectProperty,
-)
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.codeinput import CodeInput
+from kivy.properties import ListProperty, NumericProperty, ObjectProperty
+
 from pygments.lexers.python import PythonConsoleLexer
+from kivy.animation import Animation
+from rlcompleter import Completer
+from functools import partial
+import sys, threading, time
+import code
 
+Builder.load_string("""
 
-try:
-    from rlcompleter import Completer
-except ImportError:
-    Completer = None
-
-Builder.load_string('''
 <PythonConsole>:
     text_input: interactive_text_input
     scroll_view: scroll_view
@@ -36,14 +33,14 @@ Builder.load_string('''
             height: max(self.parent.height, self.minimum_height)
             on_ready_to_input: root.ready_to_input()
             sh: root.sh
-''')
+
+""")
 
 
 class PseudoFile(object):
     '''A psuedo file object, to redirect I/O operations from Python Shell to
        InteractiveShellInput.
     '''
-
     def __init__(self, sh):
         self.sh = sh
 
@@ -55,7 +52,6 @@ class PseudoFile(object):
     def writelines(self, lines):
         '''To write lines to a PsuedoFile object.
         '''
-
         for line in lines:
             self.write(line)
 
@@ -69,9 +65,8 @@ class PseudoFile(object):
         '''
         return True
 
-
 class Shell(code.InteractiveConsole):
-    "Wrapper around Python that can filter input/output to the shell"
+    # Wrapper around Python that can filter input/output to the shell
 
     def __init__(self, root):
         code.InteractiveConsole.__init__(self)
@@ -106,11 +101,9 @@ class Shell(code.InteractiveConsole):
         try:
             exec(_code, self.locals)
         except SystemExit:
-            show_message(
-                'It\'s not possible to exit from Kivy Designer Python console',
-                5, 'error'
-            )
-        except:
+            msg = 'It\'s not possible to exit from Kivy Designer Python console'
+            show_message(msg, 5, 'error')
+        except Exception:
             self.showtraceback()
 
         sys.stdout = org_stdout
@@ -139,14 +132,13 @@ class Shell(code.InteractiveConsole):
             sys.ps2
         except AttributeError:
             sys.ps2 = "... "
-        cprt = 'Type "help", "copyright", "credits" or "license"'\
-            ' for more information.'
+        
+        cprt = 'Type "help", "copyright", "credits" or "license" for more information.'
         if banner is None:
-            self.write("Python %s on %s\n%s\n(%s)\n" %
-                       (sys.version, sys.platform, cprt,
-                        self.__class__.__name__))
+            self.write(f"Python {sys.version} on {sys.platform}\n{cprt}\n({self.__class__.__name__})\n")
         else:
-            self.write("%s\n" % str(banner))
+            self.write(f"{banner}\n")
+        
         more = 0
         while not self._exit:
             try:
@@ -173,7 +165,6 @@ class Shell(code.InteractiveConsole):
                 self.resetbuffer()
                 more = 0
 
-
 class InteractiveThread(threading.Thread):
     '''Another thread in which main loop of Shell will run.
     '''
@@ -187,22 +178,21 @@ class InteractiveThread(threading.Thread):
         '''
         self._sh.interact()
 
-
 class InteractiveShellInput(CodeInput):
     '''Displays Output and sends input to Shell. Emits 'on_ready_to_input'
        when it is ready to get input from user.
     '''
-
-    def __init__(self, **kw):
-        super(InteractiveShellInput, self).__init__(**kw)
-        self.lexer = PythonConsoleLexer()
 
     sh = ObjectProperty(None)
     '''Instance of :class:`~designer.uix.py_console.Shell`
        :data:`sh` is an :class:`~kivy.properties.ObjectProperty`
     '''
 
-    __events__ = ('on_ready_to_input',)
+    __events__ = ('on_ready_to_input', )
+
+    def __init__(self, **kw):
+        super(InteractiveShellInput, self).__init__(**kw)
+        self.lexer = PythonConsoleLexer()
 
     def __init__(self, **kwargs):
         super(InteractiveShellInput, self).__init__(**kwargs)
@@ -214,16 +204,14 @@ class InteractiveShellInput(CodeInput):
         if keycode[0] == 9 and Completer:
             # tab, add autocomplete suggestion
             txt = self.text[self._cursor_pos:]
-
             if txt.strip():
                 suggestion = Completer(self.sh.locals).complete(txt, 0)
-                if suggestion:
-                    self.select_text(self._cursor_pos,
-                                          self._cursor_pos + len(txt))
-                    self.delete_selection()
-                    print('Criando partial -> ', suggestion)
-                    Clock.schedule_once(
-                        partial(self.insert_text, suggestion))
+                if not suggestion:
+                    return False
+
+                self.select_text(self._cursor_pos, (self._cursor_pos+len(txt)))
+                self.delete_selection()
+                Clock.schedule_once(partial(self.insert_text, suggestion))
                 return False
 
         elif keycode[0] == 13:
@@ -231,17 +219,17 @@ class InteractiveShellInput(CodeInput):
             self.last_line = self.text[self._cursor_pos:]
             self.dispatch('on_ready_to_input')
 
-        return super(InteractiveShellInput, self).keyboard_on_key_down(
-            window, keycode, text, modifiers)
+        sp = super(InteractiveShellInput, self)
+        return sp.keyboard_on_key_down(window, keycode, text, modifiers)
 
     def insert_text(self, substring, from_undo=False):
         '''Override of insert_text
         '''
         if self.cursor_index() < self._cursor_pos:
-            return
+            return None
 
-        return super(InteractiveShellInput, self).insert_text(substring,
-                                                              from_undo)
+        sp = super(InteractiveShellInput, self)
+        return sp.insert_text(substring, from_undo)
 
     def on_ready_to_input(self, *args):
         '''Default handler of 'on_ready_to_input'
@@ -258,7 +246,6 @@ class InteractiveShellInput(CodeInput):
         '''Get last position of cursor where output was added.
         '''
         self._cursor_pos = self.cursor_index()
-        from kivy.animation import Animation
         anim = Animation(scroll_y=0, d=0.5)
         anim.cancel_all(self.parent)
         anim.start(self.parent)
@@ -334,7 +321,6 @@ class PythonConsole(BoxLayout):
     def get_input(self, prompt):
         '''Get input from user.
         '''
-        import time
         self.prompt = prompt
         Clock.schedule_once(self._show_prompt, 0.1)
         while not self._ready_to_input and not self._exit:
@@ -348,6 +334,3 @@ class PythonConsole(BoxLayout):
         '''
         self._exit = True
         self.sh.exit()
-
-if __name__ == '__main__':
-    runTouchApp(PythonConsole())

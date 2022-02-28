@@ -1,16 +1,17 @@
+__all__ = ['DesignerSandbox', ]
+
 from kivy.clock import Clock
 from kivy.lang import Builder
 from kivy.properties import BooleanProperty
 from kivy.uix.sandbox import Sandbox, sandbox
-
 
 class DesignerSandbox(Sandbox):
     '''DesignerSandbox is subclass of :class:`~kivy.uix.sandbox.Sandbox`
        for use with Kivy Designer. It emits on_getting_exeption event
        when code running in it will raise some exception.
     '''
-
     __events__ = ('on_getting_exception',)
+    
     error_active = BooleanProperty(False)
     '''If True, automatically show the error tab on getting an Exception
     '''

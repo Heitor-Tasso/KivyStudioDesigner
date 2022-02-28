@@ -514,7 +514,7 @@ class ToolBarTopDesigner(DesignerActionView):
         '''
         current_project = self.designer.project_manager.current_project
         
-        file_name = instance.get_user_input()
+        file_name = instance.user_input.text
         if file_name.find('.') == -1:
             file_name += '.py'
 

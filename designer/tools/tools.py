@@ -17,7 +17,79 @@ from kivy.event import EventDispatcher
 from kivy.properties import ObjectProperty, StringProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.popup import Popup
+from kivy.lang.builder import Builder
 
+Builder.load_string("""
+
+<SetupPyLabel@Label>:
+    text_size: self.size
+    valign: 'middle'
+    halign: 'left'
+    size_hint_y: None
+    height: '30sp'
+
+<DesignerTextInput@TextInput>:
+    size_hint_y: None
+    height: designer_text_input_height
+    multiline: False
+
+<ToolSetupPy>:
+    orientation: 'vertical'
+    padding: designer_padding
+    spacing: designer_spacing
+    BoxLayout:
+        BoxLayout:
+            spacing: designer_spacing
+            padding: designer_padding
+            size_hint_x: 0.3
+            orientation: 'vertical'
+            SetupPyLabel:
+                text: 'Package Name: '
+            SetupPyLabel:
+                text: 'Version: '
+            SetupPyLabel:
+                text: 'URL: '
+            SetupPyLabel:
+                text: 'License: '
+            SetupPyLabel:
+                text: 'Author: '
+            SetupPyLabel:
+                text: 'Author Email: '
+            SetupPyLabel:
+                text: 'Description: '
+        BoxLayout:
+            size_hint_x: 0.7
+            orientation: 'vertical'
+            spacing: designer_spacing
+            padding: designer_padding
+            DesignerTextInput:
+                id: package_name
+            DesignerTextInput:
+                id: version
+            DesignerTextInput:
+                id: url
+            DesignerTextInput:
+                id: license
+            DesignerTextInput:
+                id: author
+            DesignerTextInput:
+                id: author_email
+            DesignerTextInput:
+                id: description
+    GridLayout:
+        cols: 2
+        size_hint_y: None
+        height: self.minimum_height
+        spacing: designer_spacing
+
+        DesignerButton:
+            text: 'Create'
+            on_press: root.create()
+        DesignerButton:
+            text: 'Cancel'
+            on_press: root.dispatch('on_cancel')
+
+""")
 
 #### UIs ####
 class ToolSetupPy(BoxLayout):

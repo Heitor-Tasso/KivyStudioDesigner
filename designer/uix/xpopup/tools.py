@@ -36,6 +36,7 @@ classes via 'configure' function::
     configure(cls_label=MyLabel, cls_button=MyButton)
 
 """
+
 import gettext
 from kivy.compat import PY2
 from kivy.config import Config
@@ -46,7 +47,9 @@ from kivy.uix.label import Label
 
 __author__ = 'ophermit'
 
-__all__ = ('configure', )
+__all__ = [
+    'XLabelBehavior', 'XLabel', 'XButton',
+    'configure', 'gettext_',]
 
 
 def configure(cls_label=None, cls_button=None):
@@ -79,10 +82,9 @@ def _setup_locale():
     try:
         with open(locale_file, "rb") as f:
             xpopup_locale = gettext.GNUTranslations(f)
-        Logger.info('Localization file loaded (%s).' % locale_file)
+        Logger.info(f'Localization file loaded ({locale_file}).')
     except Exception as e:
-        Logger.warning('%s: %s. Switch to the defaults.' %
-                       (e.__class__.__name__, str(e)))
+        Logger.warning(f'{e.__class__.__name__}: {e}. Switch to the defaults.')
         xpopup_locale = gettext.NullTranslations()
 
     if PY2:
@@ -90,29 +92,24 @@ def _setup_locale():
     else:
         return xpopup_locale.gettext
 
-
 class XLabelBehavior(object):
     """Specifies a label behavior - sets text area size to the widget's bounds.
     """
-
     def __init__(self, **kwargs):
         defaults = {
             'valign': 'middle',
             'halign': 'center',
-            'padding': (3, 3)
+            'padding': (3, 3),
         }
         defaults.update(kwargs)
         super(XLabelBehavior, self).__init__(**defaults)
         self.bind(size=self.setter('text_size'))
 
-
 class XLabel(XLabelBehavior, Label):
     pass
 
-
 class XButton(XLabelBehavior, Button):
     pass
-
 
 gettext_ = _setup_locale()
 configure(cls_label=XLabel, cls_button=XButton)

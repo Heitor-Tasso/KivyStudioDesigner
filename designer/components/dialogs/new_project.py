@@ -1,6 +1,5 @@
 from functools import partial
 from os.path import join
-
 from kivy.uix.scrollview import ScrollView
 
 from utils import constants
@@ -8,6 +7,7 @@ from utils.utils import get_kd_data_dir
 from kivy.factory import Factory
 from kivy.properties import ObjectProperty
 from kivy.uix.boxlayout import BoxLayout
+from kivy.lang.builder import Builder
 
 
 NEW_PROJECTS = {
@@ -28,6 +28,106 @@ NEW_PROJECTS = {
     'TextInput and ScrollView': ('template_textinput_scrollview_kv',
                                  'template_textinput_scrollview_py')}
 
+
+Builder.load_string("""
+
+<ProjectTemplateBox>:
+    grid: grid
+    cols: 1
+    padding: '2sp'
+    size_hint_x: None
+    bar_width: 10
+    scroll_type: ['bars', 'content']
+    GridLayout:
+        id: grid
+        cols: 1
+        size_hint_y: None
+        height: 1
+
+<NewProjectDialog>:
+    template_preview: template_preview
+    cancel_button: cancel
+    select_button: select
+    template_list: template_list
+    app_name: app_name
+    package_name: package_name
+    package_version: package_version
+    orientation: 'horizontal'
+    padding: designer_padding
+    spacing: designer_spacing
+    ProjectTemplateBox:
+        id: template_list
+        pos_hint: {'center_x': 0.5}
+        size_hint_x: 0.3
+        canvas.before:
+            Color:
+                rgba: 1, 1, 1, 0.05
+            Rectangle:
+                pos: self.pos
+                size: self.size
+    BoxLayout:
+        orientation: 'vertical'
+        size_hint_x: 0.7
+        spacing: 20
+        BoxLayout:
+            size_hint_y: 0.1
+            orientation: 'horizontal'
+            Label:
+                size_hint_x: 0.2
+                text_size: self.width, None
+                padding_x: 10
+                halign: 'right'
+                text: 'App Name: '
+            TextInput:
+                id: app_name
+                size_hint_x: 0.7
+                multiline: False
+                padding: [15, ( self.height - self.line_height ) / 2]
+                focus: True
+        BoxLayout:
+            size_hint_y: 0.1
+            orientation: 'horizontal'
+            Label:
+                size_hint_x: 0.2
+                text_size: self.width, None
+                padding_x: 10
+                halign: 'right'
+                text: 'Package Name: '
+            TextInput:
+                id: package_name
+                size_hint_x: 0.7
+                multiline: False
+                padding: [15, ( self.height - self.line_height ) / 2]
+        BoxLayout:
+            size_hint_y: 0.1
+            orientation: 'horizontal'
+            Label:
+                size_hint_x: 0.2
+                text_size: self.width, None
+                padding_x: 10
+                halign: 'right'
+                text: 'Version: '
+            TextInput:
+                id: package_version
+                size_hint_x: 0.7
+                multiline: False
+                padding: [15, ( self.height - self.line_height ) / 2]
+        Image:
+            id: template_preview
+        GridLayout:
+            rows: 1
+            size_hint_y: None
+            height: '48sp'
+            padding: designer_padding
+            spacing: designer_spacing
+            DesignerButton:
+                id: select
+                text: 'Create New Project'
+            DesignerButton:
+                id: cancel
+                text: 'Cancel'
+
+""")
 
 class ProjectTemplateBox(ScrollView):
     '''Container consistings of buttons, with their names specifying

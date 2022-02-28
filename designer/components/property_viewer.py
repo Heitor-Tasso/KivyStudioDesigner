@@ -12,7 +12,83 @@ from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.textinput import TextInput
+from kivy.lang.builder import Builder
 
+Builder.load_string("""
+
+<PropertyOptions>:
+    valign: 'middle'
+    halign: 'left'
+    shorten: True
+    shorten_from: 'right'
+    Image:
+        source: 'atlas://data/images/defaulttheme/tree_opened'
+        size_hint: None, None
+        size: root.height, root.height
+        pos: root.x + root.width - root.height, root.y
+
+<PropertyViewer>:
+    do_scroll_x: False
+    prop_list: prop_list
+
+    canvas.before:
+        Color:
+            rgb: bgcolor
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    GridLayout:
+        id: prop_list
+        cols: 2
+        padding: 3
+        size_hint_y: None
+        height: self.minimum_height
+        row_default_height: '25pt'
+
+<PropertyLabel>:
+    font_size: '10pt'
+    valign: 'middle'
+    size_hint_x: 0.5
+    text_size: self.size
+    halign: 'left'
+    valign: 'middle'
+    shorten: True
+    canvas.before:
+        Color:
+            rgb: .2, .2, .2
+        Rectangle:
+            pos: self.x, self.y - 1
+            size: self.width, 1
+
+<PropertyBase>:
+    propvalue: getattr(self.propwidget, self.propname)
+    padding: '6pt', '6pt'
+
+    canvas.after:
+        Color:
+            rgba: .9, .1, .1, (1 if self.have_error else 0)
+        Line:
+            points: [self.x, self.y, self.right, self.y, self.right, self.top, self.x, self.top]
+            close: True
+            width: 2
+    canvas.before:
+        Color:
+            rgb: .2, .2, .2
+        Rectangle:
+            pos: self.x, self.y - 1
+            size: self.width, 1
+
+<PropertyTextInput>:
+    border: 8, 8, 8, 8
+    text: str(getattr(self.propwidget, self.propname))
+    on_text: self.value_changed(args[1])
+
+<PropertyBoolean>:
+    on_active: self.set_value(args[1])
+    active: bool(getattr(self.propwidget, self.propname))
+
+""")
 
 class PropertyLabel(Label):
     '''This class represents the :class:`~kivy.label.Label` for showing

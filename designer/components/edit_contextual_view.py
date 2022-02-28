@@ -2,7 +2,39 @@ from functools import partial
 
 from kivy.properties import ObjectProperty
 from kivy.uix.actionbar import ActionButton, ContextualActionView
+from kivy.lang.builder import Builder
 
+Builder.load_string("""
+
+<EditContView>:
+    ActionPrevious:
+        title: "Edit"
+        width: 100
+        with_previous: True
+    ActionOverflow:
+    ActionButton:
+        text: 'Undo'
+        on_press: root.dispatch('on_undo')
+    ActionButton:
+        text: 'Redo'
+        on_press: root.dispatch('on_redo')
+    ActionButton:
+        text: 'Cut'
+        on_press: root.dispatch('on_cut')
+    ActionButton:
+        text: 'Copy'
+        on_press: root.dispatch('on_copy')
+    ActionButton:
+        text: 'Paste'
+        on_press: root.dispatch('on_paste')
+    ActionButton:
+        text: 'Select All'
+        on_touch_up: root.dispatch('on_selectall')
+    ActionButton:
+        text: 'Delete'
+        on_press: root.dispatch('on_delete')
+
+""")
 
 class EditContView(ContextualActionView):
     '''EditContView is a ContextualActionView, used to display Edit items:

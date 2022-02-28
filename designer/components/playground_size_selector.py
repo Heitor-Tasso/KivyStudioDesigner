@@ -7,7 +7,42 @@ from kivy.uix.button import Button
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.modalview import ModalView
 from kivy.uix.togglebutton import ToggleButton
+from kivy.lang.builder import Builder
 
+Builder.load_string("""
+
+<PlaygroundSizeSelector>:
+    markup: True
+
+<PlaygroundSizeView>:
+    accordion: accordion
+
+    BoxLayout:
+        orientation: 'vertical'
+
+        BoxLayout:
+            size_hint_y: None
+            height: sp(48)
+            Label:
+                text: 'Playground Size'
+                bold: True
+
+            Label:
+                text: 'Portrait'
+                halign: 'right'
+                valign: 'middle'
+                text_size: self.size
+            Switch:
+                size_hint_x: None
+                width: sp(128)
+                active: root.selected_orientation == 'portrait'
+                on_active: root.selected_orientation = ('portrait' if self.active else 'landscape')
+
+        Accordion:
+            id: accordion
+            min_space: '1dp'
+
+""")
 
 class PlaygroundSizeSelector(Button):
     '''Button to open playground size selection view

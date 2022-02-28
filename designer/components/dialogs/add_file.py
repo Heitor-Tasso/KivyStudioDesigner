@@ -5,7 +5,59 @@ from utils.utils import ignore_proj_watcher
 from uix.xpopup.file import XFileOpen, XFolder
 from kivy.properties import ObjectProperty
 from kivy.uix.boxlayout import BoxLayout
+from kivy.lang.builder import Builder
 
+Builder.load_string("""
+
+<AddFileDialog>:
+    text_file: text_file
+    text_folder: text_folder
+    lbl_error: lbl_error
+    orientation: 'vertical'
+    padding: designer_padding
+    spacing: designer_spacing
+    Label:
+        id: lbl_error
+        size_hint_x: 1
+        color: [1, 0, 0, 1]
+    Label:
+        text: 'Select the File:'
+        size_hint_x: None
+    BoxLayout:
+        size_hint_y: None
+        height: '24pt'
+        TextInput:
+            id: text_file
+            multiline: False
+        Button:
+            size_hint_x: None
+            text: 'Open File'
+            on_press: root.open_file_btn_pressed()
+    Label:
+        text: 'Target Folder:'
+        size_hint_x: None
+    BoxLayout:
+        size_hint_y: None
+        height: '24pt'
+        TextInput:
+            id: text_folder
+            multiline: False
+            focus: True
+        Button:
+            size_hint_x: None
+            text: 'Open Folder'
+            on_press: root.open_folder_btn_pressed()
+    BoxLayout:
+        padding: designer_padding
+        spacing: designer_spacing
+        DesignerButton:
+            text: 'Add'
+            on_press: root._perform_add_file()
+        DesignerButton:
+            text: 'Cancel'
+            on_press: root.dispatch('on_cancel')
+
+""")
 
 class AddFileDialog(BoxLayout):
     '''AddFileDialog is a dialog for adding files to current project. It emits

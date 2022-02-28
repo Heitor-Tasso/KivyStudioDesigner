@@ -1,14 +1,93 @@
 from kivy.clock import Clock
+from kivy.lang.builder import Builder
 from kivy.properties import ObjectProperty, StringProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.tabbedpanel import (
-    TabbedPanel,
-    TabbedPanelContent,
-    TabbedPanelHeader,
+    TabbedPanel, TabbedPanelContent, TabbedPanelHeader,
 )
 
+Builder.load_string("""
+
+<StatusBar>:
+    app: app
+    navbar: navbar
+    status_message: status_message
+    status_info: status_info
+    canvas:
+        Color:
+            rgb: bordercolor
+        Rectangle:
+            pos: self.x, self.top - 0.5
+            size: self.width, 1
+        Color:
+            rgb: bgcolor
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    ScrollView:
+        id: nav_scroll
+        size_hint_x: None
+        width: 0
+        do_scroll_y: False
+        StatusNavbar:
+            id: navbar
+            size_hint_x: None
+            width: max(nav_scroll.width, self.width)
+            on_children: root._update_content_width()
+
+    StatusMessage:
+        id: status_message
+        img: img
+        size_hint: 0.9, None
+        height: '20pt'
+        spacing: 10
+        on_message: root._update_content_width()
+        on_touch_down: if self.collide_point(*args[1].pos): root.dispatch('on_message_press')
+        Image:
+            id: img
+            size_hint: None, None
+            width: '20pt'
+            height: '20pt'
+            opacity: 0
+        Label:
+            size_hint_x: 1
+            text: status_message.message
+            text_size: self.size
+            halign: 'left'
+            valign: 'middle'
+            shorten: True
+            shorten_from: 'left'
+
+    StatusInfo:
+        id: status_info
+        size_hint_x: 0.1
+        on_touch_down: if self.collide_point(*args[1].pos): root.dispatch('on_info_press')
+        Label:
+            size_hint_x: 1
+            text: status_info.message
+            text_size: self.size
+            halign: 'center'
+            valign: 'middle'
+            shorten: True
+            shorten_from: 'left'
+
+<StatusNavBarButton>:
+    text: getattr(root.node, '__class__').__name__
+    font_size: '10pt'
+    width: self.texture_size[0] + 20
+    size_hint_x: None
+    on_release: app.focus_widget(root.node)
+
+<StatusNavBarSeparator>:
+    text: '>'
+    font_size: '10pt'
+    width: self.texture_size[0] + 20
+    size_hint_x: None
+
+""")
 
 class StatusNavBarButton(Button):
     '''StatusNavBarButton is a :class:`~kivy.uix.button` representing

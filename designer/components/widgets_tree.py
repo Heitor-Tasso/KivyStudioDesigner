@@ -5,7 +5,33 @@ from kivy.properties import BooleanProperty, ObjectProperty
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.tabbedpanel import TabbedPanel
 from kivy.uix.treeview import TreeViewLabel
+from kivy.lang.builder import Builder
 
+Builder.load_string("""
+
+<WidgetTreeElement>:
+    is_open: True
+    text: getattr(root.node, '__class__').__name__
+    font_size: '10pt'
+
+<WidgetsTree>:
+    do_scroll_x: False
+    tree: tree
+    canvas.before:
+        Color:
+            rgb: bgcolor
+        Rectangle:
+            pos: root.pos
+            size: root.size
+
+    TreeView:
+        id: tree
+        height: self.minimum_height
+        size_hint_y: None
+        hide_root: True
+        on_selected_node: args[1] and app.focus_widget(args[1].node)
+
+""")
 
 class WidgetTreeElement(TreeViewLabel):
     '''WidgetTreeElement represents each node in WidgetsTree

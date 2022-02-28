@@ -1,6 +1,49 @@
+__all__ = ['ConfirmationDialog', 'ConfirmationDialogSave']
+
 from kivy.properties import StringProperty
 from kivy.uix.boxlayout import BoxLayout
+from kivy.lang.builder import Builder
 
+Builder.load_string("""
+
+<ConfirmationDialog>:
+    orientation: 'vertical'
+    padding: designer_padding
+    spacing: designer_spacing
+    Label:
+        text: root.message
+    GridLayout:
+        cols: 2
+        size_hint_y: None
+        height: self.minimum_height
+        DesignerButton:
+            text: 'Yes'
+            on_release: root.dispatch('on_ok')
+        DesignerButton:
+            text: 'No'
+            on_release: root.dispatch('on_cancel')
+
+<ConfirmationDialogSave>:
+    orientation: 'vertical'
+    padding: designer_padding
+    spacing: designer_spacing
+    Label:
+        text: root.message
+    GridLayout:
+        cols: 3
+        size_hint_y: None
+        height: self.minimum_height
+        DesignerButton:
+            text: 'Save'
+            on_release: root.dispatch('on_save')
+        DesignerButton:
+            text: "Don\'t Save"
+            on_release: root.dispatch('on_dont_save')
+        DesignerButton:
+            text: 'Cancel'
+            on_release: root.dispatch('on_cancel')
+
+""")
 
 class ConfirmationDialog(BoxLayout):
     '''ConfirmationDialog shows a confirmation message with two buttons

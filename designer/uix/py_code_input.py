@@ -1,13 +1,43 @@
-import jedi
-from uix.code_input import DesignerCodeInput
+__all__ = ['PyCodeInput', 'PyScrollView']
+
 from uix.completion_bubble import CompletionBubble
+from uix.code_input import DesignerCodeInput
+
 from kivy.app import App
 from kivy.core.window import Window
-from kivy.properties import BooleanProperty, ObjectProperty
+from kivy.lang.builder import Builder
 from kivy.uix.scrollview import ScrollView
+from kivy.properties import BooleanProperty, ObjectProperty
 
+import jedi
 
 MarkupLabel = None
+
+Builder.load_string("""
+
+<PyScrollView>:
+    id: scroll
+    code_input: code_input
+    line_number: line_number
+    bar_width: '10dp'
+    scroll_type: ['bars', 'content']
+    GridLayout:
+        cols: 2
+        size_hint: 1, None
+        height: max(scroll.height, self.minimum_height)
+        TextInput:
+            id: line_number
+            size_hint: None, 1
+            readonly: True
+            background_color: [1, 1, 1, 0]
+            foreground_color: [1, 1, 1, 1]
+        PyCodeInput:
+            id: code_input
+            auto_indent: True
+            size_hint_y: None
+            height: max(self.minimum_height, scroll.height)
+
+""")
 
 
 class PyCodeInput(DesignerCodeInput):
@@ -15,40 +45,35 @@ class PyCodeInput(DesignerCodeInput):
        It's rel_file_path property, gives the file path of the file it is
        currently displaying relative to Project Directory
     '''
+    pass
 
 
 class PyScrollView(ScrollView):
     '''PyScrollView used as a :class:`~kivy.scrollview.ScrollView`
        for adding :class:`~designer.uix.py_code_input.PyCodeInput`.
     '''
-
     code_input = ObjectProperty(None)
     '''(internal) Reference to the
         :class:`~designer.uix.py_code_input.PyCodeInput`.
        :data:`code_input` is a :class:`~kivy.properties.ObjectProperty`
     '''
-
     line_number = ObjectProperty(None)
     '''(internal) Text Input to display line numbers
        :data:`line_number` is a :class:`~kivy.properties.ObjectProperty`
     '''
-
     bubble = ObjectProperty(None)
     '''(internal) Bubble to display completions suggestion
        :data:`line_number` is a :class:`~kivy.properties.ObjectProperty`
     '''
-
     is_bubble_visible = BooleanProperty(False)
     '''(internal) If bubble is visible in the screen
        :data:`line_number` is a :class:`~kivy.properties.ObjectProperty`
     '''
-
     show_line_number = BooleanProperty(True)
     '''Display line number on left
        :data:`show_line_number` is a :class:`~kivy.properties.BooleanProperty`
        and defaults to True
     '''
-
     use_autocompletion = BooleanProperty(True)
     '''Use autocompletion
        :data:`use_autocompletion` is a :class:`~kivy.properties.BooleanProperty`
@@ -80,14 +105,16 @@ class PyScrollView(ScrollView):
             Window.unbind(on_keyboard=self.on_keyboard)
 
     def on_keyboard(self, instance, key, scancode, codepoint, modifier):
-        if key == 32 and modifier == ['ctrl']:
-            code = self.code_input
-            src = code.text
-            line = code.cursor_row + 1
-            col = code.cursor_col
-            script = jedi.Script(src, line, col)
-            completions = script.completions()
-            self.show_completion(completions)
+        if key != 32 and modifier != ['ctrl']:
+            return None
+            
+        code = self.code_input
+        src = code.text
+        line = code.cursor_row + 1
+        col = code.cursor_col
+        script = jedi.Script(src, line, col)
+        completions = script.completions()
+        self.show_completion(completions)
 
     def on_complete(self, instance, completion):
         '''Add the completion to the current cursor position
@@ -101,7 +128,7 @@ class PyScrollView(ScrollView):
         self.bubble.show_completions(completions, force_scroll=True)
         self.bubble.reposition(
             self.code_input.to_window(*self.code_input.cursor_pos),
-            self.code_input.line_height + self.code_input.line_spacing
+            (self.code_input.line_height+self.code_input.line_spacing),
         )
         self.root.add_widget(self.bubble)
         self.is_bubble_visible = True
@@ -109,10 +136,12 @@ class PyScrollView(ScrollView):
     def cancel_completion(self, *args):
         '''Event handler to cancel the completion
         '''
-        if self.bubble.parent is not None:
-            self.bubble.show_completions([])
-            self.bubble.parent.remove_widget(self.bubble)
-            self.is_bubble_visible = False
+        if self.bubble.parent is None:
+            return None
+
+        self.bubble.show_completions([])
+        self.bubble.parent.remove_widget(self.bubble)
+        self.is_bubble_visible = False
 
     def on_lines_changed(self, *args):
         '''Event handler that listen the line modifications to update
@@ -127,8 +156,8 @@ class PyScrollView(ScrollView):
         to update the text input
         '''
         self._max_num_of_lines = new
-        self.line_number.text += \
-                    '\n'.join([str(i) for i in range(old + 1, new + 1)]) + '\n'
-        self.line_number.width = self.line_number._label_cached.get_extents(
-            str(self._max_num_of_lines))[0] + (self.line_number.padding[0] * 2)
+        self.line_number.text += '\n'.join(map(str, range(old+1, new+1))) + '\n'
+        
+        width = self.line_number._label_cached.get_extents(str(self._max_num_of_lines))[0]
+        self.line_number.width = width + (self.line_number.padding[0] * 2)
         # not removing lines, as long as extra lines will not be visible

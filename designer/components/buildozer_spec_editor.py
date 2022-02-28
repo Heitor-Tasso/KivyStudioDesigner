@@ -9,14 +9,118 @@ from utils.utils import get_kd_data_dir, ignore_proj_watcher
 from kivy.properties import ConfigParser, ObjectProperty, StringProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.settings import (
-    ContentPanel,
-    InterfaceWithSidebar,
-    MenuSidebar,
-    Settings,
+    ContentPanel, InterfaceWithSidebar,
+    MenuSidebar, Settings,
     SettingsPanel,
 )
 from pygments.lexers.configs import IniLexer
+from kivy.lang.builder import Builder
 
+Builder.load_string("""
+
+<SpecContentPanel>:
+    do_scroll_x: False
+    container: content
+    GridLayout:
+        id: content
+        cols: 1
+        size_hint_y: None
+        height: max(self.minimum_height, root.height)
+
+<-SpecMenuSidebar>:
+    size_hint_x: None
+    width: '200dp'
+    buttons_layout: menu
+    close_button: button
+    GridLayout:
+        pos: root.pos
+        cols: 1
+        id: menu
+        # orientation: 'vertical'
+        padding: 5
+        canvas.after:
+            Color:
+                rgb: .2, .2, .2
+            Rectangle:
+                pos: self.right - 1, self.y
+                size: 1, self.height
+    Button:
+        id: button
+
+<-SpecEditorInterface>:
+    orientation: 'horizontal'
+    menu: menu
+    content: content
+    button_bar: button_bar
+    SpecMenuSidebar:
+        id: menu
+    GridLayout:
+        id: button_bar
+        cols: 1
+        Label:
+            text: 'Buildozer Spec Editor'
+            font_size: '16pt'
+            halign: 'center'
+            size_hint_y: None
+            height: '25pt'
+        Button:
+            background_normal: 'atlas://data/images/defaulttheme/action_item'
+            background_down: 'atlas://data/images/defaulttheme/action_item'
+            text: 'GUI editor to buildozer.spec.z\\nRead more at http://buildozer.readthedocs.org'
+            text_size: self.size
+            font_size: '11pt'
+            halign: 'center'
+            valign: 'top'
+            size_hint_y: None
+            height: '30pt'
+            on_press: root.open_buildozer_docs()
+        SpecContentPanel:
+            id: content
+            current_uid: menu.selected_uid
+
+<BuildozerSpecEditor>:
+    interface_cls: 'SpecEditorInterface'
+
+<SpecCodeInput>:
+    text_input: text_input
+    lbl_error: lbl_error
+    orientation: 'vertical'
+    spacing: designer_spacing
+    padding: designer_padding
+    Label:
+        text: "Edit the buildozer.spec file"
+        size_hint_y: None
+        text_size: self.size
+        font_size: '11pt'
+        height: '20pt'
+    Label:
+        id: lbl_error
+        text: 'There is something wrong with your .spec file...'
+        size_hint_y: None
+        text_size: self.size
+        font_size: '11pt'
+        halign: 'center'
+        height: '0pt'
+    ScrollView:
+        id: spec_scroll
+        bar_width: 10
+        scroll_type: ['bars', 'content']
+        CodeInput:
+            id: text_input
+            size_hint_y: None
+            height: max(spec_scroll.height, self.minimum_height)
+    GridLayout:
+        cols: 2
+        size_hint_y: None
+        height: self.minimum_height
+        DesignerButton:
+            text: 'Apply Modifications'
+            on_press: root._save_spec()
+        DesignerButton:
+            text: 'Cancel Modifications'
+            on_press: root.load_spec()
+
+""")
 
 class SpecContentPanel(ContentPanel):
 

@@ -115,106 +115,95 @@ Following example shows how to use properties::
 
 """
 
-from kivy import metrics
+from kivy.metrics import dp
 from kivy.factory import Factory
 from kivy.lang.builder import Builder
-from textwrap import dedent
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.textinput import TextInput
+
 from kivy.properties import (
     StringProperty, NumericProperty,
     ListProperty, OptionProperty,
     BooleanProperty, ObjectProperty,
 )
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.textinput import TextInput
 
 from os import path, makedirs
+from textwrap import dedent
 
-try:
-    from .tools import gettext_ as _
-    from .xbase import XBase
-    from .notification import XError
-    from .form import XTextInput
-except:
-    from tools import gettext_ as _
-    from xbase import XBase
-    from notification import XError
-    from form import XTextInput
+from .tools import gettext_
+from .xbase import XBase
+from .notification import XError
+from .form import XTextInput
 
 __author__ = 'ophermit'
 
-__all__ = ('XFileSave', 'XFileOpen', 'XFolder')
+__all__ = ['XFilePopup', 'XFileSave', 'XFileOpen', 'XFolder']
 
 
 class XFilePopup(XBase):
     """XFilePopup class. See module documentation for more information.
     """
-
-    size_hint_x = NumericProperty(1., allownone=True)
-    size_hint_y = NumericProperty(1., allownone=True)
+    size_hint_x = NumericProperty(1, allownone=True)
+    size_hint_y = NumericProperty(1, allownone=True)
+    
     '''Default size properties for the popup
     '''
-
     browser = ObjectProperty(None)
     '''This property represents the FileChooser object. The property contains
     an object after creation :class:`xpopup.XFilePopup` object.
     '''
-
     path = StringProperty(u'/')
     '''Initial path for the browser.
 
     Binded to :attr:`~kivy.uix.filechooser.FileChooser.path`
     '''
-
     selection = ListProperty()
     '''Contains the selection in the browser.
 
     Binded to :attr:`~kivy.uix.filechooser.FileChooser.selection`
     '''
-
     multiselect = BooleanProperty(False)
     '''Binded to :attr:`~kivy.uix.filechooser.FileChooser.multiselect`
     '''
-
     dirselect = BooleanProperty(False)
     '''Binded to :attr:`~kivy.uix.filechooser.FileChooser.dirselect`
     '''
-
     filters = ListProperty()
     '''Binded to :attr:`~kivy.uix.filechooser.FileChooser.filters`
     '''
-
     CTRL_VIEW_ICON = 'icon'
     CTRL_VIEW_LIST = 'list'
     CTRL_NEW_FOLDER = 'new_folder'
 
-    view_mode = OptionProperty(
-        CTRL_VIEW_ICON, options=(CTRL_VIEW_ICON, CTRL_VIEW_LIST))
+    view_mode = OptionProperty(CTRL_VIEW_ICON, options=(CTRL_VIEW_ICON, CTRL_VIEW_LIST))
     '''Binded to :attr:`~kivy.uix.filechooser.FileChooser.view_mode`
     '''
-
     def _get_body(self):
-        from kivy.lang import Builder
-        import textwrap
-        self.browser = Builder.load_string(textwrap.dedent('''\
-        FileChooser:
-            FileChooserIconLayout
-            FileChooserListLayout
+        self.browser = Builder.load_string(dedent('''\
+            FileChooser:
+                FileChooserIconLayout
+                FileChooserListLayout
         '''))
 
         self.browser.path = self.path
         self.browser.multiselect = self.multiselect
         self.browser.dirselect = self.dirselect
         self.browser.filters = self.filters
-        self.browser.bind(path=self.setter('path'),
-                          selection=self.setter('selection'))
-        self.bind(view_mode=self.browser.setter('view_mode'),
-                  multiselect=self.browser.setter('multiselect'),
-                  dirselect=self.browser.setter('dirselect'),
-                  filters=self.browser.setter('filters'))
+        self.browser.bind(
+            path=self.setter('path'),
+            selection=self.setter('selection'))
+        
+        self.bind(
+            view_mode=self.browser.setter('view_mode'),
+            multiselect=self.browser.setter('multiselect'),
+            dirselect=self.browser.setter('dirselect'),
+            filters=self.browser.setter('filters'))
 
         lbl_path = Factory.XLabel(
-            text=self.browser.path, valign='top', halign='left',
-            size_hint_y=None, height=metrics.dp(25))
+            text=self.browser.path, valign='top',
+            halign='left', size_hint_y=None,
+            height=dp(25))
+
         self.browser.bind(path=lbl_path.setter('text'))
 
         layout = BoxLayout(orientation='vertical')
@@ -225,10 +214,10 @@ class XFilePopup(XBase):
 
     def _ctrls_init(self):
         btn = Factory.XButton
-        pnl_controls = BoxLayout(size_hint_y=None, height=metrics.dp(25))
-        pnl_controls.add_widget(btn(text=_('Icons'),on_release=self._ctrls_click))
-        pnl_controls.add_widget(btn(text=_('List'), on_release=self._ctrls_click))
-        pnl_controls.add_widget(btn(text=_('New folder'), on_release=self._ctrls_click))
+        pnl_controls = BoxLayout(size_hint_y=None, height=dp(25))
+        pnl_controls.add_widget(btn(text=gettext_('Icons'), on_release=self._ctrls_click))
+        pnl_controls.add_widget(btn(text=gettext_('List'), on_release=self._ctrls_click))
+        pnl_controls.add_widget(btn(text=gettext_('New folder'), on_release=self._ctrls_click))
         return pnl_controls
 
     def _ctrls_click(self, instance):
@@ -240,19 +229,22 @@ class XFilePopup(XBase):
         if value in self.property('view_mode').options:
             self.view_mode = value
         elif value == self.CTRL_NEW_FOLDER:
-            XTextInput(title=_('Input folder name'),
-                       text=_('New folder'),
-                       on_dismiss=self._create_dir)
+            XTextInput(
+                title=gettext_('Input folder name'),
+                text=gettext_('New folder'),
+                on_dismiss=self._create_dir)
 
     def _create_dir(self, instance):
         """Callback for create a new folder.
         """
         if instance.is_canceled():
             return
-        new_folder = self.path + path.sep + instance.get_value()
+        new_folder = f'{self.path}{path.sep}{instance.get_value()}'
         if path.exists(new_folder):
-            XError(text=_('Folder "%s" is already exist. Maybe you should '
-                          'enter another name?') % instance.get_value())
+            XError(text=gettext_(
+                f'Folder "{instance.get_value()}"'
+                'is already exist. Maybe you should enter another name?')
+            )
             return True
         makedirs(new_folder)
         self.browser.property('path').dispatch(self.browser)
@@ -264,11 +256,11 @@ class XFilePopup(XBase):
         :param files: if True - files will be included in selection
         """
         if folders and files:
-            return
+            return None
 
         t = []
         for entry in self.selection:
-            if entry == '..' + path.sep:
+            if entry == f'..{path.sep}':
                 pass
             elif folders and self.browser.file_system.is_dir(entry):
                 t.append(entry)
@@ -280,26 +272,22 @@ class XFilePopup(XBase):
 class XFileSave(XFilePopup):
     """XFileSave class. See module documentation for more information.
     """
-
-    BUTTON_SAVE = _('Save')
-    TXT_ERROR_FILENAME = _('Maybe you should enter a filename?')
+    BUTTON_SAVE = gettext_('Save')
+    TXT_ERROR_FILENAME = gettext_('Maybe you should enter a filename?')
 
     filename = StringProperty(u'')
     '''Represents entered file name. Can be used for setting default value.
     '''
-
-    title = StringProperty(_('Save file'))
+    title = StringProperty(gettext_('Save file'))
     '''Default title for the popup
     '''
-
     buttons = ListProperty([BUTTON_SAVE, XFilePopup.BUTTON_CANCEL])
     '''Default button set for the popup
     '''
-
     def _get_body(self):
         txt = TextInput(
             text=self.filename, multiline=False,
-            size_hint_y=None, height=metrics.dp(30)
+            size_hint_y=None, height=dp(30),
         )
         txt.bind(text=self.setter('filename'))
         self.bind(filename=txt.setter('text'))
@@ -310,7 +298,7 @@ class XFileSave(XFilePopup):
 
     def on_selection(self, *largs):
         if len(self.selection) == 0:
-            return
+            return None
 
         if not self.browser.file_system.is_dir(self.selection[0]):
             self.filename = self.selection[0].split(path.sep)[-1]
@@ -329,24 +317,22 @@ class XFileSave(XFilePopup):
     def get_full_name(self):
         """Returns full filename (including path)
         """
-        return self.path + path.sep + self.filename
+        return f'{self.path}{path.sep}{self.filename}'
 
 
 class XFileOpen(XFilePopup):
     """XFileOpen class. See module documentation for more information.
     """
 
-    BUTTON_OPEN = _('Open')
-    TXT_ERROR_SELECTION = _('Maybe you should select a file?')
+    BUTTON_OPEN = gettext_('Open')
+    TXT_ERROR_SELECTION = gettext_('Maybe you should select a file?')
 
-    title = StringProperty(_('Open file'))
+    title = StringProperty(gettext_('Open file'))
     '''Default title for the popup
     '''
-
     buttons = ListProperty([BUTTON_OPEN, XFilePopup.BUTTON_CANCEL])
     '''Default button set for the popup
     '''
-
     def dismiss(self, *largs, **kwargs):
         """Pre-validation before closing.
         """
@@ -363,17 +349,15 @@ class XFolder(XFilePopup):
     """XFolder class. See module documentation for more information.
     """
 
-    BUTTON_SELECT = _('Select')
-    TXT_ERROR_SELECTION = _('Maybe you should select a folders?')
+    BUTTON_SELECT = gettext_('Select')
+    TXT_ERROR_SELECTION = gettext_('Maybe you should select a folders?')
 
-    title = StringProperty(_('Choose folder'))
+    title = StringProperty(gettext_('Choose folder'))
     '''Default title for the popup
     '''
-
     buttons = ListProperty([BUTTON_SELECT, XFilePopup.BUTTON_CANCEL])
     '''Default button set for the popup
     '''
-
     def __init__(self, **kwargs):
         super(XFolder, self).__init__(**kwargs)
         # enabling the folder selection if multiselect is allowed

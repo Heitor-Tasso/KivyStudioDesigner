@@ -1,52 +1,45 @@
 __all__ = ['DesignerApp', ]
 
-from components.buildozer_spec_editor import BuildozerSpecEditor
-from components.run_contextual_view import ModulesContView
-from components.edit_contextual_view import EditContView
-from components.designer_content import DesignerContent
-from kivy.uix.popup import Popup
-
-from core.project_manager import ProjectManager, ProjectWatcher
-from core.profile_settings import ProfileSettings
-from core.project_settings import ProjectSettings
-from core.recent_manager import RecentManager
-from core.settings import DesignerSettings
-from core.undo_manager import UndoManager
-from core.shortcuts import Shortcuts
-from core.builder import Profiler
-
-from tools.bug_reporter import BugReporterApp
-from tools.tools import DesignerTools
-
-from uix.confirmation_dialog import ConfirmationDialog, ConfirmationDialogSave
-
-from utils.toolbox_widgets import toolbox_widgets
-import os, shutil, traceback
-
 from utils.utils import (
     get_config_dir, show_alert,
     ignore_proj_watcher, update_info,
     show_error_console, show_message,
 )
-from kivy.metrics import dp
+
+from uix.confirmation_dialog import ConfirmationDialog, ConfirmationDialogSave
+from components.buildozer_spec_editor import BuildozerSpecEditor
+from core.project_manager import ProjectManager, ProjectWatcher
+from components.run_contextual_view import ModulesContView
+from components.edit_contextual_view import EditContView
+from components.designer_content import DesignerContent
+from core.profile_settings import ProfileSettings
+from core.project_settings import ProjectSettings
+from utils.toolbox_widgets import toolbox_widgets
+from core.recent_manager import RecentManager
+from core.settings import DesignerSettings
+from tools.bug_reporter import BugReporterApp
+from core.undo_manager import UndoManager
+from tools.tools import DesignerTools
+from core.shortcuts import Shortcuts
+from core.builder import Profiler
 
 from kivy.app import App
+from kivy.clock import Clock
+from kivy.uix.popup import Popup
+from kivy.core.window import Window
 from kivy.uix.carousel import Carousel
 from kivy.uix.tabbedpanel import TabbedPanel
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import ScreenManager
 from kivy.base import ExceptionHandler, ExceptionManager
-
-from functools import partial
-from kivy.clock import Clock
-from kivy.core.window import Window
 from kivy.properties import (
     BooleanProperty, ListProperty,
     ObjectProperty, StringProperty,
 )
-from kivy.lang.builder import Builder
 
-Builder.load_file('designer.kv')
+import os, shutil, traceback
+from functools import partial
+
 
 class Designer(FloatLayout):
     '''Designer is the Main Window class of Kivy Designer

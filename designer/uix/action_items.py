@@ -1,11 +1,117 @@
-import weakref
+__all__ = [
+    'DesignerActionSubMenu', 'ActionCheckButton',
+    'DesignerActionProfileCheck', 'DesignerActionGroup',
+    'DesignerSubActionButton', 'DesignerActionButton',]
 
 from uix.contextual import ContextSubMenu
+
 from kivy.core.window import Window
-from kivy.properties import BooleanProperty, ObjectProperty, StringProperty
-from kivy.uix.actionbar import ActionButton, ActionGroup, ActionItem
-from kivy.uix.behaviors import ButtonBehavior
+from kivy.lang.builder import Builder
 from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.behaviors import ButtonBehavior
+from kivy.uix.actionbar import ActionButton, ActionGroup, ActionItem
+from kivy.properties import BooleanProperty, ObjectProperty, StringProperty
+
+import weakref
+
+Builder.load_string("""
+
+<DesignerActionButton>:
+    info: info
+    background_normal: 'atlas://data/images/defaulttheme/action_bar'
+    size_hint_x: None
+    width: designer_action_width
+    canvas.before:
+        Color:
+            rgba: [1, 1, 1, 0.5] if self.disabled else [1, 1, 1, 1]
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: self.background_normal
+    Label:
+        pos: root.pos
+        text_size: (self.width - sp(24), self.size[1])
+        valign: 'middle'
+        size_hint_y: None
+        height: '40sp'
+        text: root.text
+    Label:
+        id: info
+        text: root.hint
+        pos: root.pos
+        size: root.size
+        opacity: 0.5
+        text_size: self.size
+        valign: 'bottom'
+        halign: 'right'
+        padding: '5dp', '5dp'
+
+<DesignerActionSubMenu>:
+    text_size: (self.width - sp(24), self.size[1])
+    valign: 'middle'
+    size_hint_y: None
+    height: '40sp'
+    width: designer_action_width
+
+<ActionCheckButton>:
+    btn_layout: btn_layout
+    _label: _label
+    checkbox: checkbox
+    background_normal: 'atlas://data/images/defaulttheme/action_bar'
+    size_hint: None, None
+    height: '49sp'
+    width: designer_action_width
+    canvas.before:
+        Color:
+            rgba: [1, 1, 1, 1]
+        Rectangle:
+            pos: self.pos
+            size: self.size
+            source: self.background_normal
+    BoxLayout:
+        id: btn_layout
+        pos: root.pos
+        padding: [dp(5), 0, dp(5), 0]
+        spacing: '10dp'
+        CheckBox:
+            id: checkbox
+            size_hint_x: None
+            width: '20sp'
+            pos: [root.x+dp(2), root.y]
+            active: root.checkbox_active
+            group: root.group
+            allow_no_selection: root.allow_no_selection
+            on_active: root.dispatch('on_active', *args)
+        Label:
+            id: _label
+            text_size: self.size
+            valign: 'middle'
+            text: root.text
+    Label:
+        id: info
+        text: root.desc
+        pos: root.pos
+        size: root.size
+        opacity: 0.3
+        text_size: self.size
+        valign: 'bottom'
+        halign: 'right'
+        padding: dp(5), dp(5)
+
+<DesignerSubActionButton>:
+    size_hint: 1, None
+    width: designer_action_width
+    height: '48sp'
+    background_normal: 'atlas://data/images/defaulttheme/action_bar'
+    text_size: (self.width - sp(24), self.size[1])
+    valign: 'middle'
+
+<DesignerActionGroup>:
+    mode: 'spinner'
+    size_hint_x: None
+    dropdown_cls: ContextMenu
+
+""")
 
 class DesignerActionSubMenu(ContextSubMenu, ActionButton):
     pass
@@ -59,7 +165,7 @@ class ActionCheckButton(ActionItem, FloatLayout):
 
     cont_menu = ObjectProperty(None)
 
-    __events__ = ('on_active',)
+    __events__ = ('on_active', )
 
     def on_touch_down(self, touch):
         '''Override of its parent's on_touch_down, used to reverse the state
@@ -79,13 +185,11 @@ class DesignerActionProfileCheck(ActionCheckButton):
     :class `~designer.uix.actioncheckbutton.ActionCheckButton`
     It's used to create radio buttons to action menu
     '''
-
     config_key = StringProperty('')
     '''Dict key to the profile config_parser
        :data:`config_key` is a :class:`~kivy.properties.StringProperty`,
        default to ''.
     '''
-
 
 class DesignerActionGroup(ActionGroup):
 
@@ -115,12 +219,12 @@ class DesignerActionGroup(ActionGroup):
             inside_actionbutton = self.collide_point(*pos)
             if self.hovered == inside_actionbutton:
                 # If mouse is hovering inside the group then return.
-                return
+                return None
             self.hovered = inside_actionbutton
             if inside_actionbutton:
                 self.dispatch('on_enter')
         except:
-            return
+            return None
 
     def on_touch_down(self, touch):
         '''Used to determine where touch is down and to change values
@@ -147,7 +251,6 @@ class DesignerActionGroup(ActionGroup):
                 self.is_open = True
                 self._toggle_dropdown()
 
-
 class DesignerSubActionButton(ActionButton):
 
     def __init__(self, **kwargs):
@@ -156,7 +259,6 @@ class DesignerSubActionButton(ActionButton):
     def on_press(self):
         if self.cont_menu:
             self.cont_menu.dismiss()
-
 
 class DesignerActionButton(ActionItem, ButtonBehavior, FloatLayout):
     '''DesignerActionButton is a ActionButton to the ActionBar menu

@@ -2,11 +2,50 @@ from utils.toolbox_widgets import toolbox_widgets
 from kivy.clock import Clock
 from kivy.factory import Factory
 from kivy.metrics import pt
+from kivy.lang.builder import Builder
 from kivy.properties import ObjectProperty
 from kivy.uix.accordion import AccordionItem
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 
+
+Builder.load_string("""
+
+<Toolbox>:
+    accordion: accordion
+    Accordion:
+        id: accordion
+        orientation: 'vertical'
+        pos: root.pos
+        min_space: '1dp'
+        size_hint_y: None
+        height: root.height
+
+<ToolboxCategory>:
+    gridlayout: gridlayout
+    size_hint_y: None
+    height: '22pt'
+    title: self.title[0].upper() + self.title[1:]
+    ScrollView:
+        pos: root.pos
+        bar_width: 10
+        scroll_type: ['bars', 'content']
+        GridLayout:
+            id: gridlayout
+            cols: 1
+            # orientation: 'vertical'
+            padding: '5sp'
+            spacing: '3sp'
+            size_hint_y: None
+            height: max(self.parent.height, self.minimum_height)
+
+<ToolboxButton>:
+    size_hint_y: None
+    height: '22pt'
+    font_size: '10pt'
+    on_press_and_touch: app.create_draggable_element(self, self.text, args[1])
+
+""")
 
 class ToolboxCategory(AccordionItem):
     '''ToolboxCategory is responsible for grouping and showing

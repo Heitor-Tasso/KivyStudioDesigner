@@ -221,7 +221,7 @@ class DesignerGit(DesignerActionSubMenu):
     def _perform_do_commit(self, input, *args):
         '''Perform the git commit with data from InputDialog
         '''
-        # message = input.get_user_input()
+        # message = input.user_input.text
         # if self.repo.is_dirty():
         #     try:
         #         self.repo.git.commit('-am', message)

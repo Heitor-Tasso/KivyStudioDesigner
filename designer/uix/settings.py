@@ -1,25 +1,35 @@
+__all__ = [
+    'SettingDict', 'SettingListCheckItem',
+    'SettingListContent', 'SettingList',
+    'SettingShortcutContent', 'SettingShortcut']
+
 from utils.utils import get_designer
+
+from kivy.uix.settings import SettingItem, SettingSpacer
 from kivy.core.window import Keyboard, Window
+from kivy.uix.togglebutton import ToggleButton
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
+from kivy.uix.widget import Widget
+from kivy.uix.popup import Popup
 from kivy.lang import Builder
 from kivy.metrics import dp
+
 from kivy.properties import (
     BooleanProperty, DictProperty,
     ListProperty, ObjectProperty,
     StringProperty,
 )
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.button import Button
-from kivy.uix.popup import Popup
-from kivy.uix.settings import SettingItem, SettingSpacer
-from kivy.uix.togglebutton import ToggleButton
-from kivy.uix.widget import Widget
 
+Builder.load_string("""
 
-Builder.load_string('''
+#: import theme_atlas util.theme_atlas
+
 <SettingDict>:
     Label:
-        text: root.options[root.value] if root.value and root.value \
-            in root.options else ''
+        text: 
+            root.options[root.value] \
+            if root.value and root.value in root.options else ''
         pos: root.pos
         font_size: '15sp'
 
@@ -34,18 +44,17 @@ Builder.load_string('''
         halign: 'center'
         valign: 'middle'
 
-
 <SettingListCheckItem>:
     item_check: item_check
     orientation: 'horizontal'
     size_hint_y: None
-    height: 50
+    height: '50dp'
     canvas.before:
         Color:
-            rgba: 1, 1, 1, 0.2
+            rgba: [1, 1, 1, 0.2]
         Rectangle:
-            pos: self.x, self.top - 1
-            size: self.width, 1
+            pos: (self.x, (self.top-1))
+            size: (self.width, 1)
     CheckBox:
         id: item_check
         size_hint_x: 0.1
@@ -54,8 +63,8 @@ Builder.load_string('''
         group: root.group
     Button:
         text: root.item_text
-        background_normal: 'atlas://data/images/defaulttheme/action_item'
-        background_down: 'atlas://data/images/defaulttheme/action_item'
+        background_normal: theme_atlas('action_item')
+        background_down: theme_atlas('action_item')
         size_hint_x: 0.9
         text_size: self.size
         shorten: True
@@ -87,7 +96,7 @@ Builder.load_string('''
         id: custom_item_layout
         orientation: 'vertical'
         size_hint_y: None
-        height: dp(30) + pt(15)
+        height: (dp(30) + pt(15))
         Label:
             text: 'Custom item:'
             size_hint_y: None
@@ -131,16 +140,16 @@ Builder.load_string('''
             cols: 2
             canvas.after:
                 Color:
-                    rgb: .3, .3, .3
+                    rgb: (0.3, 0.3, 0.3)
                 Rectangle:
-                    pos: self.right - 1, self.y
-                    size: 1, self.height - 30
+                    pos: ((self.right-1), self.y)
+                    size: (dp(1), (self.height-dp(30)))
             Label:
                 size_hint: None, None
                 size: 0, 0
             Label:
                 size_hint_y: None
-                height: 30
+                height: '30dp'
                 text: 'Modifiers'
                 text_size: self.size
                 halign: 'center'
@@ -173,7 +182,7 @@ Builder.load_string('''
             orientation: 'vertical'
             Label:
                 size_hint_y: None
-                height: 30
+                height: '30dp'
                 text: 'Key'
                 text_size: self.size
                 halign: 'center'
@@ -186,7 +195,7 @@ Builder.load_string('''
     Label:
         text: root.error
         size_hint_y: None
-        height: 30
+        height: '30dp'
         color: [1, 0, 0, 1]
         opacity: 1 if self.text else 0
     BoxLayout:
@@ -202,7 +211,8 @@ Builder.load_string('''
             text: 'Confirm'
             on_press: root.dispatch('on_confirm', root.value)
             disabled: not root.valid
-''')
+
+""")
 
 
 class SettingDict(SettingItem):
@@ -219,10 +229,8 @@ class SettingDict(SettingItem):
     :attr:`options` is a :class:`~kivy.properties.DictProperty` and defaults
     to {}.
     '''
-
     popup = ObjectProperty(None, allownone=True)
     '''(internal) Used to store the current popup when it is shown.
-
     :attr:`popup` is an :class:`~kivy.properties.ObjectProperty` and defaults
     to None.
     '''
@@ -243,7 +251,7 @@ class SettingDict(SettingItem):
         self.popup = popup = Popup(
                 content=content, title=self.title, size_hint=(None, None),
                 size=(popup_width, '400dp'))
-        popup.height = len(self.options) * dp(55) + dp(150)
+        popup.height = (len(self.options)*dp(55)+dp(150))
 
         # add all the options
         content.add_widget(Widget(size_hint_y=None, height=1))
@@ -272,25 +280,21 @@ class SettingListCheckItem(BoxLayout):
     '''Item text. :attr:`item_text` is a
     :class:`~kivy.properties.StringProperty` and defaults to ''
     '''
-
     item_check = ObjectProperty(None)
     '''Instance of checkbox. :attr:`item_check` is a
         :class:`~kivy.properties.ObjectProperty` and defaults to None
     '''
-
     active = BooleanProperty(False)
     '''Alias to the checkbox active state.
     :attr:`checked` is a :class:`~kivy.properties.BooleanProperty` and
     defaults to False
     '''
-
     group = StringProperty(None)
     '''CheckBox group name. If the CheckBox is in a Group,
     it becomes a Radio button.
     :attr:`group` is a :class:`~kivy.properties.StringProperty` and
     defaults to ''
     '''
-
     def __init__(self, **kwargs):
         super(SettingListCheckItem, self).__init__(**kwargs)
         if self.group:
@@ -301,7 +305,6 @@ class SettingListCheckItem(BoxLayout):
         '''
         self.active = instance.active
 
-
 class SettingListContent(BoxLayout):
     '''Widget to display SettingList
     '''
@@ -310,31 +313,26 @@ class SettingListContent(BoxLayout):
     :attr:`setting` is a :class:`~kivy.properties.ObjectProperty` and
     defaults to None
     '''
-
     custom_item_layout = ObjectProperty(None)
     '''(internal) Widget that allows enter a custom item to the list.
     :attr:`custom_item` is a :class:`~kivy.properties.ObjectProperty` and
     defaults to None
     '''
-
     txt_custom_item = ObjectProperty(None)
     '''(internal) TextInput with the custom item name.
     :attr:`txt_custom_item` is a :class:`~kivy.properties.ObjectProperty` and
     defaults to None
     '''
-
     item_list = ObjectProperty(None)
     '''(internal) Widget that shows all items in a list.
     :attr:`item_list` is a :class:`~kivy.properties.ObjectProperty` and
     defaults to None
     '''
-
     selected_items = ListProperty([])
     '''List of selected items names. Updated only after clicking on Apply button
     :attr:`selected_item` is a :class:`~kivy.properties.ListProperty` and
     defaults to []
     '''
-
     __events__ = ('on_apply', 'on_cancel',)
 
     def __init__(self, **kwargs):
@@ -403,20 +401,17 @@ class SettingList(SettingItem):
     :attr:`items` is a :class:`~kivy.properties.ListProperty` and defaults
     to [].
     '''
-
     allow_custom = BooleanProperty(False)
     '''Allow/disallow a custom item to the list
     :attr:`allow_custom` is a :class:`~kivy.properties.BooleanProperty`
     and defaults to False
     '''
-
     group = StringProperty(None)
     '''CheckBox group name. If the CheckBox is in a Group,
     it becomes a Radio button.
     :attr:`group` is a :class:`~kivy.properties.StringProperty` and
     defaults to ''
     '''
-
     popup = ObjectProperty(None, allownone=True)
     '''(internal) Used to store the current popup when it is shown.
 
@@ -432,11 +427,13 @@ class SettingList(SettingItem):
     def _create_popup(self, instance):
         # create the popup
         content = SettingListContent(setting=self)
-        popup_width = min(0.95 * Window.width, 500)
-        popup_height = min(0.95 * Window.height, 500)
+        popup_width = min(0.95 * Window.width, dp(500))
+        popup_height = min(0.95 * Window.height, dp(500))
+        
         self.popup = popup = Popup(
-                content=content, title=self.title, size_hint=(None, None),
-                size=(popup_width, popup_height), auto_dismiss=False)
+            content=content, title=self.title,
+            size_hint=(None, None), auto_dismiss=False,
+            size=(popup_width, popup_height))
 
         content.bind(on_apply=self._set_values, on_cancel=self.popup.dismiss)
         selected_items = self.value.split(',')
@@ -447,7 +444,6 @@ class SettingList(SettingItem):
                 self.items.append(item)
         # list of items saved in the property
         content.selected_items = selected_items
-
         content.show_items()
         popup.open()
 
@@ -466,49 +462,41 @@ class SettingShortcutContent(BoxLayout):
     :attr:`has_ctrl` is a :class:`~kivy.properties.BooleanProperty`
     and defaults to False
     '''
-
     has_shift = BooleanProperty(False)
     '''Indicates if should listen the Shift key
     :attr:`has_shift` is a :class:`~kivy.properties.BooleanProperty`
     and defaults to False
     '''
-
     has_alt = BooleanProperty(False)
     '''Indicates if should listen the Alt key
     :attr:`has_alt` is a :class:`~kivy.properties.BooleanProperty`
     and defaults to False
     '''
-
     listen_key = BooleanProperty(False)
     '''Indicates if should listen the keyboard
     :attr:`listen_key` is a :class:`~kivy.properties.BooleanProperty`
     and defaults to False
     '''
-
     valid = BooleanProperty(True)
     '''(internal) Indicates if the shortcut is valid
     :attr:`valid` is a :class:`~kivy.properties.BooleanProperty`
     and defaults to True
     '''
-
     key = StringProperty('')
     '''Indicates the shortcut key
     :attr:`key` is a :class:`~kivy.properties.StringProperty`
     and defaults to ''
     '''
-
     config_name = StringProperty('')
     '''Indicates the field key on shortcuts.json
     :attr:`config_name` is a :class:`~kivy.properties.StringProperty`
     and defaults to ''
     '''
-
     value = StringProperty('')
     '''Indicates the shortcut in the String format
     :attr:`value` is a :class:`~kivy.properties.StringProperty`
     and defaults to ''
     '''
-
     error = StringProperty('')
     '''Error message
     :attr:`error` is a :class:`~kivy.properties.StringProperty`
@@ -536,8 +524,9 @@ class SettingShortcutContent(BoxLayout):
         if (self.has_ctrl or self.has_shift or self.has_alt) and self.key:
             valid = True
 
-        if self.key in ['f1', 'f2', 'f3', 'f4', 'f5', 'f6', 'f7', 'f8', 'f9'
-                        'f10', 'f11', 'f12']:
+        keys = {'f1', 'f2', 'f3', 'f4', 'f5', 'f6',
+                'f7', 'f8', 'f9' 'f10', 'f11', 'f12',}
+        if self.key in keys:
             valid = True
 
         modifier = []
@@ -548,14 +537,14 @@ class SettingShortcutContent(BoxLayout):
         if self.has_alt:
             modifier.append('alt')
         modifier.sort()
-        value = str(modifier) + ' + ' + self.key
+        value = f'{modifier} + {self.key}'
         # check if shortcut exist
         d = get_designer()
         if value and value in d.shortcuts.map:
             shortcut = d.shortcuts.map[value]
             if shortcut[1] != self.config_name:
                 valid = False
-                self.error = 'Shortcut already being used at ' + shortcut[1]
+                self.error = f'Shortcut already being used at {shortcut[1]}'
 
         if valid:
             self.value = value
@@ -580,7 +569,7 @@ class SettingShortcutContent(BoxLayout):
         '''Listen keyboard to create shortcuts. Update class properties
         '''
         self.key = Keyboard.keycode_to_string(Window._system_keyboard, key)
-        if self.key in ['ctrl', 'shift', 'alt']:
+        if self.key in {'ctrl', 'shift', 'alt'}:
             self.key = ''
         if modifier is None:
             modifier = []
@@ -629,7 +618,6 @@ class SettingShortcutContent(BoxLayout):
         '''
         pass
 
-
 class SettingShortcut(SettingItem):
     '''Implementation of a shortcut listener.
     Setting will be stored in the format:
@@ -641,23 +629,20 @@ class SettingShortcut(SettingItem):
         ['ctrl', 'shift'] + a
         [] + f1
     '''
-
     popup = ObjectProperty(None, allownone=True)
     '''(internal) Used to store the current popup when it's shown.
 
     :attr:`popup` is an :class:`~kivy.properties.ObjectProperty` and defaults
     to None.
     '''
-
     hint = StringProperty('')
     '''Readable shortcut. Parses value to display on settings panel
     :attr:`hint` is an :class:`~kivy.properties.StringProperty` and defaults
     to ''.
      '''
-
     def on_panel(self, instance, value):
         if value is None:
-            return
+            return None
         self.bind(on_release=self._create_popup)
 
     def _dismiss(self, *largs):
@@ -670,17 +655,17 @@ class SettingShortcut(SettingItem):
         content = SettingShortcutContent()
         content.listen_key = True
         content.config_name = self.key
+
         if self.value:
             content.parse_value(self.value)
         content.bind(on_confirm=self.on_confirm)
         content.bind(on_cancel=self._dismiss)
         popup_width = min(0.95 * Window.width, dp(500))
+        
         self.popup = popup = Popup(
-                title='Shortcut - ' + self.title,
-                content=content,
-                size_hint=(None, None),
+                title=f'Shortcut - {self.title}',
+                content=content, size_hint=(None, None),
                 size=(popup_width, '250dp'))
-
         popup.open()
 
     def on_confirm(self, instance, value, *args):
@@ -704,5 +689,5 @@ class SettingShortcut(SettingItem):
         mod, key = self.value.split('+')
         key = key.strip()
         modifier = eval(mod)
-        hint = ' + '.join(modifier) + ' + ' + key
+        hint = ' + '.join(modifier) + f' + {key}'
         self.hint = hint.title()

@@ -163,33 +163,32 @@ To obtain the specific value, use following ids:
 
 """
 
-from kivy import metrics
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.textinput import TextInput
+from kivy.uix.checkbox import CheckBox
+from kivy.uix.button import Button
+from kivy.uix.slider import Slider
+from kivy.uix.switch import Switch
+from kivy.uix.widget import Widget
 from kivy.factory import Factory
-from kivy.lang.builder import Builder
-from textwrap import dedent
+from kivy.clock import Clock
+from kivy.metrics import dp, sp
+
 from kivy.properties import (
     NumericProperty, StringProperty,
     BooleanProperty, ListProperty,
     OptionProperty, DictProperty,
 )
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.button import Button
-from kivy.uix.checkbox import CheckBox
-from kivy.uix.slider import Slider
-from kivy.uix.switch import Switch
-from kivy.uix.textinput import TextInput
-from kivy.uix.widget import Widget
-try:
-    from .tools import gettext_ as _
-    from .xbase import XBase
-    from .notification import XError
-except:
-    from tools import gettext_ as _
-    from xbase import XBase
-    from notification import XError
+
+from .tools import gettext_
+from .xbase import XBase
+from .notification import XError
 
 __author__ = 'ophermit'
 
+__all__ = [
+    'XForm', 'XSlider', 'XTextInput',
+    'XNotes', 'XAuthorization']
 
 class XForm(XBase):
     """XForm class. See module documentation for more information.
@@ -201,7 +200,6 @@ class XForm(XBase):
     :attr:`buttons` is a :class:`~kivy.properties.ListProperty` and defaults to
     [Base.BUTTON_OK, Base.BUTTON_CANCEL].
     '''
-
     values = DictProperty({})
     '''Dict of pairs <widget_id>: <widget_value>. Use it to get the data from
     form fields. Supported widget classes: TextInput, Switch, CheckBox, Slider.
@@ -209,7 +207,6 @@ class XForm(XBase):
     :attr:`values` is a :class:`~kivy.properties.DictProperty` and defaults to
     {}, read-only.
     '''
-
     required_fields = DictProperty({})
     '''Dict of pairs <widget_id>: <widget_title>. Use it to set required fields
     in the form. If found blank widget with <widget_id>, its <widget_title>
@@ -220,11 +217,9 @@ class XForm(XBase):
     :attr:`values` is a :class:`~kivy.properties.DictProperty` and defaults to
     {}.
     '''
-
     def __init__(self, **kwargs):
         self._ui_form_container = BoxLayout()
         super(XForm, self).__init__(**kwargs)
-        self._ui_form_container.add_widget(self._get_form())
 
     def _get_body(self):
         return self._ui_form_container
@@ -239,34 +234,36 @@ class XForm(XBase):
         except Exception:
             value = instance.text
 
-        if value != self.BUTTON_CANCEL:
-            self.values = {}
-            required_errors = []
-            for widget in self._ui_form_container.walk(restrict=True):
-                t_id = widget.id
-                if t_id is not None:
-                    if isinstance(widget, TextInput):
-                        t_value = widget.text
-                        if self.required_fields and\
-                                t_id in self.required_fields.keys()\
-                                and not t_value:
-                            required_errors.append(self.required_fields[t_id])
-                    elif isinstance(widget, Switch)\
-                            or isinstance(widget, CheckBox):
-                        t_value = widget.active
-                    elif isinstance(widget, Slider):
-                        t_value = widget.value
-                    else:
-                        t_value = 'Not supported: ' + widget.__class__.__name__
+        if value == self.BUTTON_CANCEL:
+            return super(XForm, self)._on_click(instance)
+        
+        self.values = {}
+        required_errors = []
+        
+        for widget in self._ui_form_container.walk(restrict=True):
+            t_id = widget.id
+            if t_id is None:
+                continue
 
-                    self.values[t_id] = t_value
+            if isinstance(widget, TextInput):
+                t_value = widget.text
+                if t_id in self.required_fields.keys():
+                    if self.required_fields and not t_value:
+                        required_errors.append(self.required_fields[t_id])
+            elif isinstance(widget, (Switch, CheckBox)):
+                t_value = widget.active
+            elif isinstance(widget, Slider):
+                t_value = widget.value
+            else:
+                t_value = f'Not supported: {widget.__class__.__name__}'
+            self.values[t_id] = t_value
 
-            if required_errors:
-                XError(text=_('Following fields are required:\n') +
-                       ', '.join(required_errors))
-                return
-
-        super(XForm, self)._on_click(instance)
+        if required_errors:
+            msg = gettext_('Following fields are required:\n')
+            XError(text=msg+', '.join(required_errors))
+            return None
+        
+        return super(XForm, self)._on_click(instance)
 
     def _get_form(self):
         raise NotImplementedError
@@ -301,11 +298,9 @@ class XSlider(XForm):
     min = NumericProperty(0.)
     max = NumericProperty(1.)
     value = NumericProperty(.5)
-    orientation = OptionProperty(
-        'horizontal', options=('vertical', 'horizontal'))
+    orientation = OptionProperty('horizontal', options=('vertical', 'horizontal'))
     '''Properties that are binded to the same slider properties.
     '''
-
     title_template = StringProperty('')
     '''Template for the formatted title. Use it if you want display the
     slider's value in the title. See module documentation for more information.
@@ -315,26 +310,28 @@ class XSlider(XForm):
     :attr:`title_template` is a :class:`~kivy.properties.StringProperty` and
     defaults to ''.
     '''
-
     def __init__(self, **kwargs):
         super(XSlider, self).__init__(**kwargs)
-        self._update_title()
+        Clock.schedule_once(self._update_title)
 
-    def _update_title(self):
+    def _update_title(self, *args):
         if self.title_template:
             self.title = self.title_template % self.value
 
     def _get_form(self):
         slider = Slider(
+            orientation=self.orientation,
             min=self.min, max=self.max,
-            value=self.value, orientation=self.orientation,
+            value=self.value,
         )
         slider.bind(value=self.setter('value'))
-        bind = self.bind
-        bind(min=slider.setter('min'))
-        bind(max=slider.setter('max'))
-        bind(value=slider.setter('value'))
-        bind(orientation=slider.setter('orientation'))
+        
+        self.bind(
+            min=slider.setter('min'),
+            max=slider.setter('max'),
+            value=slider.setter('value'),
+            orientation=slider.setter('orientation'),
+        )
 
     def on_value(self, instance, value):
         self._update_title()
@@ -342,7 +339,6 @@ class XSlider(XForm):
 
     def on_change(self, value):
         pass
-
 
 class XTextInput(XForm):
     """XTextInput class. See module documentation for more information.
@@ -354,7 +350,6 @@ class XTextInput(XForm):
     :attr:`text` is a :class:`~kivy.properties.StringProperty` and defaults to
     ''.
     '''
-
     def _get_form(self):
         layout = BoxLayout(orientation='vertical', spacing=5)
         text_input = TextInput(
@@ -364,7 +359,8 @@ class XTextInput(XForm):
             # if `focus` set to `True` - TextInput will be
             # inactive to edit
             # focus=True,
-            size_hint_y=None, height=metrics.dp(33))
+            size_hint_y=None, height=dp(33))
+        
         layout.add_widget(Widget())
         layout.add_widget(text_input)
         layout.add_widget(Widget())
@@ -372,7 +368,6 @@ class XTextInput(XForm):
 
     def _on_text_validate(self, instance):
         self._on_click(Button())
-
 
 class XNotes(XForm):
     """XNotes class. See module documentation for more information.
@@ -382,14 +377,12 @@ class XNotes(XForm):
     size_hint_y = NumericProperty(.9, allownone=True)
     '''Default size properties for the popup
     '''
-
     text = StringProperty('')
     '''This property represents default text for the TextInput.
 
     :attr:`text` is a :class:`~kivy.properties.StringProperty` and defaults to
     ''.
     '''
-
     lines = ListProperty()
     '''This property represents default text for the TextInput as list of
     strings.
@@ -399,7 +392,6 @@ class XNotes(XForm):
     :attr:`lines` is a :class:`~kivy.properties.ListProperty` and defaults to
     [].
     '''
-
     def _get_form(self):
         t = self.text
         if self.lines:
@@ -412,18 +404,20 @@ class XNotes(XForm):
         except Exception:
             value = instance.text
 
-        if value != self.BUTTON_CANCEL:
-            for widget in self._ui_form_container.walk(restrict=True):
-                if widget.id == 'text':
-                    self.lines = widget.text.split('\n')
+        if value == self.BUTTON_CANCEL:
+            return super(XForm, self)._on_click(instance)
 
-        super(XForm, self)._on_click(instance)
+        for widget in self._ui_form_container.walk(restrict=True):
+            if widget.id == 'text':
+                self.lines = widget.text.split('\n')
+
+        return super(XForm, self)._on_click(instance)
 
 
 class XAuthorization(XForm):
     """XAuthorization class. See module documentation for more information.
     """
-    BUTTON_LOGIN = _('Login')
+    BUTTON_LOGIN = gettext_('Login')
 
     login = StringProperty(u'')
     '''This property represents default text in the `login` TextInput.
@@ -432,7 +426,6 @@ class XAuthorization(XForm):
     :attr:`login` is a :class:`~kivy.properties.StringProperty` and defaults to
     ''.
     '''
-
     password = StringProperty(u'')
     '''This property represents default text in the `password` TextInput.
     For initialization only.
@@ -440,7 +433,6 @@ class XAuthorization(XForm):
     :attr:`password` is a :class:`~kivy.properties.StringProperty` and defaults
     to ''.
     '''
-
     autologin = BooleanProperty(False, allownone=True)
     '''This property represents default value for the CheckBox
     "Login automatically". For initialization only.
@@ -452,49 +444,55 @@ class XAuthorization(XForm):
     :attr:`autologin` is a :class:`~kivy.properties.BooleanProperty` and
     defaults to False.
     '''
-
-    title = StringProperty(_('Authorization'))
+    title = StringProperty(gettext_('Authorization'))
     '''Default title for the popup
     '''
-
     buttons = ListProperty([BUTTON_LOGIN, XForm.BUTTON_CANCEL])
     '''Default button set for the popup
     '''
-
     size_hint_x = NumericProperty(None, allownone=True)
     size_hint_y = NumericProperty(None, allownone=True)
-    width = NumericProperty(metrics.dp(350))
-    height = NumericProperty(metrics.dp(200))
+    width = NumericProperty(dp(350))
+    height = NumericProperty(dp(200))
     '''Default size properties for the popup
     '''
 
     def _get_form(self):
-        layout = BoxLayout(orientation='vertical', spacing=5)
+        layout = BoxLayout(orientation='vertical', spacing=dp(5))
         layout.add_widget(Widget())
-        lbl = Factory.XLabel
 
-        pnl = BoxLayout(size_hint_y=None, height=metrics.dp(28), spacing=5)
-        pnl.add_widget(
-            lbl(text=_('Login:'), halign='right', size_hint_x=None, width=metrics.dp(80))
+        pnl = BoxLayout(size_hint_y=None, height=dp(28), spacing=dp(5))
+        pnl.add_widget(Factory.XLabel(
+            text=gettext_('Login:'), halign='right',
+            size_hint_x=None, width=dp(80))
         )
-        pnl.add_widget(TextInput(multiline=False, font_size=metrics.sp(14), text=self.login))
+        pnl.add_widget(TextInput(
+            multiline=False, font_size=sp(14),
+            text=self.login)
+        )
         layout.add_widget(pnl)
 
-        pnl = BoxLayout(size_hint_y=None, height=metrics.dp(28), spacing=5)
-        pnl.add_widget(
-            lbl(text=_('Password:'), halign='right', size_hint_x=None, width=metrics.dp(80))
+        pnl = BoxLayout(size_hint_y=None, height=dp(28), spacing=dp(5))
+        pnl.add_widget(Factory.XLabel(
+            text=gettext_('Password:'), halign='right',
+            size_hint_x=None, width=dp(80))
         )
-        pnl.add_widget(
-            TextInput(multiline=False, font_size=14, password=True, text=self.password)
+        pnl.add_widget(TextInput(
+            multiline=False, font_size=14,
+            password=True, text=self.password)
         )
         layout.add_widget(pnl)
 
         if self.autologin is not None:
-            pnl = BoxLayout(size_hint_y=None, height=metrics.dp(28), spacing=5)
-            pnl.add_widget(
-                CheckBox(size_hint_x=None, width=metrics.dp(80), active=self.autologin)
+            pnl = BoxLayout(size_hint_y=None, height=dp(28), spacing=5)
+            pnl.add_widget(CheckBox(
+                size_hint_x=None, width=dp(80),
+                active=self.autologin)
             )
-            pnl.add_widget(lbl(text=_('Login automatically'), halign='left'))
+            pnl.add_widget(Factory.XLabel(
+                text=gettext_('Login automatically'), 
+                halign='left')
+            )
             layout.add_widget(pnl)
 
         layout.add_widget(Widget())

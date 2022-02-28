@@ -18,7 +18,22 @@ from kivy.uix.tabbedpanel import (
     TabbedPanelContent,
     TabbedPanelHeader,
 )
+from kivy.lang.builder import Builder
 
+Builder.load_string("""
+
+<KVLangArea>:
+    auto_indent: True
+    lexer: KivyLexer()
+    canvas.after:
+        Color:
+            rgba: .9, .1, .1, (1 if self.have_error else 0)
+        Line:
+            points: [self.x, self.y, self.right, self.y, self.right, self.top, self.x, self.top]
+            close: True
+            width: 2
+
+""")
 
 class KVLangAreaScroll(ScrollView):
     '''KVLangAreaScroll used as a :class:`~kivy.scrollview.ScrollView`
@@ -535,10 +550,10 @@ class KVLangArea(DesignerCodeInput):
 
     def get_property_value(self, widget, prop):
         self._reload = False
-        if prop[:3] != 'on_' and \
-                not isinstance(widget.properties()[prop], StringProperty) and\
-                value == '':
-            return
+        instance = isinstance(widget.properties()[prop], StringProperty)
+        value = ''
+        if prop[:3] != 'on_' and not instance and value == '':
+            return None
 
         path_to_widget = self.get_widget_path(widget)
         path_to_widget.reverse()

@@ -1,12 +1,14 @@
-import re
+__all__ = ['DesignerCodeInput', ]
 
 from utils.utils import get_current_project, get_designer, show_alert
+
 from kivy import Config
-from kivy.properties import BooleanProperty, StringProperty
 from kivy.uix.codeinput import CodeInput
 from kivy.utils import get_color_from_hex
-from pygments import styles
+from kivy.properties import BooleanProperty, StringProperty
 
+import re
+from pygments import styles
 
 class DesignerCodeInput(CodeInput):
     '''A subclass of CodeInput to be used for KivyDesigner.
@@ -15,7 +17,6 @@ class DesignerCodeInput(CodeInput):
        It emits on_show_edit event whenever clicked, this is catched
        to show EditContView;
     '''
-
     __events__ = ('on_show_edit',)
 
     saved = BooleanProperty(True)
@@ -23,19 +24,16 @@ class DesignerCodeInput(CodeInput):
         :data:`saved` is a :class:`~kivy.properties.BooleanProperty`
     and defaults to True
     '''
-
     error = BooleanProperty(False)
     '''Indicates if the current file contains any type of error
         :data:`error` is a :class:`~kivy.properties.BooleanProperty`
     and defaults to False
     '''
-
     path = StringProperty('')
     '''Path of the current file
         :data:`path` is a :class:`~kivy.properties.StringProperty`
     and defaults to ''
     '''
-
     clicked = BooleanProperty(False)
     '''If clicked is True, then it confirms that this widget has been clicked.
        The one checking this property, should set it to False.
@@ -46,10 +44,9 @@ class DesignerCodeInput(CodeInput):
         super(DesignerCodeInput, self).__init__(**kwargs)
         parser = Config.get_configparser('DesignerSettings')
         if parser:
-            parser.add_callback(self.on_codeinput_theme,
-                                'global', 'code_input_theme')
-            self.style_name = parser.getdefault('global', 'code_input_theme',
-                                                'emacs')
+            cal_names = ('global', 'code_input_theme')
+            parser.add_callback(self.on_codeinput_theme, *cal_names)
+            self.style_name = parser.getdefault(*cal_names, 'emacs')
 
     def on_codeinput_theme(self, section, key, value, *args):
         if not value in styles.get_all_styles():
@@ -80,18 +77,15 @@ class DesignerCodeInput(CodeInput):
         '''
         self.focus = True
 
-    def do_select_all(self, *args):
-        '''Function to select all text
-        '''
-        self.select_all()
-
     def on_text(self, *args):
         '''Listen text changes
         '''
-        if self.focus:
-            self.saved = False
-            d = get_designer()
-            get_current_project().saved = False
+        if not self.focus:
+            return None
+        
+        self.saved = False
+        d = get_designer()
+        get_current_project().saved = False
 
     def find_next(self, search, use_regex=False, case=False):
         '''Find the next occurrence of the string according to the cursor
@@ -101,8 +95,8 @@ class DesignerCodeInput(CodeInput):
         if not case:
             text = text.upper()
             search = search.upper()
+        
         lines = text.splitlines()
-
         col = self.cursor_col
         row = self.cursor_row
 
@@ -112,33 +106,32 @@ class DesignerCodeInput(CodeInput):
         search_size = len(search)
 
         for i, line in enumerate(lines):
-            if i >= row:
-                if use_regex:
-                    if i == row:
-                        line_find = line[col + 1:]
-                    else:
-                        line_find = line[:]
-                    found = re.search(search, line_find)
-                    if found:
-                        search_size = len(found.group(0))
-                        found = found.start()
-                    else:
-                        found = -1
-                else:
-                    # if on current line, consider col
-                    if i == row:
-                        found = line.find(search, col + 1)
-                    else:
-                        found = line.find(search)
-                # has found the string. found variable indicates the initial po
-                if found != -1:
-                    self.cursor = (found, i)
-                    break
             size += len(line)
+            if i < row:
+                continue
+            
+            if use_regex:
+                line_find = line[col + 1:] if i == row else line[:]
+                found = re.search(search, line_find)
+                if found:
+                    search_size = len(found.group(0))
+                    found = found.start()
+                else:
+                    found = -1
+            else:
+                # if on current line, consider col
+                if i == row:
+                    found = line.find(search, col + 1)
+                else:
+                    found = line.find(search)
+            # has found the string. found variable indicates the initial po
+            if found != -1:
+                self.cursor = (found, i)
+                break
 
         if found != -1:
-            pos = text.find(line) + found
-            self.select_text(pos, pos + search_size)
+            pos = (text.find(line)+found)
+            self.select_text(pos, (pos+search_size))
 
     def find_prev(self, search, use_regex=False, case=False):
         '''Find the previous occurrence of the string according to the cursor
@@ -148,8 +141,8 @@ class DesignerCodeInput(CodeInput):
         if not case:
             text = text.upper()
             search = search.upper()
-        lines = text.splitlines()
 
+        lines = text.splitlines()
         col = self.cursor_col
         row = self.cursor_row
         lines = lines[:row + 1]
@@ -161,12 +154,9 @@ class DesignerCodeInput(CodeInput):
         search_size = len(search)
 
         for i, line in enumerate(lines):
-            i = line_number - i - 1
+            i = (line_number-i-1)
             if use_regex:
-                if i == row:
-                    line_find = line[:col]
-                else:
-                    line_find = line[:]
+                line_find = line[:col] if i == row else line[:]
                 found = re.search(search, line_find)
                 if found:
                     search_size = len(found.group(0))

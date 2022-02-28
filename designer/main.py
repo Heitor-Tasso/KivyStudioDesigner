@@ -1,19 +1,90 @@
+from screens.inicial.main_inicial import ToolBarTopDesigner
 
+from uix.sandbox import DesignerSandbox
+from designer import DesignerException, Designer
+from utils.toolbox_widgets import toolbox_widgets
 from utils.utils import get_config_dir, get_fs_encoding, show_message
 from components.playground import PlaygroundDragElement
-from utils.toolbox_widgets import toolbox_widgets
-from designer import DesignerException, Designer
-from uix.sandbox import DesignerSandbox
 
+from kivy.app import App
 from kivy.factory import Factory
+from kivy.uix.widget import Widget
+from kivy.lang.builder import Builder
 from kivy.graphics import Color, Line
 from kivy.base import ExceptionManager
 from kivy.resources import resource_add_path
 from kivy.properties import BooleanProperty, ObjectProperty
 
-from kivy.uix.widget import Widget
-from kivy.app import App
 import os
+
+Builder.load_string("""
+
+#:set bgcolor (0.06, 0.07, 0.08)
+#:set bordercolor (0.54, 0.59, 0.60)
+#:set titlecolor (0.34, 0.39, 0.40)
+
+#: import KivyLexer kivy.extras.highlight.KivyLexer
+#: import ContextMenu uix.contextual.ContextMenu
+#: import ToolBarTopDesigner screens.inicial.main_inicial.ToolBarTopDesigner
+
+#
+# Helper for keeping a consistency across the whole designer UI
+#
+# Rules:
+# - rows height are 48sp
+# - padding is 4sp
+# - spacing is 4sp
+# - button / label / widget are 40sp height
+# - TextInput with a single line is 30sp height
+# - modal with just one button(close, cancel, etc). The button must be in the left
+# - menu item width is 250
+# - in conditional modals, more positive action in the right
+#:set designer_height '40sp'
+#:set designer_spacing '4sp'
+#:set designer_padding '4sp'
+#:set designer_text_input_height '30sp'
+#:set designer_action_width dp(200)
+
+<DesignerButton@Button+Label>:
+    size_hint_y: None
+    height: designer_height
+
+<DesignerListItemButton@ListItemButton>:
+    size_hint: 1, None
+    size: self.texture_size[0] + sp(32), designer_height
+    selected_color: 1, 1, 1, 1
+    deselected_color: .8, .8, .8, .5
+
+<Designer>:
+    statusbar: statusbar
+    actionbar: actionbar
+    start_page: start_page.__self__
+    designer_git: toll_bar_top.ids.git_tools
+
+    ActionBar:
+        id: actionbar
+        pos_hint: {'top': 1}
+        on_height: root.on_height()
+        ToolBarTopDesigner:
+            id:toll_bar_top
+
+    DesignerStartPage:
+        id: start_page
+        size_hint_y: None
+        height: root.height - actionbar.height - statusbar.height
+        top: root.height - actionbar.height
+        on_open_down: toll_bar_top.action_btn_open_pressed()
+        on_new_down: toll_bar_top.action_btn_new_project_pressed()
+        on_help: toll_bar_top.show_help()
+
+    StatusBar:
+        id: statusbar
+        size_hint_y: None
+        on_height: root.on_statusbar_height()
+        height: '20pt'
+        pos_hint: {'y': 0}
+
+""")
 
 class ProgramDesigner(App):
 
