@@ -182,7 +182,7 @@ class PropertyOptions(PropertyBase, Label):
             new_value = selected_items[0]
         self.propvalue = new_value
         self.set_value(new_value)
-        get_designer().close_popup()
+        get_designer().ids.toll_bar_top.close_popup()
 
 
 class PropertyTextInput(PropertyBase, TextInput):

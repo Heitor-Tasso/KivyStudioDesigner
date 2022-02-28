@@ -92,9 +92,8 @@ class ProgramDesigner(App):
 
         playground.sandbox.bind(
             on_getting_exception=self.root.on_sandbox_getting_exception)
-        self.bind(
-            widget_focused=self.root.ui_creator.propertyviewer.setter('widget'),
-            widget_focused=eventviewer.setter('widget'))
+        self.bind(widget_focused=self.root.ui_creator.propertyviewer.setter('widget'))
+        self.bind(widget_focused=eventviewer.setter('widget'))
             
         self.focus_widget(playground.root)
         if not os.path.exists(get_config_dir()):

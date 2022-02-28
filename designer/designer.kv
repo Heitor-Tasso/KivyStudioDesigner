@@ -4,9 +4,7 @@
 #: import KivyLexer kivy.extras.highlight.KivyLexer
 #: import ContextMenu uix.contextual.ContextMenu
 
-#: import open_repo utils.open_sites.open_repo
-#: import open_docs utils.open_sites.open_docs
-#: import open_kd_docs utils.open_sites.open_kd_docs
+#: import ToolBarTopDesigner screens.inicial.main_inicial.ToolBarTopDesigner
 
 #
 # Helper for keeping a consistency across the whole designer UI
@@ -1764,203 +1762,23 @@
     statusbar: statusbar
     actionbar: actionbar
     start_page: start_page.__self__
-    designer_git: git_tools
+    designer_git: toll_bar_top.ids.git_tools
 
     ActionBar:
         id: actionbar
         pos_hint: {'top': 1}
         on_height: root.on_height()
-        DesignerActionView:
-            ActionPrevious:
-                title: 'Kivy Designer'
-                with_previous: False
-            ActionOverflow:
-            DesignerActionGroup:
-                id: actn_menu_file
-                text: 'File'
-                DesignerActionButton:
-                    id: actn_btn_new_file
-                    text: 'New File'
-                    disabled: True
-                    on_press: root.action_btn_new_file_pressed()
-                DesignerActionButton:
-                    id: actn_btn_new_project
-                    text: 'New Project'
-                    on_press: root.action_btn_new_project_pressed()
-                DesignerActionButton:
-                    id: actn_btn_open_project
-                    text: 'Open Project'
-                    on_press: root.action_btn_open_pressed()
-                DesignerActionButton:
-                    id: actn_btn_save
-                    disabled: True
-                    text: 'Save'
-                    on_press: root.action_btn_save_pressed()
-                DesignerActionButton:
-                    id: actn_btn_save_as
-                    disabled: True
-                    text: 'Save As'
-                    on_press: root.action_btn_save_as_pressed()
-                DesignerActionButton:
-                    id: actn_btn_close_proj
-                    text: 'Close Project'
-                    disabled: True
-                    on_press: root.action_btn_close_proj_pressed()
-                DesignerActionButton:
-                    id: actn_btn_recent
-                    text: 'Recent Projects'
-                    on_press: root.action_btn_recent_files_pressed()
-                DesignerActionButton:
-                    id: actn_btn_settings
-                    text: 'Settings'
-                    on_press: root.action_btn_settings_pressed()
-                DesignerActionButton:
-                    id: actn_btn_quit
-                    text: 'Quit'
-                    on_press: root.check_quit()
-
-            DesignerActionGroup:
-                id: actn_menu_view
-                text: 'View'
-                disabled: True
-                ActionCheckButton:
-                    id: actn_chk_proj_tree
-                    text: 'Project Tree and Toolbox'
-                    on_active: root.action_chk_btn_toolbox_active(self)
-
-                ActionCheckButton:
-                    id: actn_chk_prop_event
-                    text: 'Properties and Events'
-                    on_active: root.action_chk_btn_property_viewer_active(self)
-
-                ActionCheckButton:
-                    id: actn_chk_widget_tree
-                    text: 'Widget Tree'
-                    on_active: root.action_chk_btn_widget_tree_active(self)
-
-                ActionCheckButton:
-                    id: actn_chk_status_bar
-                    text: 'StatusBar'
-                    on_active: root.action_chk_btn_status_bar_active(self)
-
-                ActionCheckButton:
-                    id: actn_chk_kv_lang_area
-                    text: 'KV Lang Area'
-                    on_active: root.action_chk_btn_kv_area_active(self)
-
-            DesignerActionGroup:
-                id: actn_menu_proj
-                text: 'Project'
-                disabled: True
-                DesignerActionButton:
-                    id: actn_btn_add_file
-                    text: 'Add File'
-                    on_press: root.action_btn_add_file_pressed()
-
-                DesignerActionButton:
-                    id: actn_btn_proj_pref
-                    text: 'Project Settings'
-                    on_press: root.action_btn_project_settings_pressed()
-
-            DesignerActionGroup:
-                id: actn_menu_run
-                text: 'Run'
-                disabled: True
-                DesignerActionButton:
-                    id: actn_btn_run_proj
-                    text: 'Run'
-                    on_press: lambda *a, **k: root.action_btn_clean_pressed('run', *a, **k)
-                DesignerActionButton:
-                    id: actn_btn_run_module
-                    text: 'Run with module...'
-                    on_press: root.action_btn_run_module_pressed()
-                DesignerActionButton:
-                    id: actn_btn_stop_proj
-                    disabled: True
-                    text: 'Stop'
-                    on_press: lambda *a: root.action_btn_clean_pressed('stop')
-                DesignerActionButton:
-                    id: actn_btn_clean_proj
-                    text: 'Clean'
-                    on_press: lambda *a: root.action_btn_clean_pressed('clean')
-                DesignerActionButton:
-                    id: actn_btn_build_proj
-                    text: 'Build'
-                    on_press: lambda *a: root.action_btn_clean_pressed('build')
-                DesignerActionButton:
-                    id: actn_btn_rebuild_proj
-                    text: 'Rebuild'
-                    on_press: lambda *a: root.action_btn_clean_pressed('rebuild')
-                DesignerActionButton:
-                    id: actn_btn_edit_prof_proj
-                    text: 'Edit Profiles...'
-                    on_press: root.action_btn_edit_prof_project_pressed()
-
-            DesignerActionGroup:
-                id: actn_menu_tools
-                text: 'Tools'
-                disabled: True
-                DesignerActionButton:
-                    id: actn_btn_buildozer_init
-                    text: 'Buildozer Init'
-                    on_press: root.designer_tools.buildozer_init()
-                DesignerActionButton:
-                    id: actn_btn_export_png
-                    text: 'Export .png'
-                    on_press: root.designer_tools.export_png()
-                DesignerActionButton:
-                    id: actn_btn_check_pep8
-                    text: 'Check PEP 8'
-                    on_press: root.designer_tools.check_pep8()
-                DesignerActionButton:
-                    id: actn_btn_create_setup_py
-                    text: 'Create setup.py'
-                    on_press: root.designer_tools.create_setup_py()
-                DesignerActionButton:
-                    id: actn_btn_create_gitignore
-                    text: 'Create .gitignore'
-                    on_press: root.designer_tools.create_gitignore()
-                DesignerGit:
-                    id: git_tools
-                    text: 'Git'
-                    show_arrow: True
-
-            DesignerActionGroup:
-                id: actn_menu_help
-                text: 'Help'
-                DesignerActionButton:
-                    id: actn_btn_help
-                    text: 'Help'
-                    on_press: root.show_help()
-
-                DesignerActionButton:
-                    id: actn_btn_wiki
-                    text: 'Kivy Docs'
-                    on_press: open_docs()
-
-                DesignerActionButton:
-                    id: actn_btn_doc
-                    text: 'Kivy Designer Docs'
-                    on_press: open_kd_docs()
-
-                DesignerActionButton:
-                    id: actn_btn_page
-                    text: 'Kivy Designer repo'
-                    on_press: open_repo()
-
-                DesignerActionButton:
-                    id: actn_btn_about
-                    text: 'About ...'
-                    on_press: root.action_btn_about_pressed()
+        ToolBarTopDesigner:
+            id:toll_bar_top
 
     DesignerStartPage:
         id: start_page
         size_hint_y: None
         height: root.height - actionbar.height - statusbar.height
         top: root.height - actionbar.height
-        on_open_down: root.action_btn_open_pressed()
-        on_new_down: root.action_btn_new_project_pressed()
-        on_help: root.show_help()
+        on_open_down: toll_bar_top.action_btn_open_pressed()
+        on_new_down: toll_bar_top.action_btn_new_project_pressed()
+        on_help: toll_bar_top.show_help()
 
     StatusBar:
         id: statusbar

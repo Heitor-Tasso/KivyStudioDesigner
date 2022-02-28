@@ -214,7 +214,7 @@ __pycache__/'''
         '''Copies the spec from data/new_templates/default.spec to the project
         folder
         '''
-        get_designer().close_popup()
+        get_designer().ids.toll_bar_top.close_popup()
 
         proj_dir = get_current_project().path
         spec_file = os.path.join(proj_dir, 'buildozer.spec')

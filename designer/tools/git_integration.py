@@ -231,7 +231,7 @@ class DesignerGit(DesignerActionSubMenu):
         # else:
         #     show_alert('Git Commit', 'There is nothing to commit')
 
-        get_designer().close_popup()
+        get_designer().ids.toll_bar_top.close_popup()
 
     @ignore_proj_watcher
     def do_add(self, *args):
@@ -274,7 +274,7 @@ class DesignerGit(DesignerActionSubMenu):
             self.repo.index.add(selected_files)
             show_message('%d file(s) added to Git index' %
                          len(selected_files), 5, 'info')
-            get_designer().close_popup()
+            get_designer().ids.toll_bar_top.close_popup()
         except GitCommandError as e:
             show_alert('Git Add', 'Failed to add files to Git!\n' + str(e))
 
@@ -317,7 +317,7 @@ class DesignerGit(DesignerActionSubMenu):
         the branch and checkout.
         If the code has modification, shows an alert and stops
         '''
-        get_designer().close_popup()
+        get_designer().ids.toll_bar_top.close_popup()
         return None
         if self.repo.is_dirty():
             show_alert('Git checkout',
@@ -453,7 +453,7 @@ class DesignerGit(DesignerActionSubMenu):
             # except GitCommandError as e:
             #     progress.label.text = 'Failed to push!\n' + str(e)
             #     show_message('Failed to push', 5, 'error')
-            get_designer().close_popup()
+            get_designer().ids.toll_bar_top.close_popup()
 
         progress.start()
         threading.Thread(target=push).start()
@@ -526,7 +526,7 @@ class DesignerGit(DesignerActionSubMenu):
             #     show_message('Git remote pull completed!', 5)
             # except GitCommandError as e:
             #     progress.label.text = 'Failed to pull!\n' + str(e)
-            get_designer().close_popup()
+            get_designer().ids.toll_bar_top.close_popup()
 
         progress.start()
         threading.Thread(target=pull).start()

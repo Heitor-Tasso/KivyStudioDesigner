@@ -88,7 +88,7 @@ class Buildozer(Builder):
                                         size=('200pt', '150pt'),
                                         auto_dismiss=False)
             confirm_dlg.bind(on_ok=self._perform_create_spec,
-                             on_cancel=self.designer.close_popup)
+                             on_cancel=self.designer.ids.toll_bar_top.close_popup)
             self.designer.popup.open()
             self.can_run = False
             return
@@ -106,7 +106,7 @@ class Buildozer(Builder):
                     os.path.join(self.profiler.project_path, 'buildozer.spec'))
 
         self.designer.designer_content.update_tree_view(get_current_project())
-        self.designer.close_popup()
+        self.designer.ids.toll_bar_top.close_popup()
         self.last_command()
 
     def _create_command(self, extra):
@@ -316,7 +316,7 @@ class Desktop(Builder):
     def _perform_kill_run(self, *args):
         '''Stop the running project/command and then run the project
         '''
-        self.designer.close_popup()
+        self.designer.ids.toll_bar_top.close_popup()
         self.stop()
         Clock.schedule_once(self.run, 1)
 
@@ -368,7 +368,7 @@ class Desktop(Builder):
                                         size=('300pt', '150pt'),
                                         auto_dismiss=False)
             confirm_dlg.bind(on_ok=self._perform_kill_run,
-                             on_cancel=self.designer.close_popup)
+                             on_cancel=self.designer.ids.toll_bar_top.close_popup)
             self.designer.popup.open()
             return
 

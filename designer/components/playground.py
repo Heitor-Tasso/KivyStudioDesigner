@@ -520,7 +520,7 @@ class Playground(ScatterPlane):
         '''On Playground edit item selection
         :type selected_item: instance of selected array
         '''
-        get_designer().close_popup()
+        get_designer().ids.toll_bar_top.close_popup()
         name = selected_item[0]
         # remove Root label from widget name
         if name.startswith('Root - '):
