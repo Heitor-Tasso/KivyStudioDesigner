@@ -3,10 +3,8 @@ from kivy.core.window import Keyboard, Window
 from kivy.lang import Builder
 from kivy.metrics import dp
 from kivy.properties import (
-    BooleanProperty,
-    DictProperty,
-    ListProperty,
-    ObjectProperty,
+    BooleanProperty, DictProperty,
+    ListProperty, ObjectProperty,
     StringProperty,
 )
 from kivy.uix.boxlayout import BoxLayout

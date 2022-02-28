@@ -7,7 +7,6 @@ from kivy.uix.actionbar import ActionButton, ActionGroup, ActionItem
 from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.floatlayout import FloatLayout
 
-
 class DesignerActionSubMenu(ContextSubMenu, ActionButton):
     pass
 

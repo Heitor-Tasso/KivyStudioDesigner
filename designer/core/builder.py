@@ -10,12 +10,10 @@ from utils.utils import (
     get_kd_data_dir,
     ignore_proj_watcher)
 from kivy.event import EventDispatcher
+from kivy.clock import Clock
 from kivy.properties import (
-    Clock,
-    ConfigParser,
-    ConfigParserProperty,
-    ObjectProperty,
-    StringProperty,
+    ConfigParser, ConfigParserProperty,
+    ObjectProperty, StringProperty,
 )
 from kivy.uix.popup import Popup
 

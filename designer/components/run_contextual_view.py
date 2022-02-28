@@ -3,7 +3,9 @@ import webbrowser
 from uix.action_items import DesignerActionProfileCheck
 from kivy.app import App
 from kivy.modules import screen
-from kivy.properties import Clock, ObjectProperty, partial
+from kivy.clock import Clock
+from functools import partial
+from kivy.properties import ObjectProperty
 from kivy.uix.actionbar import ContextualActionView
 
 
@@ -35,8 +37,7 @@ class ModulesContView(ContextualActionView):
     def on_webdebugger(self, *args):
         '''when running from webdebugger'''
         self.dispatch('on_module', mod='webdebugger', data=[])
-        Clock.schedule_once(partial(webbrowser.open,
-                                    'http://localhost:5000/'), 5)
+        Clock.schedule_once(partial(webbrowser.open, 'http://localhost:5000/'), 5)
 
 
 class ModScreenContView(ContextualActionView):

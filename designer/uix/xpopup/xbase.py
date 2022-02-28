@@ -51,8 +51,10 @@ from kivy import metrics
 from kivy.factory import Factory
 from kivy.lang.builder import Builder
 from textwrap import dedent
-from kivy.properties import BooleanProperty, ListProperty, StringProperty,\
-    NumericProperty
+from kivy.properties import (
+    BooleanProperty, ListProperty,
+    StringProperty, NumericProperty,
+)
 from kivy.uix.boxlayout import BoxLayout
 try:
     from .tools import gettext_ as _

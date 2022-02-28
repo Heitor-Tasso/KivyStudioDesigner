@@ -104,11 +104,9 @@ import keyword
 import tokenize
 from optparse import OptionParser
 from fnmatch import fnmatch
-try:
-    from ConfigParser import RawConfigParser
-except ImportError:
-    from configparser import RawConfigParser
-    from io import TextIOWrapper
+
+from configparser import RawConfigParser
+from io import TextIOWrapper
 
 DEFAULT_EXCLUDE = '.svn,CVS,.bzr,.hg,.git'
 DEFAULT_IGNORE = 'E24'

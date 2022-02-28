@@ -21,10 +21,8 @@ from kivy.core.window import Window
 from kivy.factory import Factory
 from kivy.graphics import Color, Line
 from kivy.properties import (
-    BooleanProperty,
-    ListProperty,
-    ObjectProperty,
-    OptionProperty,
+    BooleanProperty, ListProperty,
+    ObjectProperty, OptionProperty,
     StringProperty,
 )
 from kivy.uix.anchorlayout import AnchorLayout

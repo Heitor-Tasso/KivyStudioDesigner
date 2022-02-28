@@ -23,10 +23,9 @@ from utils.utils import (
 # from git import GitCommandError, RemoteProgress, Repo
 # from git.exc import InvalidGitRepositoryError
 from kivy.core.window import Window
+from kivy.clock import Clock
 from kivy.properties import (
-    BooleanProperty,
-    Clock,
-    ObjectProperty,
+    BooleanProperty, ObjectProperty,
     StringProperty,
 )
 from kivy.uix.label import Label

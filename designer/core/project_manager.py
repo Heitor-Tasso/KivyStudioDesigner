@@ -14,12 +14,10 @@ from utils.utils import (
 from kivy.event import EventDispatcher
 from kivy.factory import Factory
 from kivy.lang import Builder
+from kivy.clock import Clock
 from kivy.properties import (
-    BooleanProperty,
-    Clock,
-    DictProperty,
-    ListProperty,
-    ObjectProperty,
+    BooleanProperty, DictProperty,
+    ListProperty, ObjectProperty,
     StringProperty,
 )
 from kivy.uix.widget import Widget

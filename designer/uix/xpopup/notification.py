@@ -159,8 +159,11 @@ from os.path import join
 from kivy import metrics, kivy_data_dir
 from kivy.clock import Clock
 from kivy.factory import Factory
-from kivy.properties import ListProperty, StringProperty, NumericProperty,\
-    BoundedNumericProperty, BooleanProperty
+from kivy.properties import (
+    ListProperty, StringProperty,
+    NumericProperty, BoundedNumericProperty,
+    BooleanProperty,
+)
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.checkbox import CheckBox
 from kivy.uix.image import Image

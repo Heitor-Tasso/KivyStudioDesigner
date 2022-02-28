@@ -3,12 +3,9 @@ from uix.settings import SettingListContent
 from utils.utils import FakeSettingList, get_designer
 from kivy.core.window import Window
 from kivy.properties import (
-    BooleanProperty,
-    ListProperty,
-    NumericProperty,
-    ObjectProperty,
-    OptionProperty,
-    StringProperty,
+    BooleanProperty, ListProperty,
+    NumericProperty, ObjectProperty,
+    OptionProperty, StringProperty,
 )
 from kivy.uix.checkbox import CheckBox
 from kivy.uix.label import Label

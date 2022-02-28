@@ -1,8 +1,12 @@
 #:set bgcolor (0.06, 0.07, 0.08)
 #:set bordercolor (0.54, 0.59, 0.60)
 #:set titlecolor (0.34, 0.39, 0.40)
-#:import KivyLexer kivy.extras.highlight.KivyLexer
-#:import ContextMenu uix.contextual.ContextMenu
+#: import KivyLexer kivy.extras.highlight.KivyLexer
+#: import ContextMenu uix.contextual.ContextMenu
+
+#: import open_repo utils.open_sites.open_repo
+#: import open_docs utils.open_sites.open_docs
+#: import open_kd_docs utils.open_sites.open_kd_docs
 
 #
 # Helper for keeping a consistency across the whole designer UI
@@ -16,11 +20,11 @@
 # - modal with just one button(close, cancel, etc). The button must be in the left
 # - menu item width is 250
 # - in conditional modals, more positive action in the right
-#:set designer_height               '40sp'
-#:set designer_spacing              '4sp'
-#:set designer_padding              '4sp'
-#:set designer_text_input_height    '30sp'
-#:set designer_action_width         200
+#:set designer_height '40sp'
+#:set designer_spacing '4sp'
+#:set designer_padding '4sp'
+#:set designer_text_input_height '30sp'
+#:set designer_action_width dp(200)
 
 <DesignerButton@Button+Label>:
     size_hint_y: None
@@ -1760,13 +1764,12 @@
     statusbar: statusbar
     actionbar: actionbar
     start_page: start_page.__self__
-    select_profile_cont_menu: select_profile_cont_menu
     designer_git: git_tools
 
     ActionBar:
         id: actionbar
         pos_hint: {'top': 1}
-        on_height: root.on_actionbar_height()
+        on_height: root.on_height()
         DesignerActionView:
             ActionPrevious:
                 title: 'Kivy Designer'
@@ -1814,7 +1817,7 @@
                 DesignerActionButton:
                     id: actn_btn_quit
                     text: 'Quit'
-                    on_press: root.action_btn_quit_pressed()
+                    on_press: root.check_quit()
 
             DesignerActionGroup:
                 id: actn_menu_view
@@ -1844,11 +1847,6 @@
                     id: actn_chk_kv_lang_area
                     text: 'KV Lang Area'
                     on_active: root.action_chk_btn_kv_area_active(self)
-                ActionCheckButton:
-                    id: actn_chk_fullscreen
-                    checkbox_active: False
-                    text: 'Fullscreen'
-                    on_active: root.toggle_fullscreen(self)
 
             DesignerActionGroup:
                 id: actn_menu_proj
@@ -1871,7 +1869,7 @@
                 DesignerActionButton:
                     id: actn_btn_run_proj
                     text: 'Run'
-                    on_press: root.action_btn_run_project_pressed()
+                    on_press: lambda *a, **k: root.action_btn_clean_pressed('run', *a, **k)
                 DesignerActionButton:
                     id: actn_btn_run_module
                     text: 'Run with module...'
@@ -1880,24 +1878,19 @@
                     id: actn_btn_stop_proj
                     disabled: True
                     text: 'Stop'
-                    on_press: root.action_btn_stop_project_pressed()
+                    on_press: lambda *a: root.action_btn_clean_pressed('stop')
                 DesignerActionButton:
                     id: actn_btn_clean_proj
                     text: 'Clean'
-                    on_press: root.action_btn_clean_project_pressed()
+                    on_press: lambda *a: root.action_btn_clean_pressed('clean')
                 DesignerActionButton:
                     id: actn_btn_build_proj
                     text: 'Build'
-                    on_press: root.action_btn_build_project_pressed()
+                    on_press: lambda *a: root.action_btn_clean_pressed('build')
                 DesignerActionButton:
                     id: actn_btn_rebuild_proj
                     text: 'Rebuild'
-                    on_press: root.action_btn_rebuild_project_pressed()
-                DesignerActionSubMenu:
-                    id: select_profile_cont_menu
-                    text: 'Select Profile'
-                    on_press: root.action_btn_select_prof_project_pressed()
-                    show_arrow: True
+                    on_press: lambda *a: root.action_btn_clean_pressed('rebuild')
                 DesignerActionButton:
                     id: actn_btn_edit_prof_proj
                     text: 'Edit Profiles...'
@@ -1943,17 +1936,17 @@
                 DesignerActionButton:
                     id: actn_btn_wiki
                     text: 'Kivy Docs'
-                    on_press: root.open_docs()
+                    on_press: open_docs()
 
                 DesignerActionButton:
                     id: actn_btn_doc
                     text: 'Kivy Designer Docs'
-                    on_press: root.open_kd_docs()
+                    on_press: open_kd_docs()
 
                 DesignerActionButton:
                     id: actn_btn_page
                     text: 'Kivy Designer repo'
-                    on_press: root.open_repo()
+                    on_press: open_repo()
 
                 DesignerActionButton:
                     id: actn_btn_about

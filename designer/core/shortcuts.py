@@ -1,6 +1,6 @@
 from utils.utils import get_designer
 from kivy.core.window import Keyboard, Window
-
+from utils.open_sites import open_repo, open_docs, open_kd_docs
 
 class Shortcuts(object):
 
@@ -16,7 +16,6 @@ class Shortcuts(object):
         :param config_parser: config parser with all shorcut settings
         '''
         g = config_parser.getdefault
-
         # get all defined shortcuts
         m = {
             g('shortcuts', 'new_file', ''):
@@ -35,10 +34,6 @@ class Shortcuts(object):
                 [self.do_recent, 'recent'],
             g('shortcuts', 'settings', ''):
                 [self.do_settings, 'settings'],
-            g('shortcuts', 'exit', ''):
-                [self.do_exit, 'exit'],
-            g('shortcuts', 'fullscreen', ''):
-                [self.do_fullscreen, 'fullscreen'],
             g('shortcuts', 'run', ''):
                 [self.do_run, 'run'],
             g('shortcuts', 'stop', ''):
@@ -133,49 +128,40 @@ class Shortcuts(object):
         d = get_designer()
         d.action_btn_settings_pressed()
 
-    def do_exit(self, *args):
-        d = get_designer()
-        d.on_request_close()
-
-    def do_fullscreen(self, *args):
-        d = get_designer()
-        check = d.ids.actn_chk_fullscreen
-        check.checkbox.active = not check.checkbox.active
-
     def do_run(self, *args):
         d = get_designer()
         btn = d.ids.actn_btn_run_proj
         menu = d.ids.actn_menu_run
         if not btn.disabled and not menu.disabled:
-            d.action_btn_run_project_pressed()
+            d.action_btn_clean_pressed('run')
 
     def do_stop(self, *args):
         d = get_designer()
         btn = d.ids.actn_btn_stop_proj
         menu = d.ids.actn_menu_run
         if not btn.disabled and not menu.disabled:
-            d.action_btn_stop_project_pressed()
+            d.action_btn_clean_pressed('stop')
 
     def do_clean(self, *args):
         d = get_designer()
         btn = d.ids.actn_btn_clean_proj
         menu = d.ids.actn_menu_run
         if not btn.disabled and not menu.disabled:
-            d.action_btn_clean_project_pressed()
+            d.action_btn_clean_pressed('clean')
 
     def do_build(self, *args):
         d = get_designer()
         btn = d.ids.actn_btn_build_proj
         menu = d.ids.actn_menu_run
         if not btn.disabled and not menu.disabled:
-            d.action_btn_build_project_pressed()
+            d.action_btn_clean_pressed('build')
 
     def do_rebuild(self, *args):
         d = get_designer()
         btn = d.ids.actn_btn_rebuild_proj
         menu = d.ids.actn_menu_run
         if not btn.disabled and not menu.disabled:
-            d.action_btn_rebuild_project_pressed()
+            d.action_btn_clean_pressed('rebuild')
 
     def do_buildozer_init(self, *args):
         d = get_designer()
@@ -224,21 +210,21 @@ class Shortcuts(object):
         btn = d.ids.actn_btn_wiki
         menu = d.ids.actn_menu_help
         if not btn.disabled and not menu.disabled:
-            d.open_docs()
+            open_docs()
 
     def do_kd_docs(self, *args):
         d = get_designer()
         btn = d.ids.actn_btn_doc
         menu = d.ids.actn_menu_help
         if not btn.disabled and not menu.disabled:
-            d.open_kd_docs()
+            open_kd_docs()
 
     def do_kd_repo(self, *args):
         d = get_designer()
         btn = d.ids.actn_btn_page
         menu = d.ids.actn_menu_help
         if not btn.disabled and not menu.disabled:
-            d.open_repo()
+            open_repo()
 
     def do_about(self, *args):
         d = get_designer()

@@ -1,3 +1,4 @@
+from multiprocessing.sharedctypes import Value
 import os
 import os.path
 import shutil
@@ -15,10 +16,7 @@ from pygments import styles
 
 # monkey backport! (https://github.com/kivy/kivy/pull/2288)
 if not hasattr(ConfigParser, 'upgrade'):
-    try:
-        from ConfigParser import ConfigParser as PythonConfigParser
-    except ImportError:
-        from configparser import RawConfigParser as PythonConfigParser
+    from configparser import RawConfigParser as PythonConfigParser
 
     def upgrade(self, default_config_file):
         '''Upgrade the configuration based on a new default config file.
@@ -50,7 +48,11 @@ class DesignerSettings(Settings):
     def load_settings(self):
         '''This function loads project settings
         '''
-        self.config_parser = ConfigParser(name='DesignerSettings')
+        try:
+            self.config_parser = ConfigParser(name='DesignerSettings')
+        except Exception:
+            return False
+            
         DESIGNER_CONFIG = os.path.join(get_config_dir(),
                                        constants.DESIGNER_CONFIG_FILE_NAME)
 

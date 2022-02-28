@@ -6,11 +6,10 @@ from utils.utils import show_message
 from kivy.base import runTouchApp
 from kivy.clock import Clock
 from kivy.lang import Builder
+from functools import partial
 from kivy.properties import (
-    ListProperty,
-    NumericProperty,
+    ListProperty, NumericProperty,
     ObjectProperty,
-    partial,
 )
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.codeinput import CodeInput
@@ -83,8 +82,7 @@ class Shell(code.InteractiveConsole):
     def write(self, data):
         '''write data to show as output on the screen.
         '''
-        import functools
-        Clock.schedule_once(functools.partial(self.root.show_output, data), 0)
+        Clock.schedule_once(partial(self.root.show_output, data), 0)
 
     def raw_input(self, prompt=""):
         '''To show prompt and get required data from user.
@@ -223,6 +221,7 @@ class InteractiveShellInput(CodeInput):
                     self.select_text(self._cursor_pos,
                                           self._cursor_pos + len(txt))
                     self.delete_selection()
+                    print('Criando partial -> ', suggestion)
                     Clock.schedule_once(
                         partial(self.insert_text, suggestion))
                 return False

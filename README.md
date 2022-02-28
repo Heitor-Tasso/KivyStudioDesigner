@@ -10,7 +10,7 @@ Original project -> http://github.com/kivy/kivy-designer/
 Prerequisites
 -------------
 
-- [Kivy >= 3.9.7](http://kivy.org/#download)
+- [Kivy](https://kivy.org/doc/stable/gettingstarted/installation.html)
 - The following Python modules (available via pip):
     - [watchdog](https://pythonhosted.org/watchdog/)
     - [pygments](http://pygments.org/)
@@ -40,7 +40,7 @@ On OS X you might need to use the `kivy` command instead of `python` if you are 
 
 If you're successful, you'll see something like this:
 
-![ScreenShot](https://raw.github.com/kivy/kivy-designer/master/kivy_designer.png)
+![ScreenShot](kivy_designer.png)
 
 License
 -------

@@ -96,10 +96,8 @@ from kivy.core.window import Window
 from kivy.lang import Builder
 from kivy.logger import Logger
 from kivy.properties import (
-    BooleanProperty,
-    DictProperty,
-    ListProperty,
-    NumericProperty,
+    BooleanProperty, DictProperty,
+    ListProperty, NumericProperty,
     ObjectProperty,
 )
 from kivy.uix.button import Button

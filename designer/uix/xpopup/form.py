@@ -167,8 +167,11 @@ from kivy import metrics
 from kivy.factory import Factory
 from kivy.lang.builder import Builder
 from textwrap import dedent
-from kivy.properties import NumericProperty, StringProperty, BooleanProperty,\
-    ListProperty, OptionProperty, DictProperty
+from kivy.properties import (
+    NumericProperty, StringProperty,
+    BooleanProperty, ListProperty,
+    OptionProperty, DictProperty,
+)
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.checkbox import CheckBox

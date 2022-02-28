@@ -5,13 +5,11 @@ from uix.confirmation_dialog import ConfirmationDialog
 from uix.py_code_input import PyScrollView
 from utils.utils import get_designer, show_message
 from kivy.app import App
+from kivy.clock import Clock
+from functools import partial
 from kivy.properties import (
-    BooleanProperty,
-    Clock,
-    ObjectProperty,
-    OptionProperty,
-    StringProperty,
-    partial,
+    BooleanProperty, ObjectProperty,
+    OptionProperty, StringProperty,
 )
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.popup import Popup
