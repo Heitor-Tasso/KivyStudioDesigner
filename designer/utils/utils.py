@@ -32,6 +32,24 @@ def get_path(local):
 def icons(name, ext='.png'):
     return get_path(f'assets/icons/{name}{ext}')
 
+def template_images(name, ext='.png'):
+    return get_path(f'assets/template_images/{name}{ext}')
+
+def template_file(name, ext=''):
+    return get_path(f'tools/templates/{name}{ext}')
+
+def config_path(name='', ext='.ini'):
+    if name != '':
+        return get_path(f'tools/{name}{ext}')
+    else:
+        return get_path('tools')
+
+def profiles_path(name='', ext='.ini'):
+    if name != '':
+        return get_path(f'tools/profiles/{name}{ext}')
+    else:
+        return get_path('tools/profiles')
+
 def utils_source_rst(name, ext='.rst'):
     return get_path(f'utils/source/{name}{ext}')
 
@@ -41,9 +59,6 @@ def utils_source_img(name, ext='.png'):
 class constants:
     DIR_NEW_TEMPLATE = 'new_templates'
     NEW_PROJECT_DIR_NAME_PREFIX = 'designer_'
-    NEW_TEMPLATE_IMAGE_PATH = os.path.join(DIR_NEW_TEMPLATE, 'images')
-    DIR_PROFILES = 'profiles'
-    DESIGNER_CONFIG_FILE_NAME = 'config.ini'
 
 class FakeSettingList(EventDispatcher):
     '''Fake Kivy Setting to use SettingList
@@ -165,7 +180,7 @@ def get_kd_dir():
 def get_kd_data_dir():
     '''Return kivy designer's data path
     '''
-    return os.path.join(get_kd_dir(), 'data')
+    return os.path.join(get_kd_dir(), 'tools')
 
 
 def show_alert(title, msg, width=500, height=200):

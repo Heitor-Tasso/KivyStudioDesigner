@@ -1,14 +1,12 @@
 import os
 
-from utils.utils import get_kd_data_dir, ignore_proj_watcher
+from utils.utils import get_kd_data_dir, ignore_proj_watcher, profiles_path
 from kivy.config import ConfigParser
 from kivy.properties import ObjectProperty
 from kivy.uix.settings import Settings
 
-
 PROJ_DESIGNER = '.designer'
-PROJ_CONFIG = os.path.join(PROJ_DESIGNER, 'config.ini')
-
+PROJ_CONFIG = profiles_path('config')
 
 class ProjectSettings(Settings):
     '''Subclass of :class:`kivy.uix.settings.Settings` responsible for

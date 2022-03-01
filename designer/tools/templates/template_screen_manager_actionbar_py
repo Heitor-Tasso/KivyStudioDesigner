@@ -1,9 +1,6 @@
 from kivy.app import App
-from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy.properties import NumericProperty, ObjectProperty
-from kivy.lang import Builder
+from kivy.properties import ObjectProperty
 from kivy.uix.floatlayout import FloatLayout
-
 
 class RootWidget(FloatLayout):
     '''This the class representing your root widget.

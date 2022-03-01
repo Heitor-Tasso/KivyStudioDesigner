@@ -8,6 +8,8 @@ from kivy.lang.builder import Builder
 
 Builder.load_string("""
 
+#: import theme_atlas utils.utils.theme_atlas
+
 <DesignerButtonFit@DesignerButton>
     size_hint_x: None
     width: self.texture_size[0] + sp(32)
@@ -105,8 +107,8 @@ Builder.load_string("""
 
 <DesignerLinkLabel>:
     color: 0, 0, 1, 1
-    background_normal: 'atlas://data/images/defaulttheme/action_item'
-    background_disabled_normal: 'atlas://data/images/defaulttheme/action_item_disabled'
+    background_normal: theme_atlas('action_item')
+    background_disabled_normal: theme_atlas('action_item_disabled')
     text_size: self.width, None
 
 <RecentFilesBox>:

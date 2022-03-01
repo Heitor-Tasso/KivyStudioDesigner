@@ -28,14 +28,14 @@
     "type": "string",
     "title": "Presplash of the application",
     "section": "app",
-    "desc": "Presplash image of the application.\nExample %(source.dir)s/data/logo.png",
+    "desc": "Presplash image of the application.\nExample %(source.dir)s/assets/icons/logo.png",
     "key": "presplash.filename"
   },
   {
     "type": "string",
     "title": "Icon of the application",
     "section": "app",
-    "desc": "Icon of the application.\nExample %(source.dir)s/data/icon.png",
+    "desc": "Icon of the application.\nExample %(source.dir)s/assets/icons/icon.png",
     "key": "icon.filename"
   },
   {
@@ -48,14 +48,21 @@
     "section": "app",
     "desc": "Application orientation",
     "key": "orientation",
-    "options": {"landscape": "Landscape", "portrait": "Portrait", "all": "Auto"}
+    "options": {
+      "landscape": "Landscape",
+      "portrait": "Portrait",
+      "all": "Auto"
+    }
   },
   {
     "type": "bool",
     "title": "Fullscreen",
     "section": "app",
     "desc": "Fullscreen mode",
-    "values": ["Disabled", "Enabled"],
+    "values": [
+      "Disabled",
+      "Enabled"
+    ],
     "key": "fullscreen"
   },
   {
@@ -76,7 +83,13 @@
     "desc": "Source files to include (let empty to include all the files)",
     "key": "source.include_exts",
     "allow_custom": true,
-    "items": ["py","png","jpg","kv","atlas"]
+    "items": [
+      "py",
+      "png",
+      "jpg",
+      "kv",
+      "atlas"
+    ]
   },
   {
     "type": "list",
@@ -85,7 +98,11 @@
     "desc": "Source files to exclude (let empty to not exclude anything)",
     "key": "source.exclude_exts",
     "allow_custom": true,
-    "items": ["rar", "zip", "spec"]
+    "items": [
+      "rar",
+      "zip",
+      "spec"
+    ]
   },
   {
     "type": "list",
@@ -94,7 +111,11 @@
     "desc": "List of directory to exclude (let empty to not exclude anything)",
     "key": "source.exclude_dirs",
     "allow_custom": true,
-    "items": ["tests", "test", "bin"]
+    "items": [
+      "tests",
+      "test",
+      "bin"
+    ]
   },
   {
     "type": "list",
@@ -103,7 +124,10 @@
     "desc": "List of exclusions using pattern matching",
     "key": "source.exclude_patterns",
     "allow_custom": true,
-    "items": ["license","images/*/*.jpg"]
+    "items": [
+      "license",
+      "images/*/*.jpg"
+    ]
   },
   {
     "type": "list",
@@ -112,7 +136,10 @@
     "desc": "List of inclusions using pattern matching",
     "key": "source.include_patterns",
     "allow_custom": true,
-    "items": ["assets/*", "images/*.png"]
+    "items": [
+      "assets/*",
+      "images/*.png"
+    ]
   },
   {
     "type": "list",
@@ -121,7 +148,10 @@
     "desc": "List of services to declare",
     "key": "services",
     "allow_custom": true,
-    "items": ["NAME:ENTRYPOINT_TO_PY", "NAME2:ENTRYPOINT2_TO_PY"]
+    "items": [
+      "NAME:ENTRYPOINT_TO_PY",
+      "NAME2:ENTRYPOINT2_TO_PY"
+    ]
   },
   {
     "type": "title",
@@ -158,7 +188,84 @@
     "section": "app",
     "desc": "Application requirements.",
     "key": "requirements",
-    "items": ["apsw", "audiostream", "bidi", "boost", "c_igraph", "cherrypy", "cprotobuf", "cymunk", "django", "docutils", "ecdsa", "enum34", "evdev", "ffmpeg", "ffmpeg2", "ffpyplayer", "freetype", "gevent", "greenlet", "harfbuzz", "hostpython", "igraph", "jpeg", "kivent_core", "kivent_cymunk", "kivy", "leveldb", "libevent", "libpq", "libsodium", "libswift", "libtorrent", "libxml2", "libxslt", "libyaml", "lxml", "m2crypto", "midistream", "msgpack", "mysql_connector", "netifaces", "numpy", "opencv", "openssl", "paramiko", "pil", "plyer", "plyvel", "png", "polygon", "protobuf", "psutil", "psycopg2", "pyasn1", "pycrypto", "pygame", "pyjnius", "pylibpd", "pyopenssl", "pyparsing", "pyqrcode", "python", "pyyaml", "sdl", "setuptools", "six", "sqlalchemy", "sqlite3", "storm", "swift", "thrift", "twisted", "txws", "wokkel", "zeroconf", "zope"],
+    "items": [
+      "apsw",
+      "audiostream",
+      "bidi",
+      "boost",
+      "c_igraph",
+      "cherrypy",
+      "cprotobuf",
+      "cymunk",
+      "django",
+      "docutils",
+      "ecdsa",
+      "enum34",
+      "evdev",
+      "ffmpeg",
+      "ffmpeg2",
+      "ffpyplayer",
+      "freetype",
+      "gevent",
+      "greenlet",
+      "harfbuzz",
+      "hostpython",
+      "igraph",
+      "jpeg",
+      "kivent_core",
+      "kivent_cymunk",
+      "kivy",
+      "leveldb",
+      "libevent",
+      "libpq",
+      "libsodium",
+      "libswift",
+      "libtorrent",
+      "libxml2",
+      "libxslt",
+      "libyaml",
+      "lxml",
+      "m2crypto",
+      "midistream",
+      "msgpack",
+      "mysql_connector",
+      "netifaces",
+      "numpy",
+      "opencv",
+      "openssl",
+      "paramiko",
+      "pil",
+      "plyer",
+      "plyvel",
+      "png",
+      "polygon",
+      "protobuf",
+      "psutil",
+      "psycopg2",
+      "pyasn1",
+      "pycrypto",
+      "pygame",
+      "pyjnius",
+      "pylibpd",
+      "pyopenssl",
+      "pyparsing",
+      "pyqrcode",
+      "python",
+      "pyyaml",
+      "sdl",
+      "setuptools",
+      "six",
+      "sqlalchemy",
+      "sqlite3",
+      "storm",
+      "swift",
+      "thrift",
+      "twisted",
+      "txws",
+      "wokkel",
+      "zeroconf",
+      "zope"
+    ],
     "allow_custom": true
   },
   {
@@ -168,6 +275,40 @@
     "desc": "Application garden requirements.",
     "key": "garden_requirements",
     "allow_custom": true,
-    "items": ["androidtabs", "cefpython", "collider", "datetimepicker", "ddd", "desktopvideoplayer", "filebrowser", "filechooserthumbview", "gauge", "geartick", "graph", "knob", "magnet", "mapview", "modernmenu", "moretransitions", "navigationdrawer", "pagecurl", "particlesystem", "pizza", "progressspinner", "qrcode", "recycleview", "roulette", "roulettescroll", "scrolllabel", "segment", "smaa", "stiffscroll", "texturestack", "tickline", "tickmarker", "timeline"]
+    "items": [
+      "androidtabs",
+      "cefpython",
+      "collider",
+      "datetimepicker",
+      "ddd",
+      "desktopvideoplayer",
+      "filebrowser",
+      "filechooserthumbview",
+      "gauge",
+      "geartick",
+      "graph",
+      "knob",
+      "magnet",
+      "mapview",
+      "modernmenu",
+      "moretransitions",
+      "navigationdrawer",
+      "pagecurl",
+      "particlesystem",
+      "pizza",
+      "progressspinner",
+      "qrcode",
+      "recycleview",
+      "roulette",
+      "roulettescroll",
+      "scrolllabel",
+      "segment",
+      "smaa",
+      "stiffscroll",
+      "texturestack",
+      "tickline",
+      "tickmarker",
+      "timeline"
+    ]
   }
 ]

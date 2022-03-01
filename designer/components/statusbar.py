@@ -4,6 +4,7 @@ from kivy.properties import ObjectProperty, StringProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
+from utils.utils import icons
 from kivy.uix.tabbedpanel import (
     TabbedPanel, TabbedPanelContent, TabbedPanelHeader,
 )
@@ -133,11 +134,11 @@ class StatusMessage(BoxLayout):
         self.message = message
         icon = ''
         if notification_type == 'info':
-            icon = 'icons/info.png'
+            icon = icons('info')
         elif notification_type == 'error':
-            icon = 'icons/error.png'
+            icon = icons('error')
         elif notification_type == 'loading':
-            icon = 'icons/loading.gif'
+            icon = icons('loading', '.gif')
 
         if icon:
             self.img.opacity = 1

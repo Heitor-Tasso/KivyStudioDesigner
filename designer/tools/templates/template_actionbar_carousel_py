@@ -1,9 +1,7 @@
-from kivy.app import App
 from kivy.uix.floatlayout import FloatLayout
 from kivy.properties import ObjectProperty
-from kivy.lang import Builder
 from kivy.uix import actionbar
-
+from kivy.app import App
 
 class RootWidget(FloatLayout):
     '''This is the class representing your root widget.

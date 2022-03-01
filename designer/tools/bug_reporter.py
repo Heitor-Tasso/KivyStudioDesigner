@@ -21,10 +21,12 @@ except ImportError: # for pip <= 9.0.3
 
 Builder.load_string('''
 
+#: import icons utils.utils.icons
+
 <BugReporter>:
     txt_traceback: txt_traceback
     Image:
-        source: 'data/logo/kivy-icon-256.png'
+        source: icons('kivy-icon-256')
         opacity: 0.2
     BoxLayout:
         orientation: 'vertical'

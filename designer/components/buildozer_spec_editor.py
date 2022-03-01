@@ -18,6 +18,8 @@ from kivy.lang.builder import Builder
 
 Builder.load_string("""
 
+#: import theme_atlas utils.utils.theme_atlas
+
 <SpecContentPanel>:
     do_scroll_x: False
     container: content
@@ -64,8 +66,8 @@ Builder.load_string("""
             size_hint_y: None
             height: '25pt'
         Button:
-            background_normal: 'atlas://data/images/defaulttheme/action_item'
-            background_down: 'atlas://data/images/defaulttheme/action_item'
+            background_normal: theme_atlas('action_item')
+            background_down: theme_atlas('action_item')
             text: 'GUI editor to buildozer.spec.z\\nRead more at http://buildozer.readthedocs.org'
             text_size: self.size
             font_size: '11pt'

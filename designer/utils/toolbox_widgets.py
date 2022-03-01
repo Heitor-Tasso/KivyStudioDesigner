@@ -6,11 +6,13 @@
 #: The third field represents initial widget values
 #: The fourth field are extra parameters used to display the widget while dragging
 
+from utils.utils import icons
+
 toolbox_widgets = [
     ('Button', 'base', {'text': 'Button'}, {'size_hint': (None, None), 'size': ('150sp', '40sp')}),
     ('Carousel', 'base'),
     ('CheckBox', 'base', {'active': True}, {'size_hint': (None, None), 'size': ('50sp', '50sp')}),
-    ('Image', 'base', {'source': 'data/logo/kivy-icon-64.png'}, {'size_hint': (None, None), 'size': ('64dp', '64dp')}),
+    ('Image', 'base', {'source': icons('kivy-icon-64')}, {'size_hint': (None, None), 'size': ('64dp', '64dp')}),
     ('Label', 'base', {'text': 'Label'}, {'size_hint': (None, None), 'size': ('150sp', '40sp')}),
     ('ProgressBar', 'base', {}, {'size_hint': (None, None), 'size': ('150sp', '40sp')}),
     ('Screen', 'base'),

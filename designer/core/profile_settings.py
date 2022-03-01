@@ -3,8 +3,7 @@ import os.path
 import shutil
 
 from uix.confirmation_dialog import ConfirmationDialog
-from utils.utils import constants
-from utils.utils import get_config_dir, get_kd_data_dir
+from utils.utils import get_config_dir, get_kd_data_dir, profiles_path
 from kivy.config import ConfigParser
 from kivy.properties import DictProperty, ObjectProperty
 from kivy.uix.popup import Popup
@@ -209,12 +208,9 @@ class ProfileSettings(Settings):
         '''This function loads project settings
         '''
         self.settings_changed = False
-        self.PROFILES_PATH = os.path.join(get_config_dir(),
-                                          constants.DIR_PROFILES)
-
-        self.DEFAULT_PROFILES = os.path.join(get_kd_data_dir(),
-                                             constants.DIR_PROFILES)
-
+        self.PROFILES_PATH = os.path.join(get_config_dir(), 'profiles')
+        self.DEFAULT_PROFILES = profiles_path()
+        
         if not os.path.exists(self.PROFILES_PATH):
             shutil.copytree(self.DEFAULT_PROFILES, self.PROFILES_PATH)
 
@@ -236,18 +232,12 @@ class ProfileSettings(Settings):
                 str(prof_name) + '_' + _file_path] = config_parser
 
         for _file in sorted(self.config_parsers):
-            prof_name = self.config_parsers[_file].getdefault('profile',
-                                                              'name',
-                                                              'PROFILE')
+            prof_name = self.config_parsers[_file].getdefault('profile', 'name', 'PROFILE')
             if not prof_name.strip():
                 prof_name = 'PROFILE'
-            self.add_json_panel(prof_name,
-                                self.config_parsers[_file],
-                                os.path.join(
-                                    get_kd_data_dir(),
-                                    'settings',
-                                    'build_profile.json')
-                                )
+                
+            path_sett = os.path.join(get_kd_data_dir(), 'settings', 'build_profile.json')
+            self.add_json_panel(prof_name, self.config_parsers[_file], path_sett)
 
         # force to show the first profile
         first_panel = self.interface.menu.buttons_layout.children[-1].uid

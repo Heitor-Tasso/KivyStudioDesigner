@@ -3,7 +3,7 @@
     manager: manager
     ActionBar:
         id: _action
-        size_hint: 1,0.1
+        size_hint: 1, 0.1
         pos_hint: {'top':1}
         ActionView:
             use_separator: True

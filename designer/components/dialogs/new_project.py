@@ -1,9 +1,7 @@
 from functools import partial
-from os.path import join
 from kivy.uix.scrollview import ScrollView
 
-from utils.utils import constants
-from utils.utils import get_kd_data_dir
+from utils.utils import template_images
 from kivy.factory import Factory
 from kivy.properties import ObjectProperty
 from kivy.uix.boxlayout import BoxLayout
@@ -11,23 +9,22 @@ from kivy.lang.builder import Builder
 
 
 NEW_PROJECTS = {
-    'FloatLayout': ('template_floatlayout_kv',
-                    'template_floatlayout_py'),
-    'BoxLayout': ('template_boxlayout_kv',
-                  'template_boxlayout_py'),
-    'ScreenManager': ('template_screen_manager_kv',
-                      'template_screen_manager_py'),
-    'ActionBar': ('template_actionbar_kv',
-                  'template_actionbar_py'),
-    'Carousel and ActionBar': ('template_actionbar_carousel_kv',
-                               'template_actionbar_carousel_py'),
-    'ScreenManager and ActionBar': ('template_screen_manager_actionbar_kv',
-                                    'template_screen_manager_actionbar_py'),
-    'TabbedPanel': ('template_tabbed_panel_kv',
-                    'template_tabbed_panel_py'),
-    'TextInput and ScrollView': ('template_textinput_scrollview_kv',
-                                 'template_textinput_scrollview_py')}
+    'FloatLayout': ('template_floatlayout_kv', 'template_floatlayout_py'),
+    
+    'BoxLayout': ('template_boxlayout_kv', 'template_boxlayout_py'),
+    
+    'ScreenManager': ('template_screen_manager_kv', 'template_screen_manager_py'),
+    
+    'ActionBar': ('template_actionbar_kv', 'template_actionbar_py'),
 
+    'Carousel and ActionBar': ('template_actionbar_carousel_kv', 'template_actionbar_carousel_py'),
+    
+    'ScreenManager and ActionBar': ('template_screen_manager_actionbar_kv', 'template_screen_manager_actionbar_py'),
+    
+    'TabbedPanel': ('template_tabbed_panel_kv', 'template_tabbed_panel_py'),
+    
+    'TextInput and ScrollView': ('template_textinput_scrollview_kv', 'template_textinput_scrollview_py')
+}
 
 Builder.load_string("""
 
@@ -220,10 +217,9 @@ class NewProjectDialog(BoxLayout):
     def update_template_preview(self, instance):
         '''Event handler for 'on_selection_change' event of adapter.
         '''
-        name = instance.text.lower() + '.png'
+        name = instance.text.lower()
         name = name.replace(' and ', '_')
-        image_source = join(get_kd_data_dir(),
-                            constants.NEW_TEMPLATE_IMAGE_PATH, name)
+        image_source = template_images(name)
         self.template_preview.source = image_source
 
     def on_app_name_text(self, instance, value):

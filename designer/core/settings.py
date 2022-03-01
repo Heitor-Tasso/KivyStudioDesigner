@@ -1,17 +1,15 @@
-from multiprocessing.sharedctypes import Value
 import os
 import os.path
 import shutil
 import sys
 from distutils.spawn import find_executable
 
-from utils.utils import get_config_dir, get_kd_data_dir, get_kd_dir, constants
 from uix.settings import SettingList, SettingShortcut
+from utils.utils import get_config_dir, get_kd_data_dir, config_path
 from kivy.config import ConfigParser
 from kivy.properties import ObjectProperty
 from kivy.uix.settings import Settings
 from pygments import styles
-
 
 # monkey backport! (https://github.com/kivy/kivy/pull/2288)
 if not hasattr(ConfigParser, 'upgrade'):
@@ -51,12 +49,11 @@ class DesignerSettings(Settings):
             self.config_parser = ConfigParser(name='DesignerSettings')
         except Exception:
             return False
-            
-        DESIGNER_CONFIG = os.path.join(get_config_dir(),
-                                       constants.DESIGNER_CONFIG_FILE_NAME)
+        
+        DESIGNER_CONFIG = os.path.join(get_config_dir(), 'config.ini')
 
-        DEFAULT_CONFIG = os.path.join(get_kd_dir(),
-                                      constants.DESIGNER_CONFIG_FILE_NAME)
+        DEFAULT_CONFIG = config_path('config')
+
         if not os.path.exists(DESIGNER_CONFIG):
             shutil.copyfile(DEFAULT_CONFIG,
                             DESIGNER_CONFIG)

@@ -22,6 +22,8 @@ SUPPORTED_EXT = ('.py', '.py2', '.kv', '.py3', '.txt', '.diff', )
 
 Builder.load_string("""
 
+#: import theme_atlas utils.utils.theme_atlas
+
 <DesignerContent>:
     ui_creator: ui_creator
     tree_view: tree_view
@@ -104,7 +106,7 @@ Builder.load_string("""
             orientation: 'vertical'
             width: 22
             Image:
-                source: 'atlas://data/images/defaulttheme/close'
+                source: theme_atlas('close')
                 on_touch_down:
                     if self.collide_point(*args[1].pos) : root.dispatch('on_close')
 

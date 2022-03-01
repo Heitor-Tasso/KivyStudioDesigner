@@ -6,6 +6,8 @@ from kivy.lang.builder import Builder
 
 Builder.load_string("""
 
+#: import theme_atlas utils.utils.theme_atlas
+
 <CodeInputFind>:
     txt_query: txt_query
     size_hint_y: None
@@ -63,7 +65,7 @@ Builder.load_string("""
         size_hint_x: None
         width: '100dp'
     Image:
-        source: 'atlas://data/images/defaulttheme/close'
+        source: theme_atlas('close')
         size_hint: None, None
         size: designer_height, designer_height
         on_touch_down: if self.collide_point(*args[1].pos): root.dispatch('on_close')

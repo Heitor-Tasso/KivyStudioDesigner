@@ -19,7 +19,7 @@ from utils.utils import constants
 from utils.utils import (
     ignore_proj_watcher, get_kd_data_dir,
     show_message, get_kd_dir, get_path,
-    utils_source_rst,
+    utils_source_rst, template_file,
 )
 from tempfile import mkdtemp
 from distutils.dir_util import copy_tree
@@ -541,16 +541,14 @@ class ToolBarTopDesigner(DesignerActionView):
         package_version = self._new_dialog.package_version.text
         templates_dir = os.path.join(get_kd_data_dir(), constants.DIR_NEW_TEMPLATE)
         
-        kv_file = NEW_PROJECTS[template][0]
-        py_file = NEW_PROJECTS[template][1]
+        kv_file = template_file(NEW_PROJECTS[template][0])
+        py_file = template_file(NEW_PROJECTS[template][1])
 
-        shutil.copy(os.path.join(templates_dir, py_file),
-                    os.path.join(new_proj_dir, "main.py"))
-        shutil.copy(os.path.join(templates_dir, kv_file),
-                    os.path.join(new_proj_dir, "main.kv"))
+        shutil.copy(py_file, os.path.join(new_proj_dir, "main.py"))
+        shutil.copy(kv_file, os.path.join(new_proj_dir, "main.kv"))
 
         buildozer = io.open(os.path.join(new_proj_dir, 'buildozer.spec'), 'w', encoding='utf-8')
-        for line in io.open(os.path.join(templates_dir, 'default.spec'), 'r', encoding='utf-8'):
+        for line in io.open(template_file('default.spec'), 'r', encoding='utf-8'):
             line = line.replace('$app_name', app_name)
             line = line.replace('$package_name', package_name)
             line = line.replace('$package_domain', package_domain)

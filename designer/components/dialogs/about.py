@@ -3,9 +3,11 @@ from kivy.lang.builder import Builder
 
 Builder.load_string("""
 
+#: import icons utils.utils.icons
+
 <AboutDialog>:
     Image:
-        source: 'data/logo/kivy-icon-512.png'
+        source: icons('kivy-icon-512')
         pos: root.pos
         opacity: 0.2
     BoxLayout:

@@ -16,13 +16,15 @@ from kivy.lang.builder import Builder
 
 Builder.load_string("""
 
+#: import theme_atlas utils.utils.theme_atlas
+
 <PropertyOptions>:
     valign: 'middle'
     halign: 'left'
     shorten: True
     shorten_from: 'right'
     Image:
-        source: 'atlas://data/images/defaulttheme/tree_opened'
+        source: theme_atlas('tree_opened')
         size_hint: None, None
         size: root.height, root.height
         pos: root.x + root.width - root.height, root.y

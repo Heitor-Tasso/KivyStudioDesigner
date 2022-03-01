@@ -16,9 +16,11 @@ import weakref
 
 Builder.load_string("""
 
+#: import theme_atlas utils.utils.theme_atlas
+
 <DesignerActionButton>:
     info: info
-    background_normal: 'atlas://data/images/defaulttheme/action_bar'
+    background_normal: theme_atlas('action_bar')
     size_hint_x: None
     width: designer_action_width
     canvas.before:
@@ -57,7 +59,7 @@ Builder.load_string("""
     btn_layout: btn_layout
     _label: _label
     checkbox: checkbox
-    background_normal: 'atlas://data/images/defaulttheme/action_bar'
+    background_normal: theme_atlas('action_bar')
     size_hint: None, None
     height: '49sp'
     width: designer_action_width
@@ -102,7 +104,7 @@ Builder.load_string("""
     size_hint: 1, None
     width: designer_action_width
     height: '48sp'
-    background_normal: 'atlas://data/images/defaulttheme/action_bar'
+    background_normal: theme_atlas('action_bar')
     text_size: (self.width - sp(24), self.size[1])
     valign: 'middle'
 

@@ -13,7 +13,7 @@
                 text: 'File'
                 mode: 'spinner'
                 size_hint_x: None
-                width: 90
+                width: '90dp'
                 ActionButton:
                     text: 'New'
                 ActionButton:
