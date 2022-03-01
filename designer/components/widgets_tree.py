@@ -1,11 +1,15 @@
+__all__ = ['WidgetTreeElement', 'WidgetsTree']
+
 from utils.toolbox_widgets import toolbox_widgets
 from utils.utils import get_current_project
+
 from kivy.clock import Clock
-from kivy.properties import BooleanProperty, ObjectProperty
-from kivy.uix.scrollview import ScrollView
-from kivy.uix.tabbedpanel import TabbedPanel
-from kivy.uix.treeview import TreeViewLabel
 from kivy.lang.builder import Builder
+from kivy.uix.scrollview import ScrollView
+from kivy.uix.treeview import TreeViewLabel
+from kivy.uix.tabbedpanel import TabbedPanel
+from kivy.properties import BooleanProperty, ObjectProperty
+
 
 Builder.load_string("""
 
@@ -25,7 +29,7 @@ Builder.load_string("""
         Rectangle:
             pos: root.pos
             size: root.size
-
+    
     TreeView:
         id: tree
         height: self.minimum_height
@@ -35,11 +39,11 @@ Builder.load_string("""
 
 """)
 
+
 class WidgetTreeElement(TreeViewLabel):
     '''WidgetTreeElement represents each node in WidgetsTree
     '''
     node = ObjectProperty(None)
-
 
 class WidgetsTree(ScrollView):
     '''WidgetsTree class is used to display the Root Widget's Tree in a
@@ -50,23 +54,19 @@ class WidgetsTree(ScrollView):
         :class:`~designer.components.playground.Playground`
        :data:`playground` is a :class:`~kivy.properties.ObjectProperty`
     '''
-
     tree = ObjectProperty(None)
     '''This property is an instance of :class:`~kivy.uix.treeview.TreeView`.
        This TreeView is responsible for showing Root Widget's Tree.
        :data:`tree` is a :class:`~kivy.properties.ObjectProperty`
     '''
-
     dragging = BooleanProperty(False)
     '''Specifies whether a node is dragged or not.
        :data:`dragging` is a :class:`~kivy.properties.BooleanProperty`
     '''
-
     selected_widget = ObjectProperty(allownone=True)
     '''Current selected widget.
        :data:`dragging` is a :class:`~kivy.properties.ObjectProperty`
     '''
-
     def __init__(self, **kwargs):
         super(WidgetsTree, self).__init__(**kwargs)
         self.refresh = Clock.create_trigger(self._refresh)
@@ -76,9 +76,8 @@ class WidgetsTree(ScrollView):
         '''This function will add a node to TreeView, by recursively travelling
            through the Root Widget's Tree.
         '''
-
         if node is None:
-            return
+            return None
 
         b = self._get_widget(node)
         self.tree.add_node(b, treenode)
@@ -97,8 +96,7 @@ class WidgetsTree(ScrollView):
                 is_child_complex = True
                 break
 
-        if root_widget == node or (not is_child_custom and
-                                   not is_child_complex):
+        if root_widget == node or (not is_child_custom and not is_child_complex):
             if isinstance(node, TabbedPanel):
                 self.insert_for_tabbed_panel(node, b)
             else:
@@ -121,6 +119,7 @@ class WidgetsTree(ScrollView):
         except KeyError:
             wid = WidgetTreeElement(node=node)
             self._widget_cache[node] = wid.proxy_ref
+        
         if wid.parent_node:
             self.tree.remove_node(wid)
         return wid
@@ -163,6 +162,7 @@ class WidgetsTree(ScrollView):
             self.touch = touch
             Clock.schedule_once(self._start_dragging, 2)
             node = self.tree.get_node_at_pos((self.touch.x, self.touch.y))
+
             if node:
                 self.selected_widget = node.node
                 self.playground.selected_widget = self.selected_widget
@@ -175,8 +175,10 @@ class WidgetsTree(ScrollView):
     def _start_dragging(self, *args):
         '''This function will start dragging the widget.
         '''
-        if self.dragging and self.selected_widget:
-            self.playground.selected_widget = self.selected_widget
-            self.playground.dragging = False
-            self.playground.touch = self.touch
-            self.playground.start_widget_dragging()
+        if not self.dragging or not self.selected_widget:
+            return None
+        
+        self.playground.selected_widget = self.selected_widget
+        self.playground.dragging = False
+        self.playground.touch = self.touch
+        self.playground.start_widget_dragging()

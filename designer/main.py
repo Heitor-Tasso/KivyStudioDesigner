@@ -28,9 +28,9 @@ Builder.load_string("""
 
 <DesignerListItemButton@ListItemButton>:
     size_hint: 1, None
-    size: self.texture_size[0] + sp(32), designer_height
-    selected_color: 1, 1, 1, 1
-    deselected_color: .8, .8, .8, .5
+    size: ((self.texture_size[0]+sp(32)), designer_height)
+    selected_color: [1, 1, 1, 1]
+    deselected_color: [0.8, 0.8, 0.8, 0.5]
 
 <Designer>:
     statusbar: statusbar

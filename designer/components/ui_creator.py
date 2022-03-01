@@ -1,9 +1,13 @@
+__all__ = ['UICreator', ]
+
 from utils.utils import get_designer
+
 from kivy.app import App
 from kivy.clock import Clock
+from kivy.lang.builder import Builder
 from kivy.properties import ObjectProperty
 from kivy.uix.floatlayout import FloatLayout
-from kivy.lang.builder import Builder
+
 
 Builder.load_string("""
 
@@ -44,10 +48,10 @@ Builder.load_string("""
             StencilPop
 
         FloatLayout:
-            size_hint: 1,1
+            size_hint: 1, 1
             canvas:
                 Color:
-                    rgb: .21, .22, .22
+                    rgb: (0.21, 0.22, 0.22)
                 Rectangle:
                     pos: self.pos
                     size: self.size
@@ -56,7 +60,7 @@ Builder.load_string("""
                 id: playground
                 canvas.before:
                     Color:
-                        rgb: 0, 0, 0
+                        rgb: (0, 0, 0)
                     Rectangle:
                         size: self.size
                 on_show_edit: root.on_show_edit()
@@ -66,15 +70,15 @@ Builder.load_string("""
                 sizable_from: 'top'
                 size_hint_y: None
                 size_hint_x: None
-                height: 200
-                min_size: 150
-                max_size: 500
+                height: '200dp'
+                min_size: dp(150)
+                max_size: dp(500)
                 x: root.x
-                width: root.width - splitter_widget_tree.width
+                width: (root.width-splitter_widget_tree.width)
                 y: root.y
                 canvas.before:
                     Color:
-                        rgb: .21, .22, .22
+                        rgb: (0.21, 0.22, 0.22)
 
                     Rectangle:
                         size: splitter_kv.size
@@ -100,8 +104,8 @@ Builder.load_string("""
                                         id: line_number
                                         size_hint: None, 1
                                         readonly: True
-                                        background_color: 1, 1, 1, 0
-                                        foreground_color: 1, 1, 1, 1
+                                        background_color: (1, 1, 1, 0)
+                                        foreground_color: (1, 1, 1, 1)
                                     KVLangArea:
                                         id: code_input
                                         size_hint_y: None
@@ -136,37 +140,32 @@ Builder.load_string("""
             Splitter:
                 id: splitter_widget_tree
                 size_hint_x: None
-                min_size: 170
-                width: 250
+                min_size: dp(170)
+                width: '250dp'
                 pos_hint: {'y': 0, 'right': 1}
-
                 BoxLayout:
                     orientation: 'vertical'
-
                     GridLayout:
                         id: grid_playground_settings
                         cols: 1
-                        spacing: .5
+                        spacing: '0.5dp'
                         height: self.minimum_height
                         size_hint_y: None
-
                         canvas:
                             Color:
                                 rgb: titlecolor
                             Rectangle:
                                 pos: self.pos
                                 size: self.size
-
                         Label:
                             text: 'Playground Settings'
                             font_size: '10pt'
                             height: '20pt'
                             size_hint_y: None
-
+                    
                         BoxLayout:
                             size_hint_y: None
                             height: sp(48)
-
                             canvas.before:
                                 Color:
                                     rgb: bgcolor
@@ -185,7 +184,6 @@ Builder.load_string("""
                         BoxLayout:
                             size_hint_y: None
                             height: sp(48)
-
                             canvas.before:
                                 Color:
                                     rgb: bgcolor
@@ -209,10 +207,9 @@ Builder.load_string("""
                     GridLayout:
                         id: grid_playground_widget
                         cols: 1
-                        spacing: .5
+                        spacing: '0.5dp'
                         height: self.minimum_height
                         size_hint_y: None
-
                         canvas:
                             Color:
                                 rgb: titlecolor
@@ -229,21 +226,19 @@ Builder.load_string("""
                         BoxLayout:
                             size_hint_y: None
                             height: sp(48)
-
                             canvas.before:
                                 Color:
                                     rgb: bgcolor
                                 Rectangle:
                                     pos: self.pos
                                     size: self.size
-
                             Button:
                                 text: playground.root_name
                                 on_press: playground.on_widget_select_pressed()
 
                     GridLayout:
                         cols: 1
-                        spacing: .5
+                        spacing: '0.5dp'
 
                         canvas:
                             Color:
@@ -255,7 +250,7 @@ Builder.load_string("""
                         GridLayout:
                             id: grid_widget_tree
                             cols: 1
-                            spacing: .5
+                            spacing: '0.5dp'
                             Label:
                                 text: 'Widget Navigator'
                                 font_size: '10pt'
@@ -270,8 +265,8 @@ Builder.load_string("""
                             id: splitter_property
                             sizable_from: 'top'
                             size_hint_y: None
-                            height: 300
-                            max_size: 500
+                            height: '300dp'
+                            max_size: dp(500)
                             canvas.before:
                                 Color:
                                     rgb: bgcolor
@@ -292,81 +287,68 @@ Builder.load_string("""
 
 """)
 
+
 class UICreator(FloatLayout):
     '''UICreator is the Wigdet responsible for editing/creating UI of project
     '''
-
     toolbox = ObjectProperty(None)
     '''Reference to the :class:`~designer.components.toolbox.Toolbox` instance.
        :data:`toolbox` is an :class:`~kivy.properties.ObjectProperty`
     '''
-
     propertyviewer = ObjectProperty(None)
     '''Reference to the
         :class:`~designer.components.property_viewer.PropertyViewer`
        instance. :data:`propertyviewer` is an
        :class:`~kivy.properties.ObjectProperty`
     '''
-
     playground = ObjectProperty(None)
     '''Reference to the :class:`~designer.components.playground.Playground`
      instance.:data:`playground` is an :class:`~kivy.properties.ObjectProperty`
     '''
-
     widgettree = ObjectProperty(None)
     '''Reference to the :class:`~designer.components.widgets_tree.WidgetsTree`
      instance.:data:`widgettree` is an :class:`~kivy.properties.ObjectProperty`
     '''
-
     kv_code_input = ObjectProperty(None)
     '''Reference to the :class:`~designer.uix.KVLangArea` instance.
        :data:`kv_code_input` is an
        :class:`~kivy.properties.ObjectProperty`
     '''
-
     splitter_kv_code_input = ObjectProperty(None)
     '''Reference to the splitter parent of kv_code_input.
        :data:`splitter_kv_code_input` is an
        :class:`~kivy.properties.ObjectProperty`
     '''
-
     grid_widget_tree = ObjectProperty(None)
     '''Reference to the grid parent of widgettree.
        :data:`grid_widget_tree` is an
        :class:`~kivy.properties.ObjectProperty`
     '''
-
     splitter_property = ObjectProperty(None)
     '''Reference to the splitter parent of propertyviewer.
        :data:`splitter_property` is an
        :class:`~kivy.properties.ObjectProperty`
     '''
-
     splitter_widget_tree = ObjectProperty(None)
     '''Reference to the splitter parent of widgettree.
        :data:`splitter_widget_tree` is an
        :class:`~kivy.properties.ObjectProperty`
     '''
-
     error_console = ObjectProperty(None)
     '''Instance of :class:`~kivy.uix.codeinput.CodeInput` used for displaying
        exceptions.
     '''
-
     kivy_console = ObjectProperty(None)
     '''Instance of :class:`~designer.components.kivy_console.KivyConsole`.
     '''
-
     python_console = ObjectProperty(None)
     '''Instance of :class:`~designer.uix.py_console.PythonConsole`
     '''
-
     tab_pannel = ObjectProperty(None)
     '''Instance of
         :class:`~designer.components.designer_content.DesignerTabbedPanel`
        containing error_console, kivy_console and kv_lang_area
     '''
-
     eventviewer = ObjectProperty(None)
 
     def __init__(self, **kwargs):
@@ -400,15 +382,17 @@ class UICreator(FloatLayout):
     def _setup_everything(self, *args):
         '''To setup all the references in between widget
         '''
-
         self.kv_code_input.playground = self.playground
+        
         self.playground.kv_code_input = self.kv_code_input
         self.playground.kv_code_input.bind(
             on_reload_kv=self.playground.on_reload_kv)
+        
         self.playground.widgettree = self.widgettree
         self.propertyviewer.kv_code_input = self.kv_code_input
         self.eventviewer.kv_code_input = self.kv_code_input
         self.py_console.remove_widget(self.py_console.children[1])
+        
         d = get_designer()
         if self.kv_code_input not in d.code_inputs:
             d.code_inputs.append(self.kv_code_input)

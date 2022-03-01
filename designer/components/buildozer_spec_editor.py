@@ -1,20 +1,23 @@
-import json
-import os
-import tempfile
-import webbrowser
-from io import open
+__all__ = [
+    'SpecContentPanel', 'SpecMenuSidebar',
+    'SpecEditorInterface', 'SpecSettingsPanel',
+    'SpecCodeInput', 'BuildozerSpecEditor']
 
-from uix.settings import SettingDict, SettingList
 from utils.utils import get_kd_data_dir, ignore_proj_watcher
+from uix.settings import SettingDict, SettingList
+
 from kivy.properties import ConfigParser, ObjectProperty, StringProperty
 from kivy.uix.boxlayout import BoxLayout
+from kivy.lang.builder import Builder
+
 from kivy.uix.settings import (
     ContentPanel, InterfaceWithSidebar,
-    MenuSidebar, Settings,
-    SettingsPanel,
-)
+    MenuSidebar, Settings, SettingsPanel)
+
 from pygments.lexers.configs import IniLexer
-from kivy.lang.builder import Builder
+import os, io, json
+import webbrowser
+import tempfile
 
 Builder.load_string("""
 
@@ -39,14 +42,13 @@ Builder.load_string("""
         pos: root.pos
         cols: 1
         id: menu
-        # orientation: 'vertical'
-        padding: 5
+        padding: '5dp'
         canvas.after:
             Color:
-                rgb: .2, .2, .2
+                rgb: (0.2, 0.2, 0.2)
             Rectangle:
-                pos: self.right - 1, self.y
-                size: 1, self.height
+                pos: ((self.right-dp(1)), self.y)
+                size: (dp(1), self.height)
     Button:
         id: button
 
@@ -106,7 +108,7 @@ Builder.load_string("""
         height: '0pt'
     ScrollView:
         id: spec_scroll
-        bar_width: 10
+        bar_width: '10dp'
         scroll_type: ['bars', 'content']
         CodeInput:
             id: text_input
@@ -133,7 +135,6 @@ class SpecContentPanel(ContentPanel):
             self.current_panel.load_spec()
         return result
 
-
 class SpecMenuSidebar(MenuSidebar):
 
     def on_selected_uid(self, *args):
@@ -144,15 +145,11 @@ class SpecMenuSidebar(MenuSidebar):
         for button in self.buttons_layout.children:
             button.selected = button.uid == self.selected_uid
 
-
 class SpecEditorInterface(InterfaceWithSidebar):
-
     def open_buildozer_docs(self, *args):
         webbrowser.open('http://buildozer.readthedocs.org')
 
-
 class SpecSettingsPanel(SettingsPanel):
-
     def get_value(self, section, key):
         '''Return the value of the section/key from the :attr:`config`
         ConfigParser instance. This function is used by :class:`SettingItem` to
@@ -163,11 +160,11 @@ class SpecSettingsPanel(SettingsPanel):
         '''
         config = self.config
         if not config:
-            return
+            return None
+
         if config.has_option(section, key):
             return config.get(section, key)
-        else:
-            return ''
+        return ''
 
     def set_value(self, section, key, value):
         # some keys are not enabled by default on .spec. If the value is empty
@@ -176,24 +173,20 @@ class SpecSettingsPanel(SettingsPanel):
             return False
         super(SpecSettingsPanel, self).set_value(section, key, value)
 
-
 class SpecCodeInput(BoxLayout):
 
     text_input = ObjectProperty(None)
     '''CodeInput with buildozer.spec text.
      Instance of :class:`kivy.config.ObjectProperty` and defaults to None
     '''
-
     lbl_error = ObjectProperty(None)
     '''(internal) Label to display errors.
      Instance of :class:`kivy.config.ObjectProperty` and defaults to None
     '''
-
     spec_path = StringProperty('')
     '''buildozer.spec path.
     Instance of :class:`kivy.config.StringProperty` and defaults to ''
     '''
-
     __events__ = ('on_change', )
 
     def __init__(self, **kwargs):
@@ -204,8 +197,7 @@ class SpecCodeInput(BoxLayout):
         '''Read the buildozer.spec and update the CodeInput
         '''
         self.lbl_error.color = [0, 0, 0, 0]
-        self.text_input.text = open(self.spec_path, 'r',
-                                    encoding='utf-8').read()
+        self.text_input.text = io.open(self.spec_path, 'r', encoding='utf-8').read()
 
     @ignore_proj_watcher
     def _save_spec(self, *args):
@@ -214,16 +206,18 @@ class SpecCodeInput(BoxLayout):
         '''
         f = tempfile.NamedTemporaryFile()
         f.write(self.text_input.text)
+
         try:
             cfg = ConfigParser()
             cfg.read(f.name)
         except Exception:
             self.lbl_error.color = [1, 0, 0, 1]
         else:
-            spec = open(self.spec_path, 'w')
+            spec = io.open(self.spec_path, 'w')
             spec.write(self.text_input.text)
             spec.close()
             self.dispatch('on_change')
+
         f.close()
 
     def on_change(self, *args):
@@ -231,23 +225,21 @@ class SpecCodeInput(BoxLayout):
         '''
         pass
 
-
 class BuildozerSpecEditor(Settings):
     '''Subclass of :class:`kivy.uix.settings.Settings` responsible for
        the UI editor of buildozer spec
     '''
-
     config_parser = ObjectProperty(None)
     '''Config Parser for this class. Instance
        of :class:`kivy.config.ConfigParser`
     '''
-
     def __init__(self, **kwargs):
         super(BuildozerSpecEditor, self).__init__(**kwargs)
         self.register_type('dict', SettingDict)
         self.register_type('list', SettingList)
         self.SPEC_PATH = ''
         self.proj_dir = ''
+
         self.config_parser = ConfigParser.get_configparser("buildozer_spec")
         if self.config_parser is None:
             self.config_parser = ConfigParser(name="buildozer_spec")
@@ -261,18 +253,13 @@ class BuildozerSpecEditor(Settings):
         self.SPEC_PATH = os.path.join(proj_dir, 'buildozer.spec')
 
         self.config_parser.read(self.SPEC_PATH)
-        self.add_json_panel('Application', self.config_parser,
-                            os.path.join(get_kd_data_dir(),
-                            'settings', 'buildozer_spec_app.json'))
-        self.add_json_panel('Android', self.config_parser,
-                            os.path.join(get_kd_data_dir(),
-                            'settings', 'buildozer_spec_android.json'))
-        self.add_json_panel('iOS', self.config_parser,
-                            os.path.join(get_kd_data_dir(),
-                            'settings', 'buildozer_spec_ios.json'))
-        self.add_json_panel('Buildozer', self.config_parser,
-                            os.path.join(get_kd_data_dir(),
-                            'settings', 'buildozer_spec_buildozer.json'))
+
+        dir_settings = lambda name: os.path.join(get_kd_data_dir(), 'settings', name+'.json')
+        
+        self.add_json_panel('Application', self.config_parser, dir_settings('buildozer_spec_app'))
+        self.add_json_panel('Android', self.config_parser, dir_settings('buildozer_spec_android'))
+        self.add_json_panel('iOS', self.config_parser, dir_settings('buildozer_spec_ios'))
+        self.add_json_panel('Buildozer', self.config_parser, dir_settings('buildozer_spec_buildozer'))
 
         raw_spec = SpecCodeInput(spec_path=self.SPEC_PATH)
         raw_spec.bind(on_change=self.on_spec_changed)
@@ -295,7 +282,7 @@ class BuildozerSpecEditor(Settings):
             raise Exception('You must specify either the filename or data')
 
         if filename is not None:
-            with open(filename, 'r', encoding='utf-8') as fd:
+            with io.open(filename, 'r', encoding='utf-8') as fd:
                 data = json.loads(fd.read())
         else:
             data = json.loads(data)
@@ -312,9 +299,8 @@ class BuildozerSpecEditor(Settings):
             ttype = setting['type']
             cls = self._types.get(ttype)
             if cls is None:
-                raise ValueError(
-                    'No class registered to handle the <%s> type' %
-                    setting['type'])
+                msg = f"No class registered to handle the <{setting['type']}> type"
+                raise ValueError(msg)
 
             # create a instance of the class, without the type attribute
             del setting['type']
@@ -323,7 +309,6 @@ class BuildozerSpecEditor(Settings):
                 str_settings[str(key)] = item
 
             instance = cls(panel=panel, **str_settings)
-
             # instance created, add to the panel
             panel.add_widget(instance)
 

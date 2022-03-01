@@ -1,13 +1,18 @@
-from kivy.clock import Clock
-from kivy.lang.builder import Builder
-from kivy.properties import ObjectProperty, StringProperty
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.button import Button
-from kivy.uix.label import Label
+__all__ = [
+    'StatusNavBarButton', 'StatusNavBarSeparator'
+    'StatusNavbar', 'StatusMessage', 'StatusInfo',
+    'StatusBar']
+
 from utils.utils import icons
-from kivy.uix.tabbedpanel import (
-    TabbedPanel, TabbedPanelContent, TabbedPanelHeader,
-)
+
+from kivy.clock import Clock
+from kivy.uix.label import Label
+from kivy.uix.button import Button
+from kivy.lang.builder import Builder
+from kivy.uix.boxlayout import BoxLayout
+from kivy.properties import ObjectProperty, StringProperty
+from kivy.uix.tabbedpanel import TabbedPanel, TabbedPanelContent, TabbedPanelHeader
+
 
 Builder.load_string("""
 
@@ -22,8 +27,8 @@ Builder.load_string("""
         Color:
             rgb: bordercolor
         Rectangle:
-            pos: self.x, self.top - 0.5
-            size: self.width, 1
+            pos: (self.x, (self.top-dp(0.5)))
+            size: (self.width, dp(1))
         Color:
             rgb: bgcolor
         Rectangle:
@@ -46,7 +51,7 @@ Builder.load_string("""
         img: img
         size_hint: 0.9, None
         height: '20pt'
-        spacing: 10
+        spacing: '10dp'
         on_message: root._update_content_width()
         on_touch_down: if self.collide_point(*args[1].pos): root.dispatch('on_message_press')
         Image:
@@ -67,7 +72,8 @@ Builder.load_string("""
     StatusInfo:
         id: status_info
         size_hint_x: 0.1
-        on_touch_down: if self.collide_point(*args[1].pos): root.dispatch('on_info_press')
+        on_touch_down:
+            if self.collide_point(*args[1].pos): root.dispatch('on_info_press')
         Label:
             size_hint_x: 1
             text: status_info.message
@@ -80,14 +86,14 @@ Builder.load_string("""
 <StatusNavBarButton>:
     text: getattr(root.node, '__class__').__name__
     font_size: '10pt'
-    width: self.texture_size[0] + 20
+    width: (self.texture_size[0]+dp(20))
     size_hint_x: None
     on_release: app.focus_widget(root.node)
 
 <StatusNavBarSeparator>:
     text: '>'
     font_size: '10pt'
-    width: self.texture_size[0] + 20
+    width: (self.texture_size[0+dp(20))
     size_hint_x: None
 
 """)
@@ -96,21 +102,16 @@ class StatusNavBarButton(Button):
     '''StatusNavBarButton is a :class:`~kivy.uix.button` representing
        the Widgets in the Widget hierarchy of currently selected widget.
     '''
-
     node = ObjectProperty()
-
 
 class StatusNavBarSeparator(Label):
     '''StatusNavBarSeparator :class:`~kivy.uix.label.Label`
        Used to separate two Widgets by '>'
     '''
-
     pass
-
 
 class StatusNavbar(BoxLayout):
     pass
-
 
 class StatusMessage(BoxLayout):
 
@@ -119,19 +120,16 @@ class StatusMessage(BoxLayout):
        :data:`message` is an
        :class:`~kivy.properties.StringProperty` and defaults to ''
     '''
-
     icon = StringProperty('')
     '''Message icon path
        :data:`icon` is an
        :class:`~kivy.properties.StringProperty` and defaults to ''
     '''
-
     img = ObjectProperty(None)
     '''Instance of notification type icon
         :data:`img` is an
        :class:`~kivy.properties.ObjectProperty` and defaults to None
     '''
-
     def show_message(self, message, duration=5, notification_type=None):
         self.message = message
         icon = ''
@@ -147,13 +145,13 @@ class StatusMessage(BoxLayout):
             self.img.source = icon
         else:
             self.img.opacity = 0
+        
         if duration > 0:
             Clock.schedule_once(self.clear_message, duration)
 
     def clear_message(self, *args):
         self.img.opacity = 0
         self.message = ''
-
 
 class StatusInfo(BoxLayout):
 
@@ -162,41 +160,34 @@ class StatusInfo(BoxLayout):
        :data:`message` is an
        :class:`~kivy.properties.StringProperty` and defaults to ''
     '''
-
     info = StringProperty('')
     '''Info visible on the status bar
        :data:`info` is an
        :class:`~kivy.properties.StringProperty` and defaults to ''
     '''
-
     branch = StringProperty('')
     '''Branch name visible on the status bar
        :data:`branch` is an
        :class:`~kivy.properties.StringProperty` and defaults to ''
     '''
-
     def update_info(self, info, branch_name=None):
         template = info
         if branch_name is not None:
             self.branch = branch_name
 
         if self.branch:
-            template += ' | ' + self.branch
-
+            template += f' | {self.branch}'
         self.message = template
-
 
 class StatusBar(BoxLayout):
     '''StatusBar used to display Widget hierarchy of currently selected
        widget and to display messages.
     '''
-
     app = ObjectProperty()
     '''Reference to current app instance.
        :data:`app` is an
        :class:`~kivy.properties.ObjectProperty`
     '''
-
     navbar = ObjectProperty()
     '''To be used as parent of
         :class:`~designer.components.statusbar.StatusNavBarButton`
@@ -204,23 +195,19 @@ class StatusBar(BoxLayout):
        :data:`navbar` is an
        :class:`~kivy.properties.ObjectProperty`
     '''
-
     status_message = ObjectProperty()
     '''Instance of :class:`~designer.components.statusbar.StatusMessage`
        :class:`~kivy.properties.ObjectProperty`
     '''
-
     status_info = ObjectProperty()
     '''Instance of :class:`~designer.components.statusbar.StatusInfo`
        :class:`~kivy.properties.ObjectProperty`
     '''
-
     playground = ObjectProperty()
     '''Instance of
        :data:`playground` is an
        :class:`~kivy.properties.ObjectProperty`
     '''
-
     __events__ = ('on_message_press', 'on_info_press', )
 
     def __init__(self, **kwargs):
@@ -235,13 +222,12 @@ class StatusBar(BoxLayout):
         wid = self.app.widget_focused
         if not wid:
             self.update_nav_size()
-            return
+            return None
 
         # get parent list, until app.root.playground.root
         children = []
         while wid:
-            if wid == self.playground.sandbox or\
-                    wid == self.playground.sandbox.children[0]:
+            if wid in {self.playground.sandbox, self.playground.sandbox.children[0]}:
                 break
 
             if isinstance(wid, TabbedPanelContent):

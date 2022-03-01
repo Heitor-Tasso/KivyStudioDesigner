@@ -1,18 +1,25 @@
+__all__ = [
+    'PropertyLabel', 'PropertyBase' 'PropertyOptions',
+    'PropertyTextInput', 'PropertyBoolean', 'PropertyViewer']
+
 from core.undo_manager import PropOperation
 from uix.settings import SettingListContent
 from utils.utils import FakeSettingList, get_designer
+
+from kivy.uix.scrollview import ScrollView
+from kivy.uix.textinput import TextInput
+from kivy.uix.checkbox import CheckBox
+from kivy.lang.builder import Builder
 from kivy.core.window import Window
+from kivy.uix.label import Label
+from kivy.uix.popup import Popup
+from kivy.metrics import dp
+
 from kivy.properties import (
     BooleanProperty, ListProperty,
     NumericProperty, ObjectProperty,
-    OptionProperty, StringProperty,
-)
-from kivy.uix.checkbox import CheckBox
-from kivy.uix.label import Label
-from kivy.uix.popup import Popup
-from kivy.uix.scrollview import ScrollView
-from kivy.uix.textinput import TextInput
-from kivy.lang.builder import Builder
+    OptionProperty, StringProperty)
+
 
 Builder.load_string("""
 
@@ -28,23 +35,21 @@ Builder.load_string("""
         source: theme_atlas('tree_opened')
         size_hint: None, None
         size: root.height, root.height
-        pos: root.x + root.width - root.height, root.y
+        pos: ((root.x+root.width-root.height), root.y)
 
 <PropertyViewer>:
     do_scroll_x: False
     prop_list: prop_list
-
     canvas.before:
         Color:
             rgb: bgcolor
         Rectangle:
             pos: self.pos
             size: self.size
-
     GridLayout:
         id: prop_list
         cols: 2
-        padding: 3
+        padding: '3dp'
         size_hint_y: None
         height: self.minimum_height
         row_default_height: '25pt'
@@ -59,31 +64,30 @@ Builder.load_string("""
     shorten: True
     canvas.before:
         Color:
-            rgb: .2, .2, .2
+            rgb: (0.2, 0.2, 0.2)
         Rectangle:
-            pos: self.x, self.y - 1
-            size: self.width, 1
+            pos: (self.x, (self.y-dp(1)))
+            size: (self.width, dp(1))
 
 <PropertyBase>:
     propvalue: getattr(self.propwidget, self.propname)
     padding: '6pt', '6pt'
-
     canvas.after:
         Color:
-            rgba: .9, .1, .1, (1 if self.have_error else 0)
+            rgba: (0.9, 0.1, 0.1, (1 if self.have_error else 0))
         Line:
             points: [self.x, self.y, self.right, self.y, self.right, self.top, self.x, self.top]
             close: True
-            width: 2
+            width: dp(2)
     canvas.before:
         Color:
-            rgb: .2, .2, .2
+            rgb: (0.2, 0.2, 0.2)
         Rectangle:
-            pos: self.x, self.y - 1
-            size: self.width, 1
+            pos: (self.x, (self.y-dp(1)))
+            size: (self.width, dp(1))
 
 <PropertyTextInput>:
-    border: 8, 8, 8, 8
+    border: (dp(8), dp(8), dp(8), dp(8))
     text: str(getattr(self.propwidget, self.propname))
     on_text: self.value_changed(args[1])
 
@@ -100,69 +104,57 @@ class PropertyLabel(Label):
     '''
     pass
 
-
 class PropertyBase(object):
     '''This class represents Abstract Class for Property showing classes i.e.
        PropertyTextInput and PropertyBoolean
     '''
-
     propwidget = ObjectProperty()
     '''It is an instance to the Widget whose property value is displayed.
        :data:`propwidget` is a :class:`~kivy.properties.ObjectProperty`
     '''
-
     propname = StringProperty()
     '''It is the name of the property.
        :data:`propname` is a :class:`~kivy.properties.StringProperty`
     '''
-
     propvalue = ObjectProperty(allownone=True)
     '''It is the value of the property.
        :data:`propvalue` is a :class:`~kivy.properties.ObjectProperty`
     '''
-
     oldvalue = ObjectProperty(allownone=True)
     '''It is the old value of the property
        :data:`oldvalue` is a :class:`~kivy.properties.ObjectProperty`
     '''
-
     have_error = BooleanProperty(False)
     '''It specifies whether there have been an error in setting new value
        to property
        :data:`have_error` is a :class:`~kivy.properties.BooleanProperty`
     '''
-
     proptype = StringProperty()
     '''It is the type of property.
        :data:`proptype` is a :class:`~kivy.properties.StringProperty`
     '''
-
     record_to_undo = BooleanProperty(False)
     '''It specifies whether the property change has to be recorded to undo.
        It is used when :class:`~designer.core.undo_manager.UndoManager` undoes
        or redoes the property change.
        :data:`record_to_undo` is a :class:`~kivy.properties.BooleanProperty`
     '''
-
     kv_code_input = ObjectProperty()
     '''It is a reference to the
        :class:`~designer.uix.kv_code_input.KVLangArea`.
        :data:`kv_code_input` is a :class:`~kivy.properties.ObjectProperty`
     '''
-
     def set_value(self, value):
         '''This function first converts the value of the propwidget, then sets
            the new value. If there is some error in setting new value, then it
            sets the property value back to oldvalue
         '''
-
         self.have_error = False
         conversion_err = False
         oldvalue = getattr(self.propwidget, self.propname)
-        try:
-            if isinstance(self.propwidget.property(self.propname),
-                          NumericProperty):
 
+        try:
+            if isinstance(self.propwidget.property(self.propname), NumericProperty):
                 if value == 'None' or value == '':
                     value = None
                 else:
@@ -175,22 +167,21 @@ class PropertyBase(object):
         if not conversion_err:
             try:
                 setattr(self.propwidget, self.propname, value)
-                self.kv_code_input.set_property_value(self.propwidget,
-                                                      self.propname, value,
-                                                      self.proptype)
+                set_property = self.kv_code_input.set_property_value
+                set_property(self.propwidget, self.propname, value, self.proptype)
+                
                 if self.record_to_undo:
-                    designer.undo_manager.push_operation(
-                        PropOperation(self, oldvalue, value))
+                    push = designer.undo_manager.push_operation
+                    push(PropOperation(self, oldvalue, value))
+                
                 self.record_to_undo = True
             except Exception:
                 self.have_error = True
                 setattr(self.propwidget, self.propname, oldvalue)
 
-
 class PropertyOptions(PropertyBase, Label):
     '''PropertyOptions to show/set/get options for an OptionProperty
     '''
-
     def __init__(self, prop, **kwargs):
         super(PropertyOptions, self).__init__(**kwargs)
         self._chooser = None
@@ -206,7 +197,6 @@ class PropertyOptions(PropertyBase, Label):
     def on_propvalue(self, *args):
         '''Default handler for 'on_propvalue'.
         '''
-
         if self.propvalue:
             if isinstance(self.propvalue, list):
                 self.text = str(self.propvalue)
@@ -221,6 +211,7 @@ class PropertyOptions(PropertyBase, Label):
         d = get_designer()
         if d.popup:
             return False
+        
         if self.collide_point(*touch.pos):
             if self._chooser is None:
                 fake_setting = FakeSettingList()
@@ -235,15 +226,14 @@ class PropertyOptions(PropertyBase, Label):
             self._chooser.selected_items = [self.text]
             self._chooser.show_items()
 
-            popup_width = min(0.95 * Window.width, 500)
-            popup_height = min(0.95 * Window.height, 500)
+            popup_width = min(0.95 * Window.width, dp(500))
+            popup_height = min(0.95 * Window.height, dp(500))
+
             d.popup = Popup(
                 content=self._chooser,
-                title='Property Options - ' + self.propname,
-                size_hint=(None, None),
-                size=(popup_width, popup_height),
-                auto_dismiss=False
-            )
+                title=f'Property Options - {self.propname}',
+                size_hint=(None, None), auto_dismiss=False,
+                size=(popup_width, popup_height))
 
             self._chooser.bind(
                     on_apply=self._on_options,
@@ -251,7 +241,6 @@ class PropertyOptions(PropertyBase, Label):
 
             d.popup.open()
             return True
-
         return False
 
     def _on_options(self, instance, selected_items):
@@ -259,17 +248,16 @@ class PropertyOptions(PropertyBase, Label):
             new_value = eval(selected_items[0])
         else:
             new_value = selected_items[0]
+        
         self.propvalue = new_value
         self.set_value(new_value)
         get_designer().ids.toll_bar_top.close_popup()
-
 
 class PropertyTextInput(PropertyBase, TextInput):
     '''PropertyTextInput is used as widget to display
        :class:`~kivy.properties.StringProperty` and
        :class:`~kivy.properties.NumericProperty`.
     '''
-
     def value_changed(self, value, *args):
         if value != str(getattr(self.propwidget, self.propname)):
             self.set_value(value)
@@ -286,10 +274,9 @@ class PropertyTextInput(PropertyBase, TextInput):
            substring.isdigit() is False and\
            (substring != '.' or '.' in self.text)\
            and substring not in 'None':
-                return
+                return None
 
         super(PropertyTextInput, self).insert_text(substring)
-
 
 class PropertyBoolean(PropertyBase, CheckBox):
     '''PropertyBoolean is used as widget to display
@@ -297,28 +284,23 @@ class PropertyBoolean(PropertyBase, CheckBox):
     '''
     pass
 
-
 class PropertyViewer(ScrollView):
     '''PropertyViewer is used to display property names and their corresponding
        value.
     '''
-
     widget = ObjectProperty(allownone=True)
     '''Widget for which properties are displayed.
        :data:`widget` is a :class:`~kivy.properties.ObjectProperty`
     '''
-
     prop_list = ObjectProperty()
     '''Widget in which all the properties and their value is added. It is a
        :class:`~kivy.gridlayout.GridLayout.
        :data:`prop_list` is a :class:`~kivy.properties.ObjectProperty`
     '''
-
     kv_code_input = ObjectProperty()
     '''It is a reference to the KVLangArea.
        :data:`kv_code_input` is a :class:`~kivy.properties.ObjectProperty`
     '''
-
     def __init__(self, **kwargs):
         super(PropertyViewer, self).__init__(**kwargs)
         self._label_cache = {}
@@ -342,7 +324,6 @@ class PropertyViewer(ScrollView):
            :class:`~designer.components.property_viewer.PropertyTextInput`
            to :data:`prop_list`.
         '''
-
         add = self.prop_list.add_widget
         get_label = self._get_label
         props = list(value.properties().keys())
@@ -365,34 +346,37 @@ class PropertyViewer(ScrollView):
     def build_for(self, name):
         '''Creates a EventHandlerTextInput for each property given its name
         '''
-
         prop = self.widget.property(name)
+        wid = None
         if isinstance(prop, NumericProperty):
-            return PropertyTextInput(propwidget=self.widget, propname=name,
-                                     proptype='NumericProperty',
-                                     kv_code_input=self.kv_code_input)
-
+            wid = PropertyTextInput(
+                propwidget=self.widget, propname=name,
+                proptype='NumericProperty',
+                kv_code_input=self.kv_code_input,
+            )
         elif isinstance(prop, StringProperty):
-            return PropertyTextInput(propwidget=self.widget, propname=name,
-                                     proptype='StringProperty',
-                                     kv_code_input=self.kv_code_input)
-
+            wid = PropertyTextInput(
+                propwidget=self.widget, propname=name,
+                proptype='StringProperty',
+                kv_code_input=self.kv_code_input,
+            )
         elif isinstance(prop, ListProperty):
-            return PropertyTextInput(propwidget=self.widget, propname=name,
-                                     proptype='ListProperty',
-                                     kv_code_input=self.kv_code_input)
-
+            wid = PropertyTextInput(
+                propwidget=self.widget, propname=name,
+                proptype='ListProperty',
+                kv_code_input=self.kv_code_input,
+            )
         elif isinstance(prop, BooleanProperty):
-            ip = PropertyBoolean(propwidget=self.widget, propname=name,
-                                 proptype='BooleanProperty',
-                                 kv_code_input=self.kv_code_input)
-            ip.record_to_undo = True
-            return ip
-
+            wid = PropertyBoolean(
+                propwidget=self.widget, propname=name,
+                proptype='BooleanProperty',
+                kv_code_input=self.kv_code_input,
+            )
+            wid.record_to_undo = True
         elif isinstance(prop, OptionProperty):
-            ip = PropertyOptions(prop, propwidget=self.widget, propname=name,
-                                 proptype='OptionProperty',
-                                 kv_code_input=self.kv_code_input)
-            return ip
-
-        return None
+            wid = PropertyOptions(
+                prop, propwidget=self.widget, propname=name,
+                proptype='OptionProperty',
+                kv_code_input=self.kv_code_input,
+            )
+        return wid

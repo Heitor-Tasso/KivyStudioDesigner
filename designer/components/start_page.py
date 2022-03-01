@@ -1,10 +1,16 @@
-import webbrowser
+__all__ = [
+    'DesignerLinkLabel', 'RecentItem',
+    'RecentFilesBox' 'DesignerStartPage']
+
 from utils.utils import get_designer, get_fs_encoding
+
 from kivy.properties import ObjectProperty, StringProperty
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.button import Button
 from kivy.uix.scrollview import ScrollView
+from kivy.uix.boxlayout import BoxLayout
 from kivy.lang.builder import Builder
+from kivy.uix.button import Button
+
+import webbrowser
 
 Builder.load_string("""
 
@@ -12,14 +18,14 @@ Builder.load_string("""
 
 <DesignerButtonFit@DesignerButton>
     size_hint_x: None
-    width: self.texture_size[0] + sp(32)
+    width: (self.texture_size[0]+sp(32))
 
 <DesignerStartPage>:
     btn_open: btn_open
     btn_new: btn_new
     recent_files_box: recent_files_box
     orientation: 'vertical'
-    padding: 0, 0, 0, 20
+    padding: (0, 0, 0, dp(20))
     Label:
         text: 'Kivy Designer'
         font_size: '26pt'
@@ -38,7 +44,7 @@ Builder.load_string("""
         height: self.minimum_height
         width: self.minimum_width
         pos_hint: {'center_x': 0.5}
-        padding: 0, '15pt', 0, 0
+        padding: (0, pt(15), 0, 0)
         spacing: '4sp'
         DesignerButtonFit:
             id: btn_open
@@ -61,7 +67,7 @@ Builder.load_string("""
         cols: 2
         size_hint: None, None
         height: self.minimum_height
-        width: 450
+        width: '450dp'
         pos_hint: {'center_x': 0.5}
         row_force_default: True
         row_default_height: '40sp'
@@ -97,16 +103,16 @@ Builder.load_string("""
         id: recent_files_box
         pos_hint: {'center_x': 0.5}
         size_hint_x: None
-        width: 600
+        width: '600dp'
         canvas.before:
             Color:
-                rgba: 1, 1, 1, 0.05
+                rgba: (1, 1, 1, 0.05)
             Rectangle:
                 pos: self.pos
                 size: self.size
 
 <DesignerLinkLabel>:
-    color: 0, 0, 1, 1
+    color: (0, 0, 1, 1)
     background_normal: theme_atlas('action_item')
     background_disabled_normal: theme_atlas('action_item_disabled')
     text_size: self.width, None
@@ -116,31 +122,31 @@ Builder.load_string("""
     cols: 1
     padding: '2sp'
     size_hint_x: None
-    bar_width: 10
+    bar_width: '10dp'
     scroll_type: ['bars', 'content']
     GridLayout:
         id: grid
         cols: 1
         size_hint_y: None
-        height: 1
+        height: '1dp'
 
 <RecentItem>:
     orientation: 'vertical'
     size_hint: 1, None
-    height: 40
+    height: '40dp'
     on_touch_down: if self.collide_point(*args[1].pos): root.dispatch('on_press')
     canvas.after:
         Color:
-            rgb: .2, .2, .2
+            rgb: (0.2, 0.2, 0.2)
         Rectangle:
-            pos: self.x + 25, self.y
-            size: self.width - 50, 1
+            pos: (self.x+dp(25)), self.y)
+            size: (self.width-dp(50)), dp(1))
     Label:
         text: root.path
         text_size: self.size
         valign: 'middle'
         shorten: True
-        padding_x: 20
+        padding_x: '20dp'
 
 """)
 
@@ -148,43 +154,36 @@ class DesignerLinkLabel(Button):
     '''DesignerLinkLabel displays a http link and opens it in a browser window
        when clicked.
     '''
-
     link = StringProperty(None)
     '''Contains the http link to be opened.
        :data:`link` is a :class:`~kivy.properties.StringProperty`
     '''
-
     def on_release(self, *args):
         '''Default event handler for 'on_release' event.
         '''
         if self.link:
             webbrowser.open(self.link)
 
-
 class RecentItem(BoxLayout):
     path = StringProperty('')
     '''Contains the application path
        :data:`path` is a :class:`~kivy.properties.StringProperty`
     '''
-
     __events__ = ('on_press', )
 
     def on_press(self, *args):
         '''Item pressed
         '''
 
-
 class RecentFilesBox(ScrollView):
     '''Container consistings of buttons, with their names specifying
        the recent files.
     '''
-
     grid = ObjectProperty(None)
     '''The grid layout consisting of all buttons.
        This property is an instance of :class:`~kivy.uix.gridlayout`
        :data:`grid` is a :class:`~kivy.properties.ObjectProperty`
     '''
-
     def __init__(self, **kwargs):
         super(RecentFilesBox, self).__init__(**kwargs)
 
@@ -195,6 +194,7 @@ class RecentFilesBox(ScrollView):
         for p in list_files:
             if isinstance(p, bytes):
                 p = p.decode(get_fs_encoding())
+            
             recent_item = RecentItem(path=p)
             self.grid.add_widget(recent_item)
             recent_item.bind(on_press=self.btn_release)
@@ -208,7 +208,6 @@ class RecentFilesBox(ScrollView):
         d = get_designer()
         d._perform_open(instance.path)
 
-
 class DesignerStartPage(BoxLayout):
 
     recent_files_box = ObjectProperty(None)
@@ -216,7 +215,6 @@ class DesignerStartPage(BoxLayout):
         of :class:`~designer.components.start_page.RecentFilesBox`
        :data:`recent_files_box` is a :class:`~kivy.properties.ObjectProperty`
     '''
-
     __events__ = ('on_open_down', 'on_new_down', 'on_help')
 
     def on_open_down(self, *args):
