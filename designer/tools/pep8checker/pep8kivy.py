@@ -1,8 +1,7 @@
-import sys
+import sys, time
 from os import walk
 from os.path import isdir, join, abspath, dirname
 import pep8
-import time
 
 htmlmode = False
 
@@ -11,7 +10,8 @@ pep8_ignores = (
              # distinguish itself from next logical line
     'E126',  # continuation line over-indented for hanging indent
     'E127',  # continuation line over-indented for visual indent
-    'E128')  # continuation line under-indented for visual indent
+    'E128',  # continuation line under-indented for visual indent
+)
 
 class KivyStyleChecker(pep8.Checker):
 
@@ -42,6 +42,7 @@ if __name__ == '__main__':
         else:
             htmlmode = True
             targets = sys.argv[-1].split()
+        
     elif sys.argv == 2:
         targets = sys.argv[-1]
     else:
@@ -64,12 +65,13 @@ if __name__ == '__main__':
                      'kivy/modules/webdebugger.py',
                      'kivy/modules/_webdebugger.py',
                      'designer/utils/toolbox_widgets.py']
+    
     for target in targets:
         if isdir(target):
             if htmlmode:
                 path = join(dirname(abspath(__file__)), 'pep8base.html')
                 print(open(path, 'r').read())
-                print('''<p>Generated: %s</p><table>''' % (time.strftime('%c')))
+                print(f"<p>Generated: {time.strftime('%c')}</p><table>")
 
             for dirpath, dirnames, filenames in walk(target):
                 cont = False
@@ -77,13 +79,17 @@ if __name__ == '__main__':
                     if pat in dirpath:
                         cont = True
                         break
+
                 if cont:
                     continue
+                
                 for filename in filenames:
                     if not filename.endswith('.py'):
                         continue
+                    
                     cont = False
                     complete_filename = join(dirpath, filename)
+                    
                     for pat in exclude_files:
                         if complete_filename.endswith(pat):
                             cont = True
@@ -91,10 +97,9 @@ if __name__ == '__main__':
                         continue
 
                     if htmlmode:
-                        print('<tr><th colspan="2">%s</td></tr>' \
-                             % complete_filename)
+                        print(f'<tr><th colspan="2">{complete_filename}</td></tr>')
+                    
                     errors += check(complete_filename)
-
             if htmlmode:
                 print('</div></div></table></body></html>')
 
@@ -106,6 +111,5 @@ if __name__ == '__main__':
             else:
                 if target.endswith('.py'):
                     errors += check(target)
-
     # If errors is 0 we return with 0. That's just fine.
     sys.exit(errors)

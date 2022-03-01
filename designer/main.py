@@ -1,5 +1,3 @@
-from screens.inicial.main_inicial import ToolBarTopDesigner
-
 from uix.sandbox import DesignerSandbox
 from designer import DesignerException, Designer
 from utils.toolbox_widgets import toolbox_widgets

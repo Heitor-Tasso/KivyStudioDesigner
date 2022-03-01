@@ -3,7 +3,7 @@ import os.path
 import shutil
 
 from uix.confirmation_dialog import ConfirmationDialog
-from utils import constants
+from utils.utils import constants
 from utils.utils import get_config_dir, get_kd_data_dir
 from kivy.config import ConfigParser
 from kivy.properties import DictProperty, ObjectProperty

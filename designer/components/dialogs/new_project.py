@@ -2,7 +2,7 @@ from functools import partial
 from os.path import join
 from kivy.uix.scrollview import ScrollView
 
-from utils import constants
+from utils.utils import constants
 from utils.utils import get_kd_data_dir
 from kivy.factory import Factory
 from kivy.properties import ObjectProperty

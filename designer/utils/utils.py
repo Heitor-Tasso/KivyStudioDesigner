@@ -1,19 +1,49 @@
 '''This file contains a few functions which are required by more than one
    module of Kivy Designer.
 '''
-import functools
-import inspect
-import os
-import sys
 
-from kivy.app import App
+from kivy.properties import BooleanProperty, ListProperty, StringProperty
 from kivy.event import EventDispatcher
 from kivy.factory import Factory
-from kivy.properties import BooleanProperty, ListProperty, StringProperty
+from kivy.uix.widget import Widget
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
-from kivy.uix.widget import Widget
+from kivy.app import App
+
 from __init__ import init_file
+import functools
+import inspect
+import os, sys
+
+def theme_atlas(theme):
+    return f'atlas://data/images/defaulttheme/{theme}'
+
+def correct_path(path_filename:str):
+    bar_init = '/' if path_filename.startswith('/') else ''
+    new_str = []
+    for x in path_filename.split('\\'):
+        new_str.extend(x.split(r'/'))
+    path = [x + '/' for x in new_str[0:-1] if x != '']
+    return ''.join([bar_init] + path + [new_str[-1]])
+
+def get_path(local):
+    return correct_path(f'{os.path.split(init_file)[0]}/{local}')
+
+def icons(name, ext='.png'):
+    return get_path(f'assets/icons/{name}{ext}')
+
+def utils_source_rst(name, ext='.rst'):
+    return get_path(f'utils/source/{name}{ext}')
+
+def utils_source_img(name, ext='.png'):
+    return get_path(f'utils/source/img/{name}{ext}')
+
+class constants:
+    DIR_NEW_TEMPLATE = 'new_templates'
+    NEW_PROJECT_DIR_NAME_PREFIX = 'designer_'
+    NEW_TEMPLATE_IMAGE_PATH = os.path.join(DIR_NEW_TEMPLATE, 'images')
+    DIR_PROFILES = 'profiles'
+    DESIGNER_CONFIG_FILE_NAME = 'config.ini'
 
 class FakeSettingList(EventDispatcher):
     '''Fake Kivy Setting to use SettingList

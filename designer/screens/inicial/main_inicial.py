@@ -15,13 +15,13 @@ from kivy.uix.popup import Popup
 from kivy.app import App
 from kivy.properties import ObjectProperty
 from kivy.lang.builder import Builder
-from utils import constants
+from utils.utils import constants
 from utils.utils import (
     ignore_proj_watcher, get_kd_data_dir,
-    show_message, get_kd_dir,
+    show_message, get_kd_dir, get_path,
+    utils_source_rst,
 )
 from tempfile import mkdtemp
-from util import get_path
 from distutils.dir_util import copy_tree
 from kivy.clock import Clock
 from kivy.metrics import dp
@@ -66,7 +66,7 @@ class ToolBarTopDesigner(DesignerActionView):
             return False
         if self.designer.help_dlg is None:
             self.designer.help_dlg = HelpDialog()
-            self.designer.help_dlg.rst.source = os.path.join(get_kd_dir(), 'help.rst')
+            self.designer.help_dlg.rst.source = utils_source_rst('help')
 
         self.popup = Popup(
             title='Kivy Designer Help', content=self.designer.help_dlg,

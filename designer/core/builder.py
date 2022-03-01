@@ -3,7 +3,7 @@ import shutil
 import sys
 
 from uix.confirmation_dialog import ConfirmationDialog
-from utils import constants
+from utils.utils import constants
 from utils.utils import (
     get_current_project,
     get_fs_encoding,

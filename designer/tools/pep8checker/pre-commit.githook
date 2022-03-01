@@ -26,6 +26,7 @@ curdir = dirname(abspath(__file__))
 kivydir = sep.join(curdir.split(sep)[:-2])
 srcdir = kivydir
 script = join(srcdir, 'tools', 'pep8checker', 'pep8kivy.py')
+
 try:
     with open(script): pass
 except IOError:
@@ -52,6 +53,7 @@ proc.wait()
 #
 # So check for D entries and remove them from targets.
 #
+
 targets = []
 for target in proc.stdout:
     parts = [p.strip() for p in target.split()]
@@ -75,4 +77,3 @@ if retval:
     print("Error:", retval, "styleguide violation(s) encountered!")
     print("Your commit has been aborted. Please fix the violations and retry.")
     sys.exit(retval)
-

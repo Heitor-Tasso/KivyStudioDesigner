@@ -23,7 +23,7 @@ from kivy.properties import (
 
 Builder.load_string("""
 
-#: import theme_atlas util.theme_atlas
+#: import theme_atlas utils.utils.theme_atlas
 
 <SettingDict>:
     Label:

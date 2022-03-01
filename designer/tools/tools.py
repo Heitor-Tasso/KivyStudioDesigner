@@ -1,23 +1,24 @@
-import datetime
-import os
-import shutil
-import sys
 
-from uix.confirmation_dialog import ConfirmationDialog
-from utils import constants
-from utils.utils import (
-    get_current_project,
-    get_designer,
-    get_kd_data_dir,
-    get_kd_dir,
-    ignore_proj_watcher,
-    show_alert,
-)
-from kivy.event import EventDispatcher
 from kivy.properties import ObjectProperty, StringProperty
 from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.popup import Popup
+from kivy.event import EventDispatcher
 from kivy.lang.builder import Builder
+from kivy.uix.popup import Popup
+from kivy.metrics import dp
+
+from uix.confirmation_dialog import ConfirmationDialog
+from utils.utils import (
+    get_current_project, constants,
+    get_kd_data_dir, get_kd_dir,
+    ignore_proj_watcher, show_alert,
+    get_designer,
+)
+
+import sys, os, datetime
+from textwrap import dedent
+import shutil
+
+__all__ = ['ToolSetupPy', 'DesignerTools']
 
 Builder.load_string("""
 
@@ -91,14 +92,12 @@ Builder.load_string("""
 
 """)
 
-#### UIs ####
 class ToolSetupPy(BoxLayout):
 
     path = StringProperty('')
     '''setup.py path
        Instance of :class:`kivy.config.StringProperty`
     '''
-
     __events__ = ('on_create', 'on_cancel', )
 
     @ignore_proj_watcher
@@ -113,30 +112,24 @@ class ToolSetupPy(BoxLayout):
         author_email = self.ids.author_email.text
         description = self.ids.description.text
 
-        setup_template = '''from distutils.core import setup
+        setup = dedent(f'''
+            from distutils.core import setup
 
-setup(
-    name='%s',
-    version='%s',
-    packages=[],
-    url='%s',
-    license='%s',
-    author='%s',
-    author_email='%s',
-    description='%s',
-)
-'''
-        setup = setup_template % (
-            package_name,
-            version,
-            url,
-            license,
-            author,
-            author_email,
-            description,
-        )
+            setup(
+                name='{package_name}',
+                version='{version}',
+                packages=[],
+                url='{url}',
+                license='{license}',
+                author='{author}',
+                author_email='{author_email}',
+                description='{description}',
+            )
+        ''')
 
-        f = open(self.path, 'w').write(setup)
+        with open(self.path, 'w') as file:
+            file.write(setup)
+            file.close()
 
         self.dispatch('on_create')
 
@@ -148,8 +141,6 @@ setup(
         '''Event handler to "Cancel" button'''
         pass
 
-
-### Tools ###
 class DesignerTools(EventDispatcher):
 
     designer = ObjectProperty()
@@ -173,37 +164,32 @@ class DesignerTools(EventDispatcher):
 
         name = datetime.datetime.now().strftime("%m-%d-%Y_%H-%M-%S.png")
         if wdg.id:
-            name = wdg.id + '_' + name
+            name = f'{wdg.id} _ {name}'
         wdg.export_to_png(os.path.join(proj_dir, name))
-        status.show_message('Image saved at ' + name, 5, 'info')
+        status.show_message(f'Image saved at {name}', 5, 'info')
 
     def check_pep8(self):
         '''Check the PEP8 from current project
         '''
         proj_dir = get_current_project().path
         kd_dir = get_kd_dir()
-        pep8_dir = os.path.join(kd_dir, 'tools', 'pep8checker',
-                                'pep8kivy.py')
-
-        python_path =\
-            self.designer.designer_settings.config_parser.getdefault(
-                'global',
-                'python_shell_path',
-                ''
-            )
+        pep8_dir = os.path.join(kd_dir, 'tools', 'pep8checker', 'pep8kivy.py')
+        
+        getdefault = self.designer.designer_settings.config_parser.getdefault
+        python_path = getdefault('global', 'python_shell_path', '')
 
         if python_path == '':
-            self.profiler.dispatch('on_error', 'Python Shell Path not '
-                                   'specified.'
-                                   '\n\nUpdate it on \'File\' -> \'Settings\'')
-            return
+            msg = "Python Shell Path not specified.\n\nUpdate it on \'File\' -> \'Settings\'"
+            self.profiler.dispatch('on_error', msg)
+            return None
 
         if sys.platform[0] == 'w':
             pep8_dir = u'"' + pep8_dir + u'"'
 
-        cmd = '%s %s %s' % (python_path, pep8_dir, proj_dir)
-        self.designer.ui_creator.tab_pannel.switch_to(
-            self.designer.ui_creator.tab_pannel.tab_list[2])
+        cmd = f'{python_path} {pep8_dir} {proj_dir}'
+        switch_to = self.designer.ui_creator.tab_pannel.switch_to
+        
+        switch_to(self.designer.ui_creator.tab_pannel.tab_list[2])
         self.designer.ui_creator.kivy_console.run_command(cmd)
 
     def create_setup_py(self):
@@ -221,9 +207,11 @@ class DesignerTools(EventDispatcher):
             return False
 
         content = ToolSetupPy(path=setup_path)
-        d.popup = Popup(title='Create setup.py', content=content,
-                        size_hint=(None, None), size=(550, 350),
-                        auto_dismiss=False)
+        d.popup = Popup(
+            title='Create setup.py', content=content,
+            size_hint=(None, None), size=(dp(550), dp(350)),
+            auto_dismiss=False)
+
         content.bind(on_cancel=d.close_popup)
 
         def on_create(*args):
@@ -239,21 +227,25 @@ class DesignerTools(EventDispatcher):
         '''
         proj_dir = get_current_project().path
         status = self.designer.statusbar
-
         gitignore_path = os.path.join(proj_dir, '.gitignore')
 
         if os.path.exists(gitignore_path):
             show_alert('Create .gitignore', '.gitignore already exists!')
             return False
 
-        gitignore = '''*.pyc
-*.pyo
-bin/
-.designer/
-.buildozer/
-__pycache__/'''
+        gitignore = dedent('''
+            *.pyc
+            *.pyo
+            bin/
+            .designer/
+            .buildozer/
+            __pycache__/
+        ''')
 
-        f = open(gitignore_path, 'w').write(gitignore)
+        with open(gitignore_path, 'w') as file:
+            file.write(gitignore)
+            file.close()
+        
         status.show_message('.gitignore created successfully', 5, 'info')
 
     def buildozer_init(self):
@@ -267,19 +259,20 @@ __pycache__/'''
         spec_file = os.path.join(proj_dir, 'buildozer.spec')
 
         if os.path.exists(spec_file):
-            confirm_dlg = ConfirmationDialog(
-                message='The buildozer.spec file already exist.'
-                        '\nDo you want to create a new spec?')
-            d.popup = Popup(title='Buildozer init',
-                            content=confirm_dlg,
-                            size_hint=(None, None),
-                            size=('250pt', '150pt'),
-                            auto_dismiss=False)
-            confirm_dlg.bind(on_ok=self._perform_buildozer_init,
-                             on_cancel=d.close_popup)
+            msg = 'The buildozer.spec file already exist.\nDo you want to create a new spec?'
+            confirm_dlg = ConfirmationDialog(message=msg)
+            
+            d.popup = Popup(
+                title='Buildozer init', content=confirm_dlg,
+                size_hint=(None, None), size=('250pt', '150pt'),
+                auto_dismiss=False)
+            confirm_dlg.bind(
+                on_ok=self._perform_buildozer_init,
+                on_cancel=d.close_popup)
             d.popup.open()
-        else:
-            self._perform_buildozer_init()
+            return None
+        
+        self._perform_buildozer_init()
 
     @ignore_proj_watcher
     def _perform_buildozer_init(self, *args):
@@ -291,8 +284,7 @@ __pycache__/'''
         proj_dir = get_current_project().path
         spec_file = os.path.join(proj_dir, 'buildozer.spec')
 
-        templates_dir = os.path.join(get_kd_data_dir(),
-                                     constants.DIR_NEW_TEMPLATE)
+        templates_dir = os.path.join(get_kd_data_dir(), constants.DIR_NEW_TEMPLATE)
         shutil.copy(os.path.join(templates_dir, 'default.spec'), spec_file)
 
         self.designer.designer_content.update_tree_view(get_current_project())

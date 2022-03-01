@@ -1,8 +1,5 @@
-import os
-import sys
-import webbrowser
+__all__ = ['ReportWarning', 'BugReporter', 'BugReporterApp']
 
-from six.moves import urllib
 from kivy.app import App
 from kivy.core.clipboard import Clipboard
 from kivy.lang import Builder
@@ -10,8 +7,20 @@ from kivy.properties import ObjectProperty, StringProperty
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.popup import Popup
 
+import os, sys, platform
+from textwrap import dedent
+import webbrowser
+import urllib
+
+try: # for pip >= 10
+    from pip._internal.req import parse_requirements
+    from pip._internal.network.download import PipSession
+except ImportError: # for pip <= 9.0.3
+    from pip.req import parse_requirements
+    from pip.download import PipSession
 
 Builder.load_string('''
+
 <BugReporter>:
     txt_traceback: txt_traceback
     Image:
@@ -94,12 +103,10 @@ class ReportWarning(Popup):
     text = StringProperty('')
     '''Warning Message
     '''
-
     __events__ = ('on_release',)
 
     def on_release(self, *args):
         pass
-
 
 class BugReporter(FloatLayout):
     txt_traceback = ObjectProperty(None)
@@ -129,7 +136,7 @@ class BugReporter(FloatLayout):
         self.warning = warning
 
     def _do_report(self, *args):
-        txt = six.moves.urllib.parse.quote(
+        txt = urllib.parse.quote(
             self.txt_traceback.text.encode('utf-8'))
         url = 'https://github.com/kivy/kivy-designer/issues/new?body=' + txt
         webbrowser.open(url)
@@ -149,52 +156,50 @@ class BugReporterApp(App):
         super(BugReporterApp, self).__init__(**kw)
 
     def build(self):
-        rep = BugReporter()
-        template = '''
-## Environment Info
-
-%s
-
-## Traceback
-
-```
-%s
-```
-
-End of Traceback
-'''
-        env_info = 'Pip is not installed'
-        try:
-            from pip.req import parse_requirements
-            from pip.download import PipSession
-            import platform
-
-            requirements = parse_requirements(os.path.join(
-                os.path.dirname(os.path.realpath(__file__)),
-                '..',
-                '..',
-                'requirements.txt'),
-                session=PipSession()
-            )
-            env_info = ''
-            for req in requirements:
+        path = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', 'requirements.txt')
+        requirements = parse_requirements(path, session=PipSession())
+        env_info = '\n'
+        space = ' ' * 16
+        
+        for req in requirements:
+            try:
                 version = req.installed_version
-                if version is None:
-                    version = 'Not installed'
-                env_info += req.name + ': ' + version + '\n'
-            env_info += '\nPlatform: ' + platform.platform()
-            env_info += '\nPython: ' + platform.python_version()
+            except AttributeError:
+                version = req.requirement
 
-        except ImportError:
-            pass
+            if version is None:
+                version = 'Not installed'
+
+            try:
+                env_info +=  f'{space}{req.name}: {version}\n'
+            except AttributeError:
+                env_info += f'{space}{version}\n'
+
+        env_info += f'\n{space}Platform: {platform.platform()}'
+        env_info += f'\n{space}Python: {platform.python_version()}'
+
         if isinstance(self.traceback, bytes):
             encoding = sys.getfilesystemencoding()
             if not encoding:
                 encoding = sys.stdin.encoding
             if encoding:
                 self.traceback = self.traceback.decode(encoding)
-        rep.txt_traceback.text = template % (env_info, self.traceback)
 
+        template = dedent(f'''
+            ## Environment Info
+            {env_info}
+
+            ## Traceback
+
+            ```
+            {self.traceback}
+            ```
+
+            End of Traceback
+        ''')
+
+        rep = BugReporter()
+        rep.txt_traceback.text = template
         return rep
 
 

@@ -18,7 +18,7 @@ from kivy.metrics import dp
 from sympy import maximum
 
 Builder.load_string("""
-#: import theme_atlas util.theme_atlas
+#: import theme_atlas utils.utils.theme_atlas
 
 <MenuBubble>:
     background_image: theme_atlas('action_item')

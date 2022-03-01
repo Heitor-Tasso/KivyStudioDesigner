@@ -5,9 +5,8 @@ import shutil
 import sys
 from distutils.spawn import find_executable
 
+from utils.utils import get_config_dir, get_kd_data_dir, get_kd_dir, constants
 from uix.settings import SettingList, SettingShortcut
-from utils import constants
-from utils.utils import get_config_dir, get_kd_data_dir, get_kd_dir
 from kivy.config import ConfigParser
 from kivy.properties import ObjectProperty
 from kivy.uix.settings import Settings
