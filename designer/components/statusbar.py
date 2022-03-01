@@ -93,7 +93,7 @@ Builder.load_string("""
 <StatusNavBarSeparator>:
     text: '>'
     font_size: '10pt'
-    width: (self.texture_size[0+dp(20))
+    width: (self.texture_size[0]+dp(20))
     size_hint_x: None
 
 """)

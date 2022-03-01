@@ -187,7 +187,7 @@ class PlaygroundSizeView(ModalView):
             values = sorted(values, key=sort_sizes, reverse=True)
             for name, size in values:
                 btn = ToggleButton(text='', markup=True)
-                btntext = f'{name}\n[color=777777][size={btn.font_size*0.8}]{size[0]}x{size[1]}[/size][/color]'
+                btntext = f"{name}\n[color=777777][size={int(btn.font_size*0.8)}]{size[0]}x{size[1]}[/size][/color]"
                 btn.text = btntext
                 
                 btn.bind(on_press=partial(self.set_size, size))

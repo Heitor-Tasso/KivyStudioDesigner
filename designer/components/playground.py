@@ -51,7 +51,7 @@ Builder.load_string("""
     do_rotation: False
     size_hint: None, None
     size: '550dp', '350dp'
-    pos: '300dp', '230dp'
+    pos: dp(300), dp(230)
     auto_bring_to_front: False
     canvas:
         Color:

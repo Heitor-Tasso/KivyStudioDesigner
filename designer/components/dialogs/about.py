@@ -34,7 +34,7 @@ Builder.load_string("""
             text_size: self.size
             padding: 30, 20
             text:"    Kivy Designer is Kivy\'s tool for designing Graphical User Interfaces (GUIs) from Kivy Widgets. \\nYou can compose and customize widgets, and test them. It is completely written in Python using Kivy. \\nKivy Designer is integrated with Buildozer and Hanga, so you can easily develop and publish your applications to Desktop and Mobile devices.'"
-            font_size: '12pt'
+            font_size: pt(12)
             valign: 'top'
         DesignerButton:
             text: 'Close'

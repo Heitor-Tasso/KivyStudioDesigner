@@ -34,7 +34,7 @@ Builder.load_string("""
     Label:
         markup: True
         text: '[i]Innovative User Interfaces, Desktop, and Mobile Development Made Easy.[/i]'
-        font_size: '12pt'
+        font_size: pt(12)
         halign: 'center'
         size_hint_y: None
         height: '15pt'
@@ -139,8 +139,8 @@ Builder.load_string("""
         Color:
             rgb: (0.2, 0.2, 0.2)
         Rectangle:
-            pos: (self.x+dp(25)), self.y)
-            size: (self.width-dp(50)), dp(1))
+            pos: ((self.x+dp(25)), self.y)
+            size: ((self.width-dp(50)), dp(1))
     Label:
         text: root.path
         text_size: self.size

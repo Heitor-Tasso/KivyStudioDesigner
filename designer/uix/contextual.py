@@ -31,7 +31,7 @@ Builder.load_string("""
 
 <MenuHeader>
     color: (1, 1, 1, 1) if self.state == 'normal' else (0, 0, 0, 1)
-    font_size: '12dp'
+    font_size: dp(12)
     shorten: True
     text_size: self.size
     padding: '2dp', '2dp'
