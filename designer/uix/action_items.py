@@ -17,6 +17,7 @@ import weakref
 Builder.load_string("""
 
 #: import theme_atlas utils.utils.theme_atlas
+#: import hex utils.colors.hex
 
 <DesignerActionButton>:
     info: info

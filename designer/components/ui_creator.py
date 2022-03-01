@@ -7,6 +7,8 @@ from kivy.lang.builder import Builder
 
 Builder.load_string("""
 
+#: import hex utils.colors.hex
+
 <UICreator>:
     kv_code_input: code_input
     splitter_kv_code_input: splitter_kv

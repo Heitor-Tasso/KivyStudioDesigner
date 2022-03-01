@@ -9,6 +9,8 @@ from kivy.lang.builder import Builder
 
 Builder.load_string("""
 
+#: import hex utils.colors.hex
+
 <AddFileDialog>:
     text_file: text_file
     text_folder: text_folder

@@ -7,6 +7,8 @@ from kivy.lang.builder import Builder
 
 Builder.load_string("""
 
+#: import hex utils.colors.hex
+
 <InputDialog>:
     orientation: 'vertical'
     user_input: user_input

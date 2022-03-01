@@ -42,6 +42,8 @@ from kivy.lang.builder import Builder
 
 Builder.load_string("""
 
+#: import hex utils.colors.hex
+
 <Playground>:
     do_scale: False
     do_rotation: False

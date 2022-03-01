@@ -1,27 +1,26 @@
-import os
-import shutil
-import sys
+__all__ = ['Builder', 'Buildozer', 'Hanga', 'Desktop', 'Profiler']
 
 from uix.confirmation_dialog import ConfirmationDialog
-from utils.utils import constants
 from utils.utils import (
-    get_current_project,
-    get_fs_encoding,
-    get_kd_data_dir,
-    ignore_proj_watcher)
+    get_current_project, get_fs_encoding,
+    get_kd_data_dir, constants,
+)
+
 from kivy.event import EventDispatcher
+from kivy.uix.popup import Popup
 from kivy.clock import Clock
 from kivy.properties import (
     ConfigParser, ConfigParserProperty,
     ObjectProperty, StringProperty,
 )
-from kivy.uix.popup import Popup
+
+import shutil
+import sys, os
 
 
 class Builder(EventDispatcher):
     '''Builder interface
     '''
-
     def __init__(self, profiler):
         self.profiler = profiler
         self.designer = self.profiler.designer
@@ -35,11 +34,9 @@ class Builder(EventDispatcher):
         if not self.profiler.pro_mode:
             self.profiler.pro_mode = 'Debug'
 
-
 class Buildozer(Builder):
     '''Class to handle Buildozer builder
     '''
-
     def __init__(self, profiler):
         super(Buildozer, self).__init__(profiler)
         self.buildozer_path = ''
@@ -50,48 +47,43 @@ class Buildozer(Builder):
         '''
         if self.designer.popup:
             self.can_run = False
-            self.profiler.dispatch('on_error', 'You must close all popups '
-                                               'before building your project')
-            return
+            msg = 'You must close all popups before building your project'
+            self.profiler.dispatch('on_error', msg)
+            return None
+        
         # first, check if buildozer is set
-        self.buildozer_path = self.designer_settings.config_parser.getdefault(
-            'buildozer',
-            'buildozer_path',
-            ''
-        )
+        getdefault = self.designer_settings.config_parser.getdefault
+        self.buildozer_path = getdefault('buildozer', 'buildozer_path', '')
 
         if self.buildozer_path == '':
-            self.profiler.dispatch('on_error',
-                                   'Buildozer Path not specified.'
-                                   "\n\nUpdate it on File -> Settings")
+            msg = "Buildozer Path not specified.\n\nUpdate it on File -> Settings"
+            self.profiler.dispatch('on_error', msg)
             self.can_run = False
-            return
+            return None
 
-        envs = self.proj_settings.config_parser.getdefault(
-            'env variables',
-            'env',
-            ''
-        )
-
+        getdefault = self.proj_settings.config_parser.getdefault
+        envs = getdefault('env variables', 'env', '')
         for env in envs.split(' '):
             self.ui_creator.kivy_console.environment[
                 env[:env.find('=')]] = env[env.find('=') + 1:]
+        
         # check if buildozer.spec exists
-        if not os.path.isfile(os.path.join(self.profiler.project_path,
-                                           'buildozer.spec')):
+        if not os.path.isfile(os.path.join(self.profiler.project_path, 'buildozer.spec')):
             confirm_dlg = ConfirmationDialog(
-                message='buildozer.spec not found.\n'
-                        'Do you want to create it now?')
-            self.designer.popup = Popup(title='Buildozer',
-                                        content=confirm_dlg,
-                                        size_hint=(None, None),
-                                        size=('200pt', '150pt'),
-                                        auto_dismiss=False)
-            confirm_dlg.bind(on_ok=self._perform_create_spec,
-                             on_cancel=self.designer.ids.toll_bar_top.close_popup)
+                message='buildozer.spec not found.\nDo you want to create it now?')
+            
+            self.designer.popup = Popup(
+                title='Buildozer', content=confirm_dlg,
+                size_hint=(None, None), size=('200pt', '150pt'),
+                auto_dismiss=False)
+            
+            confirm_dlg.bind(
+                on_ok=self._perform_create_spec,
+                on_cancel=self.designer.ids.toll_bar_top.close_popup)
+            
             self.designer.popup.open()
             self.can_run = False
-            return
+            return None
 
         # TODO check if buildozer source.dir and main file exists
 
@@ -100,8 +92,7 @@ class Buildozer(Builder):
     def _perform_create_spec(self, *args):
         '''Creates the default buildozer.spec file
         '''
-        templates_dir = os.path.join(get_kd_data_dir(),
-                                     constants.DIR_NEW_TEMPLATE)
+        templates_dir = os.path.join(get_kd_data_dir(), constants.DIR_NEW_TEMPLATE)
         shutil.copy(os.path.join(templates_dir, 'default.spec'),
                     os.path.join(self.profiler.project_path, 'buildozer.spec'))
 
@@ -117,7 +108,7 @@ class Buildozer(Builder):
         self.ui_creator.tab_pannel.switch_to(
             self.ui_creator.tab_pannel.tab_list[2])
 
-        cd = 'cd ' + self.profiler.project_path
+        cd = f'cd {self.profiler.project_path}'
         args = [self.buildozer_path]
         if self.profiler.pro_verbose:
             args.append('--verbose')
@@ -134,9 +125,9 @@ class Buildozer(Builder):
         cmd = self._create_command([build_mode])
         if not self.can_run:
             self.last_command = self.build
-            return
-        self.run_command(cmd)
+            return None
 
+        self.run_command(cmd)
         self.profiler.dispatch('on_message', 'Building project...')
         self.ui_creator.kivy_console.bind(on_command_list_done=self.on_build)
 
@@ -152,11 +143,10 @@ class Buildozer(Builder):
         cmd = self._create_command(['update'])
         if not self.can_run:
             self.last_command = self.rebuild
-            return
-        self.run_command(cmd)
+            return None
 
-        self.profiler.dispatch('on_message',
-                               'Updating project dependencies...')
+        self.run_command(cmd)
+        self.profiler.dispatch('on_message', 'Updating project dependencies...')
         self.ui_creator.kivy_console.bind(on_command_list_done=self.build)
 
     def run(self, *args, **kwargs):
@@ -165,7 +155,8 @@ class Buildozer(Builder):
         self.build()
         if not self.can_run:
             self.last_command = self.run
-            return
+            return None
+
         if not self.profiler.pro_install:
             self.profiler.bind(on_build=self.deploy)
         self.profiler.bind(on_deploy=self._run)
@@ -176,9 +167,10 @@ class Buildozer(Builder):
         cmds = ['run']
         if self.profiler.pro_debug and self.profiler.pro_target == 'Android':
             cmds.append('logcat')
+        
         cmd = self._create_command(cmds)
         if not self.can_run:
-            return
+            return None
         self.run_command(cmd)
 
         self.profiler.dispatch('on_message', 'Running on device...')
@@ -189,9 +181,9 @@ class Buildozer(Builder):
         '''
         cmd = self._create_command(['deploy'])
         if not self.can_run:
-            return
-        self.run_command(cmd)
+            return None
 
+        self.run_command(cmd)
         self.profiler.dispatch('on_message', 'Installing on device...')
         self.ui_creator.kivy_console.bind(on_command_list_done=self.on_deploy)
 
@@ -201,9 +193,9 @@ class Buildozer(Builder):
         cmd = self._create_command(['clean'])
         if not self.can_run:
             self.last_command = self.clean
-            return
+            return None
+        
         self.run_command(cmd)
-
         self.profiler.dispatch('on_message', 'Cleaning project...')
         self.ui_creator.kivy_console.bind(on_command_list_done=self.on_clean)
 
@@ -211,9 +203,7 @@ class Buildozer(Builder):
         '''on_clean event handler
         '''
         self.ui_creator.kivy_console.unbind(on_command_list_done=self.on_clean)
-
         self.project_watcher.resume_watching(delay=0)
-
         self.profiler.dispatch('on_message', 'Project clean', 5)
         self.profiler.dispatch('on_clean')
 
@@ -221,9 +211,7 @@ class Buildozer(Builder):
         '''on_build event handler
         '''
         self.ui_creator.kivy_console.unbind(on_command_list_done=self.on_build)
-
         self.project_watcher.resume_watching(delay=0)
-
         self.profiler.dispatch('on_message', 'Build complete', 5)
         self.profiler.dispatch('on_build')
 
@@ -234,9 +222,7 @@ class Buildozer(Builder):
         '''on_build event handler
         '''
         self.ui_creator.kivy_console.unbind(on_command_list_done=self.on_deploy)
-
         self.project_watcher.resume_watching(delay=0)
-
         self.profiler.dispatch('on_message', 'Installed on device', 5)
         self.profiler.dispatch('on_deploy')
 
@@ -244,33 +230,26 @@ class Buildozer(Builder):
         '''on_stop event handler
         '''
         self.ui_creator.kivy_console.unbind(on_command_list_done=self.on_stop)
-
         self.profiler.dispatch('on_stop')
 
     def on_run(self, *args):
         '''on_run event handler
         '''
         self.ui_creator.kivy_console.unbind(on_command_list_done=self.on_run)
-
         self.project_watcher.resume_watching(delay=0)
-
         self.profiler.dispatch('on_message', '', 1)
         self.profiler.dispatch('on_run')
         self.designer.ids.actn_btn_stop_proj.disabled = True
 
-
 class Hanga(Builder):
     '''Class to handle Hanga builder
     '''
-
     def __init__(self, profiler):
         super(Hanga, self).__init__(profiler)
-
 
 class Desktop(Builder):
     '''Class to handle Desktop builder
     '''
-
     def __init__(self, profiler):
         super(Desktop, self).__init__(profiler)
         self.python_path = ''
@@ -282,30 +261,18 @@ class Desktop(Builder):
         '''Initialize python variables
         If there is something wrong shows an alert
         '''
-        self.python_path = self.designer_settings.config_parser.getdefault(
-            'global',
-            'python_shell_path',
-            ''
-        )
+        getdefault = self.designer_settings.config_parser.getdefault
+        self.python_path = getdefault('global', 'python_shell_path', '')
 
         if self.python_path == '':
-            self.profiler.dispatch('on_error', 'Python Shell Path not '
-                                   'specified.'
-                                   '\n\nUpdate it on \'File\' -> \'Settings\'')
+            msg = 'Python Shell Path not specified.\n\nUpdate it on \'File\' -> \'Settings\''
+            self.profiler.dispatch('on_error', msg)
             self.can_run = False
-            return
+            return None
 
-        self.args = self.proj_settings.config_parser.getdefault(
-            'arguments',
-            'arg',
-            ''
-        )
-
-        envs = self.proj_settings.config_parser.getdefault(
-            'env variables',
-            'env',
-            ''
-        )
+        getdefault = self.proj_settings.config_parser.getdefault
+        self.args = getdefault('arguments', 'arg', '')
+        envs = getdefault('env variables', 'env', '')
 
         for env in envs.split(' '):
             self.ui_creator.kivy_console.environment[
@@ -324,15 +291,15 @@ class Desktop(Builder):
         '''Run the project using Python
         '''
         if self.designer.popup:
-            self.profiler.dispatch('on_error', 'You must close all popups '
-                                               'before building your project')
-            return
+            msg = 'You must close all popups before building your project'
+            self.profiler.dispatch('on_error', msg)
+            return None
+        
         mod = kwargs.get('mod', '')
         data = kwargs.get('data', [])
-
         self._get_python()
         if not self.can_run:
-            return
+            return None
 
         py_main = os.path.join(self.profiler.project_path, 'main.py')
         if isinstance(py_main, bytes):
@@ -340,37 +307,38 @@ class Desktop(Builder):
 
         if not os.path.isfile(py_main):
             self.profiler.dispatch('on_error', 'Cannot find main.py')
-            return
+            return None
+
         if sys.platform[0] == 'w':
             py_main = py_main.replace(' ', '\x01')
         else:
             py_main = py_main.replace(' ', '\\ ')
+        
         cmd = ''
         if mod == '':
-            cmd = '%s %s %s' % (self.python_path, py_main, self.args)
+            cmd = f'{self.python_path} {py_main} {self.args}'
         elif mod == 'screen':
-            cmd = '%s %s -m screen:%s %s' % (self.python_path, py_main,
-                                             data, self.args)
+            cmd = f'{self.python_path} {py_main} -m screen:{data} {self.args}'
         else:
-            cmd = '%s %s -m %s %s' % (self.python_path, py_main,
-                                      mod, self.args)
+            cmd = f'{self.python_path} {py_main} -m {mod} {self.args}'
 
         status = self.run_command(cmd)
-
         # popen busy
         if status is False:
             confirm_dlg = ConfirmationDialog(
-                message="There is another command running.\n"
-                        "Do you want to stop it to run your project?")
-            self.designer.popup = Popup(title='Kivy Designer',
-                                        content=confirm_dlg,
-                                        size_hint=(None, None),
-                                        size=('300pt', '150pt'),
-                                        auto_dismiss=False)
-            confirm_dlg.bind(on_ok=self._perform_kill_run,
-                             on_cancel=self.designer.ids.toll_bar_top.close_popup)
+                message="There is another command running.\nDo you want to stop it to run your project?")
+            
+            self.designer.popup = Popup(
+                title='Kivy Designer', content=confirm_dlg,
+                size_hint=(None, None), size=('300pt', '150pt'),
+                auto_dismiss=False)
+
+            confirm_dlg.bind(
+                on_ok=self._perform_kill_run,
+                on_cancel=self.designer.ids.toll_bar_top.close_popup)
+            
             self.designer.popup.open()
-            return
+            return None
 
         self.ui_creator.tab_pannel.switch_to(
             self.ui_creator.tab_pannel.tab_list[2])
@@ -396,6 +364,7 @@ class Desktop(Builder):
             ext = _file.split('.')[-1]
             if ext == 'pyc':
                 os.remove(os.path.join(self.profiler.project_path, _file))
+        
         __pycache__ = os.path.join(self.profiler.project_path, '__pycache__')
         if os.path.exists(__pycache__):
             shutil.rmtree(__pycache__)
@@ -408,16 +377,14 @@ class Desktop(Builder):
         '''
         self._get_python()
         if not self.can_run:
-            return
+            return None
 
         self.project_watcher.pause_watching()
         proj_path = self.profiler.project_path
         if isinstance(proj_path, bytes):
             proj_path = proj_path.decode(get_fs_encoding())
 
-        self.run_command(
-                    '%s -m compileall -l %s' % (self.python_path, proj_path))
-
+        self.run_command(f'{self.python_path} -m compileall -l {proj_path}')
         self.ui_creator.tab_pannel.switch_to(
             self.ui_creator.tab_pannel.tab_list[2])
 
@@ -443,75 +410,62 @@ class Desktop(Builder):
         self.profiler.dispatch('on_message', '', 1)
         self.profiler.dispatch('on_stop')
 
-
 class Profiler(EventDispatcher):
     profile_path = StringProperty('')
     ''' Profile settings path
     :class:`~kivy.properties.StringProperty` and defaults to ''.
     '''
-
     project_path = StringProperty('')
     ''' Project path
     :class:`~kivy.properties.StringProperty` and defaults to ''.
     '''
-
     designer = ObjectProperty(None)
     '''Reference of :class:`~designer.app.Designer`.
        :data:`designer` is a :class:`~kivy.properties.ObjectProperty`
     '''
-
     profile_config = ObjectProperty(None)
     '''Reference to a ConfigParser with the profile settings
     :class:`~kivy.properties.ObjectProperty` and defaults to None.
     '''
-
     pro_name = ConfigParserProperty('', 'profile', 'name', 'profiler')
     '''Reference to a ConfigParser with the profile settings
     Get the profile name
     :class:`~kivy.properties.ConfigParserProperty`
     '''
-
     pro_builder = ConfigParserProperty('', 'profile', 'builder', 'profiler')
     '''Reference to a ConfigParser with the profile settings
     Get the profile builder
     :class:`~kivy.properties.ConfigParserProperty`
     '''
-
     pro_target = ConfigParserProperty('', 'profile', 'target', 'profiler')
     '''Reference to a ConfigParser with the profile settings
     Get the profile target
     :class:`~kivy.properties.ConfigParserProperty`
     '''
-
     pro_mode = ConfigParserProperty('', 'profile', 'mode', 'profiler')
     '''Reference to a ConfigParser with the profile settings
     Get the profile builder
     :class:`~kivy.properties.ConfigParserProperty`
     '''
-
     pro_install = ConfigParserProperty('', 'profile', 'install', 'profiler')
     '''Reference to a ConfigParser with the profile settings
     Get the profile install_on_device
     :class:`~kivy.properties.ConfigParserProperty`
     '''
-
     pro_debug = ConfigParserProperty('', 'profile', 'debug', 'profiler')
     '''Reference to a ConfigParser with the profile settings
     Get the profile debug mode
     :class:`~kivy.properties.ConfigParserProperty`
     '''
-
     pro_verbose = ConfigParserProperty('', 'profile', 'verbose', 'profiler')
     '''Reference to a ConfigParser with the profile settings
     Get the profile verbose mode
     :class:`~kivy.properties.ConfigParserProperty`
     '''
-
     builder = ObjectProperty(None)
     '''Reference to the builder class. Can be Hanga, Buildozer or Desktop
     :class:`~kivy.properties.ObjectProperty`
     '''
-
     __events__ = ('on_run', 'on_stop', 'on_error', 'on_message', 'on_build',
                   'on_deploy', 'on_clean')
 
@@ -560,8 +514,8 @@ class Profiler(EventDispatcher):
             elif self.pro_builder == 'Hanga':
                 # TODO implement hanga
                 self.builder = Desktop(self)
-                self.dispatch('on_error', 'Hanga Builder not yet implemented!\n'
-                              'Using Desktop')
+                msg = 'Hanga Builder not yet implemented!\nUsing Desktop'
+                self.dispatch('on_error', msg)
             else:
                 self.builder = Desktop(self)
 

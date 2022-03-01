@@ -19,6 +19,7 @@ from kivy.lang.builder import Builder
 Builder.load_string("""
 
 #: import theme_atlas utils.utils.theme_atlas
+#: import hex utils.colors.hex
 
 <SpecContentPanel>:
     do_scroll_x: False
@@ -292,13 +293,16 @@ class BuildozerSpecEditor(Settings):
         '''
         if filename is None and data is None:
             raise Exception('You must specify either the filename or data')
+
         if filename is not None:
             with open(filename, 'r', encoding='utf-8') as fd:
                 data = json.loads(fd.read())
         else:
             data = json.loads(data)
+
         if type(data) != list:
             raise ValueError('The first element must be a list')
+        
         panel = SpecSettingsPanel(title=title, settings=self, config=config)
 
         for setting in data:

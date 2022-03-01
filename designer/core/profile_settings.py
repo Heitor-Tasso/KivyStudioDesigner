@@ -1,17 +1,22 @@
-import os
-import os.path
-import shutil
+__all__ = [
+    'ProfileContentPanel', 'ProfileMenuSidebar',
+    'ProfileSettingsInterface', 'ProfileSettings']
 
-from uix.confirmation_dialog import ConfirmationDialog
 from utils.utils import get_config_dir, get_kd_data_dir, profiles_path
-from kivy.config import ConfigParser
-from kivy.properties import DictProperty, ObjectProperty
+from uix.confirmation_dialog import ConfirmationDialog
+
 from kivy.uix.popup import Popup
+from kivy.config import ConfigParser
 from kivy.lang.builder import Builder
+from kivy.properties import DictProperty, ObjectProperty
 from kivy.uix.settings import (
     ContentPanel, InterfaceWithSidebar,
     MenuSidebar, Settings,
 )
+
+import os
+import shutil
+
 
 Builder.load_string("""
 
@@ -33,9 +38,9 @@ Builder.load_string("""
         GridLayout:
             cols: 2
             size_hint_y: None
-            height: 50
-            spacing: 5
-            padding: 5
+            height: '50dp'
+            spacing: '5dp'
+            padding: '5dp'
             DesignerButton:
                 id: btn_select_prof
                 text: 'Use this Profile'
@@ -57,48 +62,48 @@ Builder.load_string("""
     new_button: button_new
     ScrollView:
         id: e_scroll
-        y: root.y + 70
+        y: (root.y+dp(70))
         x: root.x
         width: root.width
         size_hint_y: None
-        height: root.height - 75
+        height: (root.height-dp(75))
         GridLayout:
             size_hint_y: None
             height: max(e_scroll.height, self.minimum_height)
             cols: 1
             id: menu
             # orientation: 'vertical'
-            padding: 5
-            spacing: 5
+            padding: '5dp'
+            spacing: '5dp'
             canvas.after:
                 Color:
-                    rgb: .2, .2, .2
+                    rgb: (0.2, 0.2, 0.2)
                 Rectangle:
-                    pos: self.right - 1, self.y
-                    size: 1, self.height
+                    pos: ((self.right-dp(1)), self.y)
+                    size: dp(1), self.height
     DesignerButton:
         text: 'New'
         id: button_new
         size_hint_x: None
-        width: root.width - dp(20)
-        pos: root.x + dp(10), root.y + sp(49)
+        width: root.width-dp(20)
+        pos: ((root.x+dp(10)), (root.y+sp(49)))
         font_size: '15sp'
     DesignerButton:
         text: 'Close'
         id: button_close
         size_hint_x: None
-        width: root.width - dp(20)
-        pos: root.x + dp(10), root.y + 5
+        width: (root.width-dp(20))
+        pos: ((root.x+dp(10)), (root.y+dp(5)))
         font_size: '15sp'
 
 <ProfileContentPanel>:
     current_uid: 0
+
 """)
 
 class ProfileContentPanel(ContentPanel):
     ''' ContentPanel with a custom design and custom events
     '''
-
     __events__ = ('on_current_panel', )
 
     def __int__(self, **kwargs):
@@ -115,30 +120,24 @@ class ProfileContentPanel(ContentPanel):
         '''
         pass
 
-
 class ProfileMenuSidebar(MenuSidebar):
     pass
-
 
 class ProfileSettingsInterface(InterfaceWithSidebar):
     ''' InterfaceWithSidebar with a custom style and custom events
     '''
-
     button_bar = ObjectProperty(None)
     ''' Reference to the widget's GridLayout with buttons
     :class:`~kivy.properties.ObjectProperty` and defaults to None.
     '''
-
     new_button = ObjectProperty(None)
     ''' Reference to the widget's New button.
     :class:`~kivy.properties.ObjectProperty` and defaults to None.
     '''
-
     select_prof_button = ObjectProperty(None)
     ''' Reference to the widget's Use this Profile button.
     :class:`~kivy.properties.ObjectProperty` and defaults to None.
     '''
-
     __events__ = ('on_delete', 'on_new', 'on_use_this_profile')
 
     def __init__(self, **kwargs):
@@ -147,6 +146,7 @@ class ProfileSettingsInterface(InterfaceWithSidebar):
             on_press=lambda j: self.dispatch('on_delete'))
         self.button_bar.btn_select_prof.bind(
             on_press=lambda j: self.dispatch('on_use_this_profile'))
+        
         self.menu.new_button.bind(on_press=lambda j: self.dispatch('on_new'))
         self.content.bind(on_current_panel=self.on_current_panel)
 
@@ -174,22 +174,18 @@ class ProfileSettingsInterface(InterfaceWithSidebar):
         filename = os.path.basename(_file)
         self.button_bar.btn_delete_prof.disabled = filename == 'desktop.ini'
 
-
 class ProfileSettings(Settings):
     '''Subclass of :class:`kivy.uix.settings.Settings` responsible for
        showing build profile settings of Kivy Designer.
     '''
-
     config_parsers = DictProperty({})
     '''List of config parsers
     :class:`~kivy.properties.DictProperty` and defaults to {}.
     '''
-
     selected_config = ObjectProperty(None)
     '''ConfigParser of the selected config
     :class `~kivy.properties.ObjectProperty` and defaults to None.
     '''
-
     __events__ = ('on_use_this_profile', 'on_changed')
 
     def __init__(self, **kwargs):
@@ -201,6 +197,7 @@ class ProfileSettings(Settings):
         self.interface.bind(on_delete=self.on_delete)
         self.interface.bind(
             on_use_this_profile=lambda j: self.dispatch('on_use_this_profile'))
+        
         self.interface.content.bind(on_current_panel=self.on_current_config)
         self.settings_changed = False  # changes in name, new or delete
 
@@ -228,8 +225,8 @@ class ProfileSettings(Settings):
             prof_name = config_parser.getdefault('profile', 'name', 'PROFILE')
             if not prof_name.strip():
                 prof_name = 'PROFILE'
-            self.config_parsers[
-                str(prof_name) + '_' + _file_path] = config_parser
+
+            self.config_parsers[f'{prof_name}_{_file_path}'] = config_parser
 
         for _file in sorted(self.config_parsers):
             prof_name = self.config_parsers[_file].getdefault('profile', 'name', 'PROFILE')
@@ -246,9 +243,7 @@ class ProfileSettings(Settings):
     def on_config_change(self, instance, section, key, value, *args):
         '''This function is default handler of on_config_change event.
         '''
-        super(ProfileSettings, self).on_config_change(
-            instance, section, key, value
-        )
+        super(ProfileSettings, self).on_config_change(instance, section, key, value)
         if key == 'name':
             self.update_panel()
             self.settings_changed = True
@@ -258,15 +253,13 @@ class ProfileSettings(Settings):
         '''
         new_name = 'new_profile'
         i = 1
-        while os.path.exists(os.path.join(
-                self.PROFILES_PATH, new_name + str(i) + '.ini')):
+        while os.path.exists(os.path.join(self.PROFILES_PATH, f'{new_name}{i}.ini')):
             i += 1
+        
         new_name += str(i)
-        new_prof_path = os.path.join(
-            self.PROFILES_PATH, new_name + '.ini')
-
-        shutil.copy2(os.path.join(self.DEFAULT_PROFILES, 'desktop.ini'),
-                     new_prof_path)
+        new_prof_path = os.path.join(self.PROFILES_PATH, f'{new_name}.ini')
+        shutil.copy2(os.path.join(self.DEFAULT_PROFILES, 'desktop.ini'), new_prof_path)
+        
         config_parser = ConfigParser()
         config_parser.read(new_prof_path)
         config_parser.set('profile', 'name', new_name.upper())
@@ -280,13 +273,16 @@ class ProfileSettings(Settings):
         '''
         confirm_dlg = ConfirmationDialog(
             message="Do you want to delete this profile?")
-        self._popup = Popup(title='Delete Profile',
-                            content=confirm_dlg,
-                            size_hint=(None, None),
-                            size=('200pt', '150pt'),
-                            auto_dismiss=False)
-        confirm_dlg.bind(on_ok=self._perform_delete_prof,
-                         on_cancel=self._popup.dismiss)
+        
+        self._popup = Popup(
+            title='Delete Profile', content=confirm_dlg,
+            size_hint=(None, None), size=('200pt', '150pt'),
+            auto_dismiss=False)
+        
+        confirm_dlg.bind(
+            on_ok=self._perform_delete_prof,
+            on_cancel=self._popup.dismiss)
+        
         self._popup.open()
 
     def _perform_delete_prof(self, *args):

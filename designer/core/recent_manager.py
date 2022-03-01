@@ -1,7 +1,7 @@
-import os
+__all__ = ['RecentManager', ]
 
 from utils.utils import get_config_dir, get_fs_encoding
-
+import os
 
 RECENT_FILES_NAME = 'recent_files'
 
@@ -10,7 +10,6 @@ class RecentManager(object):
     '''RecentManager is responsible for retrieving/storing the list of recently
        opened/saved projects.
     '''
-
     def __init__(self):
         super(RecentManager, self).__init__()
         self.list_projects = []
@@ -35,7 +34,6 @@ class RecentManager(object):
             self.list_projects.remove(path)
 
         self.list_projects.insert(0, path)
-
         # Recent files should not be greater than max_recent_files
         while len(self.list_projects) > self.max_recent_files:
             self.list_projects.pop()
@@ -45,13 +43,12 @@ class RecentManager(object):
     def store_files(self):
         '''To store the list of files on disk.
         '''
-
         _string = ''
         for _file in self.list_projects:
-            _string += _file + '\n'
+            _string += f'{_file}\n'
 
-        recent_file_path = os.path.join(get_config_dir(),
-                                        RECENT_FILES_NAME)
+        recent_file_path = os.path.join(get_config_dir(), RECENT_FILES_NAME)
+        
         f = open(recent_file_path, 'w')
         f.write(_string)
         f.close()
@@ -59,24 +56,18 @@ class RecentManager(object):
     def load_files(self):
         '''To load the list of files from disk
         '''
-
-        recent_file_path = os.path.join(get_config_dir(),
-                                        RECENT_FILES_NAME)
-
+        recent_file_path = os.path.join(get_config_dir(), RECENT_FILES_NAME)
         if not os.path.exists(recent_file_path):
-            return
+            return None
 
         f = open(recent_file_path, 'r')
         path = f.readline()
-
         while path != '':
             file_path = path.strip()
             if isinstance(file_path, bytes):
-                file_path = file_path.decode(get_fs_encoding()).encode(
-                    get_fs_encoding())
+                file_path = file_path.decode(get_fs_encoding()).encode(get_fs_encoding())
             if os.path.exists(file_path):
                 self.list_projects.append(file_path)
 
             path = f.readline()
-
         f.close()

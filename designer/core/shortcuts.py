@@ -1,6 +1,9 @@
-from utils.utils import get_designer
-from kivy.core.window import Keyboard, Window
+__all__ = ['Shortcuts', ]
+
 from utils.open_sites import open_repo, open_docs, open_kd_docs
+from utils.utils import get_designer
+
+from kivy.core.window import Keyboard, Window
 
 class Shortcuts(object):
 
@@ -15,65 +18,32 @@ class Shortcuts(object):
         '''Read shortcuts from config_parser
         :param config_parser: config parser with all shorcut settings
         '''
-        g = config_parser.getdefault
         # get all defined shortcuts
-        m = {
-            g('shortcuts', 'new_file', ''):
-                [self.do_new_file, 'new_file'],
-            g('shortcuts', 'new_project', ''):
-                [self.do_new_project, 'new_project'],
-            g('shortcuts', 'open_project', ''):
-                [self.do_open_project, 'open_project'],
-            g('shortcuts', 'save', ''):
-                [self.do_save, 'save'],
-            g('shortcuts', 'save_as', ''):
-                [self.do_save_as, 'save_as'],
-            g('shortcuts', 'close_project', ''):
-                [self.do_close_project, 'close_project'],
-            g('shortcuts', 'recent', ''):
-                [self.do_recent, 'recent'],
-            g('shortcuts', 'settings', ''):
-                [self.do_settings, 'settings'],
-            g('shortcuts', 'run', ''):
-                [self.do_run, 'run'],
-            g('shortcuts', 'stop', ''):
-                [self.do_stop, 'stop'],
-            g('shortcuts', 'clean', ''):
-                [self.do_clean, 'clean'],
-            g('shortcuts', 'build', ''):
-                [self.do_build, 'build'],
-            g('shortcuts', 'rebuild', ''):
-                [self.do_rebuild, 'rebuild'],
-            g('shortcuts', 'buildozer_init', ''):
-                [self.do_buildozer_init, 'buildozer_init'],
-            g('shortcuts', 'export_png', ''):
-                [self.do_export_png, 'export_png'],
-            g('shortcuts', 'check_pep8', ''):
-                [self.do_check_pep8, 'check_pep8'],
-            g('shortcuts', 'create_setup_py', ''):
-                [self.do_create_setup_py, 'create_setup_py'],
-            g('shortcuts', 'create_gitignore', ''):
-                [self.do_create_gitignore, 'create_gitignore'],
-            g('shortcuts', 'help', ''):
-                [self.do_help, 'help'],
-            g('shortcuts', 'kivy_docs', ''):
-                [self.do_kivy_docs, 'kivy_docs'],
-            g('shortcuts', 'kd_docs', ''):
-                [self.do_kd_docs, 'kd_docs'],
-            g('shortcuts', 'kd_repo', ''):
-                [self.do_kd_repo, 'kd_repo'],
-            g('shortcuts', 'about', ''):
-                [self.do_about, 'about'],
-        }
+        shortcuts = (
+            (self.do_new_file, 'new_file'), (self.do_new_project, 'new_project'),
+            (self.do_open_project, 'open_project'), (self.do_save, 'save'),
+            (self.do_save_as, 'save_as'), (self.do_close_project, 'close_project'),
+            (self.do_recent, 'recent'), (self.do_settings, 'settings'), (self.do_run, 'run'),
+            (self.do_stop, 'stop'), (self.do_clean, 'clean'), (self.do_build, 'build'),
+            (self.do_rebuild, 'rebuild'), (self.do_buildozer_init, 'buildozer_init'),
+            (self.do_export_png, 'export_png'), (self.do_check_pep8, 'check_pep8'),
+            (self.do_create_setup_py, 'create_setup_py'), (self.do_create_gitignore, 'create_gitignore'),
+            (self.do_help, 'help'), (self.do_kivy_docs, 'kivy_docs'), (self.do_kd_docs, 'kd_docs'),
+            (self.do_kd_repo, 'kd_repo'), (self.do_about, 'about'),
+        )
 
-        self.map = m
+        self.map = dict()
+        getdefault = config_parser.getdefault
+        for func, name in shortcuts:
+            key = getdefault('shortcuts', name, '')
+            self.map[key] = [func, name]
 
     def parse_key_down(self, keyboard, key, codepoint, text, modifier, *args):
         '''Parse keys and generate the formatted keyboard shortcut
         '''
         key_str = Keyboard.keycode_to_string(Window._system_keyboard, key)
         modifier.sort()
-        value = str(modifier) + ' + ' + key_str
+        value = f'{modifier} + {key_str}'
         if value in self.map:
             self.map.get(value)[0]()
             return True
@@ -82,6 +52,7 @@ class Shortcuts(object):
         d = get_designer()
         btn = d.ids.actn_btn_new_file
         menu = d.ids.actn_menu_file
+
         if not btn.disabled and not menu.disabled:
             d.action_btn_new_file_pressed()
 
@@ -89,6 +60,7 @@ class Shortcuts(object):
         d = get_designer()
         btn = d.ids.actn_btn_new_project
         menu = d.ids.actn_menu_file
+
         if not btn.disabled and not menu.disabled:
             d.action_btn_new_project_pressed()
 
@@ -96,6 +68,7 @@ class Shortcuts(object):
         d = get_designer()
         btn = d.ids.actn_btn_open_project
         menu = d.ids.actn_menu_file
+
         if not btn.disabled and not menu.disabled:
             d.action_btn_open_pressed()
 
@@ -103,6 +76,7 @@ class Shortcuts(object):
         d = get_designer()
         btn = d.ids.actn_btn_save
         menu = d.ids.actn_menu_file
+
         if not btn.disabled and not menu.disabled:
             d.action_btn_save_pressed()
 
@@ -110,6 +84,7 @@ class Shortcuts(object):
         d = get_designer()
         btn = d.ids.actn_btn_save_as
         menu = d.ids.actn_menu_file
+
         if not btn.disabled and not menu.disabled:
             d.action_btn_save_as_pressed()
 
@@ -117,6 +92,7 @@ class Shortcuts(object):
         d = get_designer()
         btn = d.ids.actn_btn_close_proj
         menu = d.ids.actn_menu_file
+
         if not btn.disabled and not menu.disabled:
             d.action_btn_close_proj_pressed()
 
@@ -132,6 +108,7 @@ class Shortcuts(object):
         d = get_designer()
         btn = d.ids.actn_btn_run_proj
         menu = d.ids.actn_menu_run
+
         if not btn.disabled and not menu.disabled:
             d.action_btn_clean_pressed('run')
 
@@ -139,6 +116,7 @@ class Shortcuts(object):
         d = get_designer()
         btn = d.ids.actn_btn_stop_proj
         menu = d.ids.actn_menu_run
+
         if not btn.disabled and not menu.disabled:
             d.action_btn_clean_pressed('stop')
 
@@ -146,6 +124,7 @@ class Shortcuts(object):
         d = get_designer()
         btn = d.ids.actn_btn_clean_proj
         menu = d.ids.actn_menu_run
+
         if not btn.disabled and not menu.disabled:
             d.action_btn_clean_pressed('clean')
 
@@ -153,6 +132,7 @@ class Shortcuts(object):
         d = get_designer()
         btn = d.ids.actn_btn_build_proj
         menu = d.ids.actn_menu_run
+
         if not btn.disabled and not menu.disabled:
             d.action_btn_clean_pressed('build')
 
@@ -160,6 +140,7 @@ class Shortcuts(object):
         d = get_designer()
         btn = d.ids.actn_btn_rebuild_proj
         menu = d.ids.actn_menu_run
+
         if not btn.disabled and not menu.disabled:
             d.action_btn_clean_pressed('rebuild')
 
@@ -167,6 +148,7 @@ class Shortcuts(object):
         d = get_designer()
         btn = d.ids.actn_btn_buildozer_init
         menu = d.ids.actn_menu_tools
+
         if not btn.disabled and not menu.disabled:
             d.designer_tools.buildozer_init()
 
@@ -174,6 +156,7 @@ class Shortcuts(object):
         d = get_designer()
         btn = d.ids.actn_btn_export_png
         menu = d.ids.actn_menu_tools
+
         if not btn.disabled and not menu.disabled:
             d.designer_tools.export_png()
 
@@ -181,6 +164,7 @@ class Shortcuts(object):
         d = get_designer()
         btn = d.ids.actn_btn_check_pep8
         menu = d.ids.actn_menu_tools
+
         if not btn.disabled and not menu.disabled:
             d.designer_tools.check_pep8()
 
@@ -188,6 +172,7 @@ class Shortcuts(object):
         d = get_designer()
         btn = d.ids.actn_btn_create_setup_py
         menu = d.ids.actn_menu_tools
+
         if not btn.disabled and not menu.disabled:
             d.designer_tools.create_setup_py()
 
@@ -195,6 +180,7 @@ class Shortcuts(object):
         d = get_designer()
         btn = d.ids.actn_btn_create_gitignore
         menu = d.ids.actn_menu_tools
+
         if not btn.disabled and not menu.disabled:
             d.designer_tools.create_gitignore()
 
@@ -202,6 +188,7 @@ class Shortcuts(object):
         d = get_designer()
         btn = d.ids.actn_btn_help
         menu = d.ids.actn_menu_help
+
         if not btn.disabled and not menu.disabled:
             d.show_help()
 
@@ -209,6 +196,7 @@ class Shortcuts(object):
         d = get_designer()
         btn = d.ids.actn_btn_wiki
         menu = d.ids.actn_menu_help
+
         if not btn.disabled and not menu.disabled:
             open_docs()
 
@@ -216,6 +204,7 @@ class Shortcuts(object):
         d = get_designer()
         btn = d.ids.actn_btn_doc
         menu = d.ids.actn_menu_help
+
         if not btn.disabled and not menu.disabled:
             open_kd_docs()
 
@@ -223,6 +212,7 @@ class Shortcuts(object):
         d = get_designer()
         btn = d.ids.actn_btn_page
         menu = d.ids.actn_menu_help
+
         if not btn.disabled and not menu.disabled:
             open_repo()
 
@@ -230,5 +220,6 @@ class Shortcuts(object):
         d = get_designer()
         btn = d.ids.actn_btn_about
         menu = d.ids.actn_menu_help
+
         if not btn.disabled and not menu.disabled:
             d.action_btn_about_pressed()

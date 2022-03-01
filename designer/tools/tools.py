@@ -22,6 +22,8 @@ __all__ = ['ToolSetupPy', 'DesignerTools']
 
 Builder.load_string("""
 
+#: import hex utils.colors.hex
+
 <SetupPyLabel@Label>:
     text_size: self.size
     valign: 'middle'

@@ -11,6 +11,8 @@ from kivy.uix.tabbedpanel import (
 
 Builder.load_string("""
 
+#: import hex utils.colors.hex
+
 <StatusBar>:
     app: app
     navbar: navbar

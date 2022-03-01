@@ -9,6 +9,8 @@ from kivy.lang.builder import Builder
 
 Builder.load_string("""
 
+#: import hex utils.colors.hex
+
 <WidgetTreeElement>:
     is_open: True
     text: getattr(root.node, '__class__').__name__

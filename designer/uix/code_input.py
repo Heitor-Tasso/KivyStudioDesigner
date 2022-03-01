@@ -40,7 +40,7 @@ class DesignerCodeInput(CodeInput):
        :data:`clicked` is a :class:`~kivy.properties.BooleanProperty`
     '''
 
-    def __init__(self, **kwargs):
+    def __init__(self, name='', **kwargs):
         super(DesignerCodeInput, self).__init__(**kwargs)
         parser = Config.get_configparser('DesignerSettings')
         if parser:

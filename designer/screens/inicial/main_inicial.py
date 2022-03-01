@@ -18,7 +18,7 @@ from kivy.lang.builder import Builder
 from utils.utils import constants
 from utils.utils import (
     ignore_proj_watcher, get_kd_data_dir,
-    show_message, get_kd_dir, get_path,
+    show_message, get_path,
     utils_source_rst, template_file,
 )
 from tempfile import mkdtemp
@@ -302,7 +302,7 @@ class ToolBarTopDesigner(DesignerActionView):
         if self.popup:
             return False
 
-        _recent_dlg = RecentDialog(self.recent_manager.list_projects)
+        _recent_dlg = RecentDialog(self.designer.recent_manager.list_projects)
         _recent_dlg.bind(
             on_cancel=self.close_popup,
             on_select=self.designer._recent_file_release)

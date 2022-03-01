@@ -6,6 +6,8 @@ from kivy.lang.builder import Builder
 
 Builder.load_string("""
 
+#: import hex utils.colors.hex
+
 <ConfirmationDialog>:
     orientation: 'vertical'
     padding: designer_padding

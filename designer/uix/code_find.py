@@ -7,6 +7,7 @@ from kivy.lang.builder import Builder
 Builder.load_string("""
 
 #: import theme_atlas utils.utils.theme_atlas
+#: import hex utils.colors.hex
 
 <CodeInputFind>:
     txt_query: txt_query

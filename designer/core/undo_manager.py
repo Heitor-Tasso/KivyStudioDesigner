@@ -1,12 +1,16 @@
+__all__ = [
+    'OperationBase', 'WidgetOperation',
+    'WidgetDragOperation', 'PropOperation',
+    'UndoManager']
+
 from utils.utils import get_current_project
+
 from kivy.uix.checkbox import CheckBox
 from kivy.uix.textinput import TextInput
-
 
 class OperationBase(object):
     '''UndoOperationBase class, Abstract class for all Undo Operations
     '''
-
     def __init__(self, operation_type):
         super(OperationBase, self).__init__()
         self.operation_type = operation_type
@@ -17,11 +21,9 @@ class OperationBase(object):
     def do_redo(self):
         pass
 
-
 class WidgetOperation(OperationBase):
     '''WidgetOperation class for widget operations of add and remove
     '''
-
     def __init__(self, widget_op_type, widget, parent, playground, kv_str):
         super(WidgetOperation, self).__init__('widget')
         self.widget_op_type = widget_op_type
@@ -36,32 +38,32 @@ class WidgetOperation(OperationBase):
         '''
         if self.widget_op_type == 'add':
             self.playground.remove_widget_from_parent(self.widget, True)
-
-        else:
-            self.widget.parent = None
-            self.playground.add_widget_to_parent(self.widget, self.parent,
-                                                 from_undo=True,
-                                                 kv_str=self.kv_str)
+            return None
+        
+        self.widget.parent = None
+        
+        add_to_parent = self.playground.add_widget_to_parent
+        add_to_parent(
+            self.widget, self.parent,
+            from_undo=True, kv_str=self.kv_str)
 
     def do_redo(self):
         '''Override of :class:`OperationBase`.do_redo.
            This will redo a WidgetOperation.
         '''
-
         if self.widget_op_type == 'remove':
             self.playground.remove_widget_from_parent(self.widget, True)
-
-        else:
-            self.widget.parent = None
-            self.playground.add_widget_to_parent(self.widget, self.parent,
-                                                 from_undo=True,
-                                                 kv_str=self.kv_str)
-
+            return None
+        
+        self.widget.parent = None
+        add_to_parent = self.playground.add_widget_to_parent
+        add_to_parent(
+            self.widget, self.parent,
+            from_undo=True, kv_str=self.kv_str)
 
 class WidgetDragOperation(OperationBase):
 
-    def __init__(self, widget, cur_parent, prev_parent, prev_index,
-                 playground, extra_args):
+    def __init__(self, widget, cur_parent, prev_parent, prev_index, playground, extra_args):
         self.widget = widget
         self.cur_parent = cur_parent
         self.prev_parent = prev_parent
@@ -72,27 +74,33 @@ class WidgetDragOperation(OperationBase):
 
     def do_undo(self):
         self.cur_parent.remove_widget(self.widget)
-        self.playground.drag_wigdet(self.widget, self.prev_parent,
-                                    extra_args={'index': self.prev_index,
-                                                'prev_index': self.cur_index,
-                                                'x': self.extra_args['prev_x'],
-                                                'y': self.extra_args['prev_y']},
-                                    from_undo=True)
+        
+        extra_args = {
+            'index': self.prev_index,
+            'prev_index': self.cur_index,
+            'x': self.extra_args['prev_x'],
+            'y': self.extra_args['prev_y'],
+        }
+        self.playground.drag_wigdet(
+            self.widget, self.prev_parent,
+            extra_args=extra_args, from_undo=True)
 
     def do_redo(self):
         self.prev_parent.remove_widget(self.widget)
-        self.playground.drag_wigdet(self.widget, self.cur_parent,
-                                    extra_args={'index': self.cur_index,
-                                                'prev_index': self.prev_index,
-                                                'x': self.extra_args['x'],
-                                                'y': self.extra_args['y']},
-                                    from_undo=True)
 
+        extra_args = {
+            'index': self.cur_index,
+            'prev_index': self.prev_index,
+            'x': self.extra_args['x'],
+            'y': self.extra_args['y'],
+        }
+        self.playground.drag_wigdet(
+            self.widget, self.cur_parent,
+            extra_args=extra_args, from_undo=True)
 
 class PropOperation(OperationBase):
     '''PropOperation class for Property Operations of changing property value
     '''
-
     def __init__(self, prop, oldvalue, newvalue):
         super(PropOperation, self).__init__('property')
         self.prop = prop
@@ -103,7 +111,6 @@ class PropOperation(OperationBase):
         '''Override of :class:`OperationBase`.do_undo.
            This will undo a PropOperation.
         '''
-
         setattr(self.prop.propwidget, self.prop.propname, self.oldvalue)
         self._update_widget(self.oldvalue)
 
@@ -121,17 +128,14 @@ class PropOperation(OperationBase):
         '''Override of :class:`OperationBase`.do_redo.
            This will redo a PropOperation.
         '''
-
         setattr(self.prop.propwidget, self.prop.propname, self.newvalue)
         self._update_widget(self.newvalue)
-
 
 class UndoManager(object):
     '''UndoManager is reponsible for managing all the operations related
        to Widgets. It is also responsible for redoing and undoing the last
        available operation.
     '''
-
     def __init__(self, **kwargs):
         super(UndoManager, self).__init__(**kwargs)
         self._undo_stack_operation = []
@@ -147,7 +151,7 @@ class UndoManager(object):
         '''To undo last operation
         '''
         if self._undo_stack_operation == []:
-            return
+            return None
 
         operation = self._undo_stack_operation.pop()
         operation.do_undo()
@@ -156,9 +160,8 @@ class UndoManager(object):
     def do_redo(self):
         '''To redo last operation
         '''
-
         if self._redo_stack_operation == []:
-            return
+            return None
 
         operation = self._redo_stack_operation.pop()
         operation.do_redo()

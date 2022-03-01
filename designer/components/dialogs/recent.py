@@ -1,13 +1,14 @@
 from utils.utils import get_fs_encoding
-# from kivy.adapters.listadapter import ListAdapter
+from components.adapters.listadapter import ListAdapter
 from functools import partial
 from kivy.properties import ObjectProperty
 from kivy.uix.boxlayout import BoxLayout
-# from kivy.uix.listview import ListItemButton
-from kivy.uix.button import Button
+from uix.listview import ListItemButton
 from kivy.lang.builder import Builder
 
 Builder.load_string("""
+
+#: import hex utils.colors.hex
 
 <RecentItemButton>:
     selected_color: 1, 1, 1, 0.5
@@ -50,13 +51,8 @@ Builder.load_string("""
 
 """)
 
-class RecentItemButton(Button):
+class RecentItemButton(ListItemButton):
     pass
-
-
-class ListAdapter(object):
-    def __init__(self, cls, data, selection_mode, allow_empty_selection, args_converter, *args, **kwwargs):
-        pass
 
 class RecentDialog(BoxLayout):
     '''RecentDialog shows the list of recent files retrieved from RecentManager
@@ -114,6 +110,9 @@ class RecentDialog(BoxLayout):
         '''
         Get the path of the selected project
         '''
+        if not self.adapter.selection:
+            return ''
+        
         return self.adapter.selection[0].text
 
     def on_select_button(self, *args):

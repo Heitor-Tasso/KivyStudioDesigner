@@ -28,6 +28,8 @@ NEW_PROJECTS = {
 
 Builder.load_string("""
 
+#: import hex utils.colors.hex
+
 <ProjectTemplateBox>:
     grid: grid
     cols: 1

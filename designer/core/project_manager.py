@@ -1,40 +1,44 @@
-import ast
-import imp
-import inspect
-import os
-import re
-import sys
+__all__ = [
+    'ProjectEventHandler', 'ProjectWatcher', 'CallWrapper',
+    'AppWidget', 'Project', 'ProjectManager']
 
 from utils.utils import (
-    get_app_widget,
-    get_designer,
-    show_error_console,
-    show_message,
+    get_app_widget, get_designer,
+    show_error_console, show_message,
 )
+
 from kivy.event import EventDispatcher
+from kivy.uix.widget import Widget
 from kivy.factory import Factory
 from kivy.lang import Builder
 from kivy.clock import Clock
+
 from kivy.properties import (
     BooleanProperty, DictProperty,
     ListProperty, ObjectProperty,
     StringProperty,
 )
-from kivy.uix.widget import Widget
-from six import exec_
-from watchdog.events import RegexMatchingEventHandler
-from watchdog.observers import Observer
+
+import re
+import imp
+import ast
+import os, sys
+import inspect
 from io import open
+from six import exec_
+from watchdog.observers import Observer
+from watchdog.events import RegexMatchingEventHandler
 
 
-IGNORED_PATHS = ('/.designer', '/.buildozer', '/.git', '/bin',)
-IGNORED_EXTS = ('.pyc',)
+IGNORED_PATHS = ('/.designer', '/.buildozer', '/.git', '/bin', )
+IGNORED_EXTS = ('.pyc', )
 KV_EVENT_RE = r'(\s+on_\w+\s*:.+)|(^[\s\w\d]+:[\.]+[\s\w]+\(.*)'
 KV_ROOT_WIDGET = r'^([\w\d_]+)\:'
 KV_APP_WIDGET = r'^<([\w\d_@]+)>\:'
 
 
 class ProjectEventHandler(RegexMatchingEventHandler):
+    
     def __init__(self, project_watcher):
         super(ProjectEventHandler, self).__init__()
         self.project_watcher = project_watcher
@@ -43,29 +47,24 @@ class ProjectEventHandler(RegexMatchingEventHandler):
         if self.project_watcher:
             self.project_watcher.on_any_event(event)
 
-
 class ProjectWatcher(EventDispatcher):
     '''ProjectWatcher is responsible for watching any changes in
        project directory. It will call self._callback whenever there
        are any changes. It can currently handle only one directory at
        a time.
     '''
-
     _active = BooleanProperty(True)
     '''Indicates if the watchdog can dispatch events
        :data:`active` is a :class:`~kivy.properties.BooleanProperty`
     '''
-
     _path = StringProperty('')
     '''Project folder
        :data:`path` is a :class:`~kivy.properties.StringProperty`
     '''
-
     __events__ = ('on_project_modified',)
 
     def __init__(self, **kw):
         super(ProjectWatcher, self).__init__(**kw)
-
         self._observer = None
         self._handler = None
         self._watcher = None
@@ -76,9 +75,9 @@ class ProjectWatcher(EventDispatcher):
         self._path = path
         self._observer = Observer()
         self._handler = ProjectEventHandler(project_watcher=self)
-        self._watcher = self._observer.schedule(
-            self._handler, path,
-            recursive=True)
+        
+        schedule = self._observer.schedule
+        self._watcher = schedule(self._handler, path, recursive=True)
         self._observer.start()
 
     def on_project_modified(self, *args):
@@ -88,7 +87,6 @@ class ProjectWatcher(EventDispatcher):
         '''To stop watching currently watched directory. This will also call
            join() on the thread created by Observer.
         '''
-
         if self._observer:
             self._observer.unschedule_all()
             self._observer.stop()
@@ -117,18 +115,20 @@ class ProjectWatcher(EventDispatcher):
             # filter events
             path = event.src_path.replace(self._path, '')
             if not path:
-                return
+                return None
+
             if '__pycache__' in path:
-                return
+                return None
+
             for ign in IGNORED_PATHS:
                 if path.startswith(ign):
-                    return
+                    return None
+
             for ext in IGNORED_EXTS:
                 if event.src_path.endswith(ext):
-                    return
+                    return None
 
             self.dispatch('on_project_modified', event)
-
 
 class CallWrapper(ast.NodeTransformer):
     def visit_Expr(self, node):
@@ -136,89 +136,74 @@ class CallWrapper(ast.NodeTransformer):
             return None
         return node
 
-
 class AppWidget(EventDispatcher):
     name = StringProperty('')
     '''Root Widget name.
        :data:`name` is a :class:`~kivy.properties.StringProperty` and
        defaults to ''
     '''
-
     kv_path = StringProperty('')
     '''RootWidget associated kv file path.
        :data:`kv_path` is a :class:`~kivy.properties.StringProperty` and
        default to ''
     '''
-
     py_path = StringProperty('')
     '''RootWidget associated py file path.
        :data:`py_path` is a :class:`~kivy.properties.StringProperty` and
        default to ''
     '''
-
     is_root = BooleanProperty(False)
     '''Indicates if this widget is a root/default kivy widget or not
         :data:`is_root` is a :class:`~kivy.properties.BooleanProperty` and
         defaults to False
     '''
-
     instance = ObjectProperty(None)
     '''If the widget is root, it has a instance returned by Builder.load_string
     If not is root, instance is None
     data:`instance` is a :class:`~kivy.properties.ObjectProperty` and
         defaults to None
     '''
-
     is_dynamic = BooleanProperty(False)
     '''Indicates if this widget is a dynamic widget or not
         :data:`is_dynamic` is a :class:`~kivy.properties.BooleanProperty` and
         defaults to False
     '''
-
     module_name = StringProperty('')
     '''ModuleName used in the class import
        :data:`module_name` is a :class:`~kivy.properties.StringProperty` and
        default to ''
     '''
 
-
 class Project(EventDispatcher):
     path = StringProperty('')
     '''Project path.
        :data:`path` is a :class:`~kivy.properties.StringProperty`
     '''
-
     saved = BooleanProperty(True)
     '''Indicates if the project was saved. The project is seted as saved when
         oppened
        :data:`saved` is a :class:`~kivy.properties.BooleanProperty`
     '''
-
     new_project = BooleanProperty(False)
     '''Indicates if it's a new project.
        :data:`new_project` is a :class:`~kivy.properties.BooleanProperty`
     '''
-
     file_list = ListProperty([])
     '''List of files in the project folder.
         :data:`file_list` is a :class:`~kivy.properties.ListProperty`
     '''
-
     kv_list = ListProperty([])
     '''List of kv files in the project folder.
         :data:`kv_list` is a :class:`~kivy.properties.ListProperty`
     '''
-
     py_list = ListProperty([])
     '''List of py files in the project folder.
         :data:`kv_list` is a :class:`~kivy.properties.ListProperty`
     '''
-
     app_widgets = DictProperty({})
     '''List of :class:`~designer.core.project_manager.AppWidget`.
     :data:`app_widgets` is a :class:`~kivy.properties.DictProperty`
     '''
-
     def __init__(self, **kw):
         super(Project, self).__init__(**kw)
         self._errors = []  # exception messages
@@ -263,7 +248,6 @@ class Project(EventDispatcher):
     def parse(self, reload_files=False):
         '''Parse project files to analyse python and kv files
         '''
-
         if reload_files:
             self.get_files()
 
@@ -301,12 +285,11 @@ class Project(EventDispatcher):
         errors = list(self._errors)
         show_error_console('')
         if len(errors):
-            show_message(
-                'Errors found while parsing the project. Check Error Console',
-                5, 'error'
-            )
+            msg = 'Errors found while parsing the project. Check Error Console'
+            show_message(msg, 5, 'error')
+
         for er in range(0, len(errors)):
-            show_error_console('\n\nError: %d\n' % (er + 1), append=True)
+            show_error_console(f'\n\nError: {er+1}\n', append=True)
             show_error_console(errors[er], append=True)
             self._errors.remove(errors[er])
 
@@ -319,25 +302,29 @@ class Project(EventDispatcher):
             wd = self.app_widgets[key]
             if path != wd.kv_path:
                 continue
+
             wdg = get_app_widget(wd)
             if wdg is None:
                 p = get_designer().ui_creator.playground
                 if p.root_name == wd.name:
                     wdg = p._last_root
+
                 if not wdg:
                     continue
+
             if wd.is_dynamic:
                 del self.app_widgets[key]
 
             rules = Builder.match(wdg)
-
             # Cleaning widget rules
             for _rule in rules:
                 for _tuple in Builder.rules[:]:
-                    if _tuple[1] == _rule:
-                        Builder.rules.remove(_tuple)
-                        if wd.is_dynamic:
-                            Factory.unregister(wd.name.split('@')[0])
+                    if _tuple[1] != _rule:
+                        continue
+
+                    Builder.rules.remove(_tuple)
+                    if wd.is_dynamic:
+                        Factory.unregister(wd.name.split('@')[0])
 
             # Cleaning class rules
             for rule in Builder.rules[:]:
@@ -362,6 +349,7 @@ class Project(EventDispatcher):
             d = get_designer()
             d.ui_creator.kv_code_input.have_error = True
             return False
+        
         # first, if a root widget was found, maps it
         if root:
             root_widgets = re.findall(KV_ROOT_WIDGET, src, re.MULTILINE)
@@ -369,13 +357,16 @@ class Project(EventDispatcher):
             for r in root_widgets:
                 if r != root_name:
                     continue
+
                 if r in self.app_widgets:
                     wdg = self.app_widgets[r]
                 else:
                     wdg = AppWidget()
+                
                 wdg.name = r
                 if path:
                     wdg.kv_path = path
+                
                 wdg.is_root = True
                 wdg.instance = root
                 if wdg not in self.app_widgets:
@@ -388,6 +379,7 @@ class Project(EventDispatcher):
             wdg.name = a
             if path:
                 wdg.kv_path = path
+
             wdg.is_dynamic = '@' in a
             # dynamic widgets are not preloaded by py files
             if wdg not in self.app_widgets:
@@ -398,9 +390,7 @@ class Project(EventDispatcher):
     def parse_py(self, path):
         '''Parses a Python file and load it.
         '''
-
         rel_path = path.replace(self.path, '')
-
         # creates a name to the import based in the file name and its path
         module_name = 'KDImport' + ''.join([x.replace('.py', '').capitalize()
                                             for x in rel_path.split('/')])
@@ -412,16 +402,15 @@ class Project(EventDispatcher):
         except SyntaxError as e:
             self._errors.append(str(e))
             return False
+        
         p = CallWrapper().visit(p)
         p = ast.fix_missing_locations(p)
-
         # if module is already loaded, removes it
         if module_name in sys.modules:
             del sys.modules[module_name]
 
         # imports the new python
         module = imp.new_module(module_name)
-
         try:
             exec_(compile(p, os.path.basename(path), 'exec'), module.__dict__)
         except Exception as e:
@@ -433,12 +422,10 @@ class Project(EventDispatcher):
         classes = inspect.getmembers(
             sys.modules[module_name],
             lambda member:
-            inspect.isclass(member) and member.__module__ == module_name
-        )
+                inspect.isclass(member) and member.__module__ == module_name)
 
         if classes:
             self.load_widgets(path, classes, module_name)
-
         return True
 
     def load_widgets(self, path, classes, module_name):
@@ -448,18 +435,20 @@ class Project(EventDispatcher):
         :return: self.root_widgets
         '''
         for klass_name, klass in classes:
-            if issubclass(klass, Widget):
-                # updates root_widget dict
-                if klass_name in self.app_widgets:
-                    # if already exists, update only the path
-                    self.app_widgets[klass_name].py_path = path
-                else:
-                    # otherwise create a new widget representation
-                    r = AppWidget()
-                    r.py_path = path
-                    r.name = klass_name
-                    r.module_name = module_name
-                    self.app_widgets[klass_name] = r
+            if not issubclass(klass, Widget):
+                continue
+
+            # updates root_widget dict
+            if klass_name in self.app_widgets:
+                # if already exists, update only the path
+                self.app_widgets[klass_name].py_path = path
+            else:
+                # otherwise create a new widget representation
+                r = AppWidget()
+                r.py_path = path
+                r.name = klass_name
+                r.module_name = module_name
+                self.app_widgets[klass_name] = r
 
         return self.app_widgets
 
@@ -476,6 +465,7 @@ class Project(EventDispatcher):
                 fname = code.path
                 if not fname:
                     continue
+            
                 content = code.text
                 open(fname, 'w', encoding='utf-8').write(content)
                 code.saved = True
@@ -492,17 +482,14 @@ class ProjectManager(EventDispatcher):
     '''An instance of the current project.
        :data:`current_project` is a :class:`~kivy.properties.ObjectProperty`
     '''
-
     projects = DictProperty(None)
     '''A map of opened projects
        :data:`projects` is a :class:`~kivy.properties.DictProperty`
     '''
-
     project_manager = BooleanProperty(True)
     '''Auto save the project
         :data:`project_manager` is a :class:`~kivy.properties.BooleanProperty`
     '''
-
     def __init__(self, **kwargs):
         super(ProjectManager, self).__init__(**kwargs)
         self.current_project = Project()

@@ -1,8 +1,8 @@
 from uix.sandbox import DesignerSandbox
 from designer import DesignerException, Designer
 from utils.toolbox_widgets import toolbox_widgets
-from utils.utils import get_config_dir, get_fs_encoding, show_message
 from components.playground import PlaygroundDragElement
+from utils.utils import get_config_dir, get_fs_encoding, show_message
 
 from kivy.app import App
 from kivy.factory import Factory
@@ -17,31 +17,10 @@ import os
 
 Builder.load_string("""
 
-#:set bgcolor (0.06, 0.07, 0.08)
-#:set bordercolor (0.54, 0.59, 0.60)
-#:set titlecolor (0.34, 0.39, 0.40)
-
+#: import hex utils.colors.hex
 #: import KivyLexer kivy.extras.highlight.KivyLexer
 #: import ContextMenu uix.contextual.ContextMenu
 #: import ToolBarTopDesigner screens.inicial.main_inicial.ToolBarTopDesigner
-
-#
-# Helper for keeping a consistency across the whole designer UI
-#
-# Rules:
-# - rows height are 48sp
-# - padding is 4sp
-# - spacing is 4sp
-# - button / label / widget are 40sp height
-# - TextInput with a single line is 30sp height
-# - modal with just one button(close, cancel, etc). The button must be in the left
-# - menu item width is 250
-# - in conditional modals, more positive action in the right
-#:set designer_height '40sp'
-#:set designer_spacing '4sp'
-#:set designer_padding '4sp'
-#:set designer_text_input_height '30sp'
-#:set designer_action_width dp(200)
 
 <DesignerButton@Button+Label>:
     size_hint_y: None

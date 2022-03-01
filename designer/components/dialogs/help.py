@@ -4,6 +4,8 @@ from kivy.lang import Builder
 
 Builder.load_string("""
 
+#: import hex utils.colors.hex
+
 <HelpDialog>:
     orientation: 'vertical'
     rst: rst
