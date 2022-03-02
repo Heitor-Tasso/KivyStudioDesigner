@@ -29,7 +29,6 @@ class DictAdapter(ListAdapter):
     python dictionary of records. It extends the list-like capabilities of
     :class:`~kivy.adapters.listadapter.ListAdapter`.
     '''
-
     sorted_keys = ListProperty([])
     '''The sorted_keys list property contains a list of hashable objects (can
     be strings) that will be used directly if no args_converter function is
@@ -40,7 +39,6 @@ class DictAdapter(ListAdapter):
     :data:`sorted_keys` is a :class:`~kivy.properties.ListProperty`, default
     to [].
     '''
-
     data = DictProperty(None)
     '''A dict that indexes records by keys that are equivalent to the keys in
     sorted_keys, or they are a superset of the keys in sorted_keys.
@@ -50,7 +48,6 @@ class DictAdapter(ListAdapter):
     :data:`data` is a :class:`~kivy.properties.DictProperty`, default
     to None.
     '''
-
     def __init__(self, **kwargs):
         if 'sorted_keys' in kwargs:
             if type(kwargs['sorted_keys']) not in (tuple, list):
@@ -77,6 +74,7 @@ class DictAdapter(ListAdapter):
             if not key in self.data:
                 stale_sorted_keys = True
                 break
+        
         if stale_sorted_keys:
             self.sorted_keys = sorted(self.data.keys())
         self.delete_cache()
@@ -104,11 +102,13 @@ class DictAdapter(ListAdapter):
 
         sorted_keys will be updated by update_for_new_data().
         '''
-        if len(self.selection) > 0:
-            selected_keys = [sel.text for sel in self.selection]
-            first_sel_index = self.sorted_keys.index(selected_keys[0])
-            desired_keys = self.sorted_keys[first_sel_index:]
-            self.data = dict([(key, self.data[key]) for key in desired_keys])
+        if len(self.selection) < 1:
+            return None
+
+        selected_keys = [sel.text for sel in self.selection]
+        first_sel_index = self.sorted_keys.index(selected_keys[0])
+        desired_keys = self.sorted_keys[first_sel_index:]
+        self.data = dict(map(lambda k: (k, self.data[k]), desired_keys))
 
     def trim_right_of_sel(self, *args):
         '''Cut list items with indices in sorted_keys that are greater than
@@ -116,11 +116,13 @@ class DictAdapter(ListAdapter):
 
         sorted_keys will be updated by update_for_new_data().
         '''
-        if len(self.selection) > 0:
-            selected_keys = [sel.text for sel in self.selection]
-            last_sel_index = self.sorted_keys.index(selected_keys[-1])
-            desired_keys = self.sorted_keys[:last_sel_index + 1]
-            self.data = dict([(key, self.data[key]) for key in desired_keys])
+        if len(self.selection) < 1:
+            return None
+
+        selected_keys = [sel.text for sel in self.selection]
+        last_sel_index = self.sorted_keys.index(selected_keys[-1])
+        desired_keys = self.sorted_keys[:last_sel_index + 1]
+        self.data = dict(map(lambda k: (k, self.data[k]), desired_keys))
 
     def trim_to_sel(self, *args):
         '''Cut list items with indices in sorted_keys that are les than or
@@ -130,12 +132,14 @@ class DictAdapter(ListAdapter):
 
         sorted_keys will be updated by update_for_new_data().
         '''
-        if len(self.selection) > 0:
-            selected_keys = [sel.text for sel in self.selection]
-            first_sel_index = self.sorted_keys.index(selected_keys[0])
-            last_sel_index = self.sorted_keys.index(selected_keys[-1])
-            desired_keys = self.sorted_keys[first_sel_index:last_sel_index + 1]
-            self.data = dict([(key, self.data[key]) for key in desired_keys])
+        if len(self.selection) < 1:
+            return None
+
+        selected_keys = [sel.text for sel in self.selection]
+        first_sel_index = self.sorted_keys.index(selected_keys[0])
+        last_sel_index = self.sorted_keys.index(selected_keys[-1])
+        desired_keys = self.sorted_keys[first_sel_index:last_sel_index + 1]
+        self.data = dict(map(lambda k: (k, self.data[k]), desired_keys))
 
     def cut_to_sel(self, *args):
         '''Same as trim_to_sel, but intervening list items within the selected
@@ -143,6 +147,8 @@ class DictAdapter(ListAdapter):
 
         sorted_keys will be updated by update_for_new_data().
         '''
-        if len(self.selection) > 0:
-            selected_keys = [sel.text for sel in self.selection]
-            self.data = dict([(key, self.data[key]) for key in selected_keys])
+        if len(self.selection) < 1:
+            return None
+
+        selected_keys = [sel.text for sel in self.selection]
+        self.data = dict(map(lambda k: (k, self.data[k]), selected_keys))

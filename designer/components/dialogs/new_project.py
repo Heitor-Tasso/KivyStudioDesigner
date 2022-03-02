@@ -1,30 +1,29 @@
-from functools import partial
-from kivy.uix.scrollview import ScrollView
+
+__all__ = ['ProjectTemplateBox', 'NewProjectDialog']
 
 from utils.utils import template_images
+
 from kivy.factory import Factory
-from kivy.properties import ObjectProperty
-from kivy.uix.boxlayout import BoxLayout
 from kivy.lang.builder import Builder
+from kivy.uix.boxlayout import BoxLayout
+from kivy.properties import ObjectProperty
+from kivy.uix.scrollview import ScrollView
+
+from functools import partial
 
 
 NEW_PROJECTS = {
-    'FloatLayout': ('template_floatlayout_kv', 'template_floatlayout_py'),
-    
-    'BoxLayout': ('template_boxlayout_kv', 'template_boxlayout_py'),
-    
-    'ScreenManager': ('template_screen_manager_kv', 'template_screen_manager_py'),
-    
-    'ActionBar': ('template_actionbar_kv', 'template_actionbar_py'),
 
+    'FloatLayout': ('template_floatlayout_kv', 'template_floatlayout_py'),    
+    'BoxLayout': ('template_boxlayout_kv', 'template_boxlayout_py'),
+    'ScreenManager': ('template_screen_manager_kv', 'template_screen_manager_py'),
+    'ActionBar': ('template_actionbar_kv', 'template_actionbar_py'),
     'Carousel and ActionBar': ('template_actionbar_carousel_kv', 'template_actionbar_carousel_py'),
-    
     'ScreenManager and ActionBar': ('template_screen_manager_actionbar_kv', 'template_screen_manager_actionbar_py'),
-    
     'TabbedPanel': ('template_tabbed_panel_kv', 'template_tabbed_panel_py'),
-    
     'TextInput and ScrollView': ('template_textinput_scrollview_kv', 'template_textinput_scrollview_py')
 }
+
 
 Builder.load_string("""
 
@@ -35,7 +34,7 @@ Builder.load_string("""
     cols: 1
     padding: '2sp'
     size_hint_x: None
-    bar_width: 10
+    bar_width: '10dp'
     scroll_type: ['bars', 'content']
     GridLayout:
         id: grid
@@ -60,28 +59,28 @@ Builder.load_string("""
         size_hint_x: 0.3
         canvas.before:
             Color:
-                rgba: 1, 1, 1, 0.05
+                rgba: [1, 1, 1, 0.05]
             Rectangle:
                 pos: self.pos
                 size: self.size
     BoxLayout:
         orientation: 'vertical'
         size_hint_x: 0.7
-        spacing: 20
+        spacing: '20dp'
         BoxLayout:
             size_hint_y: 0.1
             orientation: 'horizontal'
             Label:
                 size_hint_x: 0.2
                 text_size: self.width, None
-                padding_x: 10
+                padding_x: '10dp'
                 halign: 'right'
                 text: 'App Name: '
             TextInput:
                 id: app_name
                 size_hint_x: 0.7
                 multiline: False
-                padding: [15, ( self.height - self.line_height ) / 2]
+                padding: [dp(15), ((self.height-self.line_height)/2)]
                 focus: True
         BoxLayout:
             size_hint_y: 0.1
@@ -89,28 +88,28 @@ Builder.load_string("""
             Label:
                 size_hint_x: 0.2
                 text_size: self.width, None
-                padding_x: 10
+                padding_x: '10dp'
                 halign: 'right'
                 text: 'Package Name: '
             TextInput:
                 id: package_name
                 size_hint_x: 0.7
                 multiline: False
-                padding: [15, ( self.height - self.line_height ) / 2]
+                padding: [dp(15), ((self.height-self.line_height)/2)]
         BoxLayout:
             size_hint_y: 0.1
             orientation: 'horizontal'
             Label:
                 size_hint_x: 0.2
                 text_size: self.width, None
-                padding_x: 10
+                padding_x: '10dp'
                 halign: 'right'
                 text: 'Version: '
             TextInput:
                 id: package_version
                 size_hint_x: 0.7
                 multiline: False
-                padding: [15, ( self.height - self.line_height ) / 2]
+                padding: [dp(15), ((self.height-self.line_height)/2)]
         Image:
             id: template_preview
         GridLayout:
@@ -132,19 +131,16 @@ class ProjectTemplateBox(ScrollView):
     '''Container consistings of buttons, with their names specifying
        the recent files.
     '''
-
     grid = ObjectProperty(None)
     '''The grid layout consisting of all buttons.
        This property is an instance of :class:`~kivy.uix.gridlayout`
        :data:`grid` is a :class:`~kivy.properties.ObjectProperty`
     '''
-
     text = ObjectProperty(None)
     '''The grid layout consisting of all buttons.
        This property is an instance of :class:`~kivy.uix.gridlayout`
        :data:`grid` is a :class:`~kivy.properties.ObjectProperty`
     '''
-
     def __init__(self, **kwargs):
         super(ProjectTemplateBox, self).__init__(**kwargs)
 
@@ -154,6 +150,7 @@ class ProjectTemplateBox(ScrollView):
         '''
         item_strings = list(NEW_PROJECTS.keys())
         item_strings.sort()
+
         for p in item_strings:
             recent_item = Factory.DesignerListItemButton(text=p)
             self.grid.add_widget(recent_item)
@@ -175,38 +172,31 @@ class NewProjectDialog(BoxLayout):
     ''':class:`~kivy.uix.button.Button` used to select the list item.
        :data:`select_button` is a :class:`~kivy.properties.ObjectProperty`
     '''
-
     cancel_button = ObjectProperty(None)
     ''':class:`~kivy.uix.button.Button` to cancel the dialog.
        :data:`cancel_button` is a :class:`~kivy.properties.ObjectProperty`
     '''
-
     template_preview = ObjectProperty(None)
     '''Type of :class:`~kivy.uix.image.Image` to display preview of selected
        new template.
        :data:`template_preview` is a :class:`~kivy.properties.ObjectProperty`
     '''
-
     template_list = ObjectProperty(None)
     '''Type of :class:`ProjectTemplateBox` used for showing template available.
        :data:`template_list` is a :class:`~kivy.properties.ObjectProperty`
     '''
-
     app_name = ObjectProperty(None)
     '''Type of :class:`ProjectTemplateBox` used for showing template available.
        :data:`template_list` is a :class:`~kivy.properties.ObjectProperty`
     '''
-
     package_name = ObjectProperty(None)
     '''Type of :class:`ProjectTemplateBox` used for showing template available.
        :data:`template_list` is a :class:`~kivy.properties.ObjectProperty`
     '''
-
     package_version = ObjectProperty(None)
     '''Type of :class:`ProjectTemplateBox` used for showing template available.
        :data:`template_list` is a :class:`~kivy.properties.ObjectProperty`
     '''
-
     __events__ = ('on_select', 'on_cancel')
 
     def __init__(self, **kwargs):

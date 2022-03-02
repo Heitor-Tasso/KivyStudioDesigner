@@ -49,18 +49,39 @@ If you wish to have a bare-bones list adapter, without selection, use
 
 '''
 
-__all__ = ('ListAdapter', )
+__all__ = ('ListAdapter', 'SelectableDataItem')
+
+from components.adapters.adapter import Adapter
+
+from kivy.event import EventDispatcher
+from kivy.lang import Builder
+from kivy.properties import (
+    ListProperty,  DictProperty,
+    BooleanProperty, OptionProperty,
+    NumericProperty,
+)
 
 import inspect
-from kivy.event import EventDispatcher
-from components.adapters.adapter import Adapter
-from components.adapters.models import SelectableDataItem
-from kivy.properties import ListProperty
-from kivy.properties import DictProperty
-from kivy.properties import BooleanProperty
-from kivy.properties import OptionProperty
-from kivy.properties import NumericProperty
-from kivy.lang import Builder
+
+class SelectableDataItem(object):
+    '''
+    A mixin class containing requirements for selection operations.
+
+    This is the is_selected boolean.
+    '''
+
+    def __init__(self, **kwargs):
+        super(SelectableDataItem, self).__init__()
+        self._is_selected = kwargs.get('is_selected', False)
+
+    @property
+    def is_selected(self):
+        """Is the data item selected"""
+        return self._is_selected
+
+    @is_selected.setter
+    def is_selected(self, value):
+        self._is_selected = value
 
 
 class ListAdapter(Adapter, EventDispatcher):
@@ -69,7 +90,6 @@ class ListAdapter(Adapter, EventDispatcher):
     collection type data, adding selection and view creation and management
     functonality.
     '''
-
     data = ListProperty([])
     '''The data list property is redefined here, overriding its definition as
     an ObjectProperty in the Adapter class.. We will bind to data and want any
@@ -80,14 +100,12 @@ class ListAdapter(Adapter, EventDispatcher):
     :data:`data` is a :class:`~kivy.properties.ListProperty`, default
     to [].
     '''
-
     selection = ListProperty([])
     '''The selection list property is the container for selected items.
 
     :data:`selection` is a :class:`~kivy.properties.ListProperty`, default
     to [].
     '''
-
     selection_mode = OptionProperty('single',
             options=('none', 'single', 'multiple'))
     '''Selection modes:
@@ -107,7 +125,6 @@ class ListAdapter(Adapter, EventDispatcher):
     :data:`selection_mode` is an :class:`~kivy.properties.OptionProperty`,
     default to 'single'.
     '''
-
     propagate_selection_to_data = BooleanProperty(False)
     '''Normally, data items are not selected/deselected, because the data items
     might not have an is_selected boolean property -- only the item view for a
@@ -143,7 +160,6 @@ class ListAdapter(Adapter, EventDispatcher):
     :class:`~kivy.properties.BooleanProperty`,
     default to False.
     '''
-
     allow_empty_selection = BooleanProperty(True)
     '''The allow_empty_selection may be used for cascading selection between
     several list views, or between a list view and an observing view. Such
@@ -156,7 +172,6 @@ class ListAdapter(Adapter, EventDispatcher):
     :class:`~kivy.properties.BooleanProperty`,
     default to True.
     '''
-
     selection_limit = NumericProperty(-1)
     '''When selection_mode is multiple, if selection_limit is non-negative,
     this number will limit the number of selected items. It can even be 1,
@@ -170,7 +185,6 @@ class ListAdapter(Adapter, EventDispatcher):
     :data:`selection_limit` is a :class:`~kivy.properties.NumericProperty`,
     default to -1 (no limit).
     '''
-
     cached_views = DictProperty({})
     '''View instances for data items are instantiated and managed in the
     adapter. Here we maintain a dictionary containing the view
@@ -182,16 +196,15 @@ class ListAdapter(Adapter, EventDispatcher):
     :data:`cached_views` is a :class:`~kivy.properties.DictProperty`,
     default to {}.
     '''
-
     def __init__(self, **kwargs):
         super(ListAdapter, self).__init__(**kwargs)
 
         self.register_event_type('on_selection_change')
-
-        self.bind(selection_mode=self.selection_mode_changed,
-                  allow_empty_selection=self.check_for_empty_selection,
-                  data=self.update_for_new_data)
-
+        self.bind(
+            selection_mode=self.selection_mode_changed,
+            allow_empty_selection=self.check_for_empty_selection,
+            data=self.update_for_new_data,
+        )
         self.update_for_new_data()
 
     def delete_cache(self, *args):
@@ -215,9 +228,11 @@ class ListAdapter(Adapter, EventDispatcher):
     def get_view(self, index):
         if index in self.cached_views:
             return self.cached_views[index]
+        
         item_view = self.create_view(index)
         if item_view:
             self.cached_views[index] = item_view
+        
         return item_view
 
     def create_view(self, index):
@@ -233,7 +248,6 @@ class ListAdapter(Adapter, EventDispatcher):
             return None
 
         item_args = self.args_converter(index, item)
-
         item_args['index'] = index
 
         if self.cls:
@@ -266,7 +280,6 @@ class ListAdapter(Adapter, EventDispatcher):
                 raise Exception(msg.format(index))
 
         view_instance.bind(on_release=self.handle_selection)
-
         for child in view_instance.children:
             child.bind(on_release=self.handle_selection)
 
@@ -280,8 +293,7 @@ class ListAdapter(Adapter, EventDispatcher):
 
     def handle_selection(self, view, hold_dispatch=False, *args):
         if view not in self.selection:
-            if self.selection_mode in ['none', 'single'] and \
-                    len(self.selection) > 0:
+            if self.selection_mode in ['none', 'single'] and len(self.selection) > 0:
                 for selected_view in self.selection:
                     self.deselect_item_view(selected_view)
             if self.selection_mode != 'none':
@@ -290,9 +302,8 @@ class ListAdapter(Adapter, EventDispatcher):
                         # If < 0, selection_limit is not active.
                         if self.selection_limit < 0:
                             self.select_item_view(view)
-                        else:
-                            if len(self.selection) < self.selection_limit:
-                                self.select_item_view(view)
+                        elif len(self.selection) < self.selection_limit:
+                            self.select_item_view(view)
                     else:
                         self.select_item_view(view)
                 else:
@@ -403,12 +414,14 @@ class ListAdapter(Adapter, EventDispatcher):
         self.check_for_empty_selection()
 
     def check_for_empty_selection(self, *args):
-        if not self.allow_empty_selection:
-            if len(self.selection) == 0:
-                # Select the first item if we have it.
-                v = self.get_view(0)
-                if v is not None:
-                    self.handle_selection(v)
+        if self.allow_empty_selection:
+            return None
+
+        if len(self.selection) == 0:
+            # Select the first item if we have it.
+            v = self.get_view(0)
+            if v is not None:
+                self.handle_selection(v)
 
     # [TODO] Also make methods for scroll_to_sel_start, scroll_to_sel_end,
     #        scroll_to_sel_middle.
@@ -417,18 +430,22 @@ class ListAdapter(Adapter, EventDispatcher):
         '''Cut list items with indices in sorted_keys that are less than the
         index of the first selected item, if there is selection.
         '''
-        if len(self.selection) > 0:
-            first_sel_index = min([sel.index for sel in self.selection])
-            self.data = self.data[first_sel_index:]
+        if len(self.selection) < 1:
+            return None
+
+        first_sel_index = min(map(lambda x: x.index, self.selection))
+        self.data = self.data[first_sel_index:]
 
     def trim_right_of_sel(self, *args):
         '''Cut list items with indices in sorted_keys that are greater than
         the index of the last selected item, if there is selection.
         '''
-        if len(self.selection) > 0:
-            last_sel_index = max([sel.index for sel in self.selection])
-            print('last_sel_index', last_sel_index)
-            self.data = self.data[:last_sel_index + 1]
+        if len(self.selection) < 1:
+            return None
+
+        last_sel_index = max(map(lambda x: x.index, self.selection))
+        print('last_sel_index', last_sel_index)
+        self.data = self.data[:last_sel_index+1]
 
     def trim_to_sel(self, *args):
         '''Cut list items with indices in sorted_keys that are les than or
@@ -436,15 +453,19 @@ class ListAdapter(Adapter, EventDispatcher):
         selection. This preserves intervening list items within the selected
         range.
         '''
-        if len(self.selection) > 0:
-            sel_indices = [sel.index for sel in self.selection]
-            first_sel_index = min(sel_indices)
-            last_sel_index = max(sel_indices)
-            self.data = self.data[first_sel_index:last_sel_index + 1]
+        if len(self.selection) < 1:
+            return None
+
+        sel_indices = [sel.index for sel in self.selection]
+        first_sel_index = min(sel_indices)
+        last_sel_index = max(sel_indices)
+        self.data = self.data[first_sel_index:last_sel_index + 1]
 
     def cut_to_sel(self, *args):
         '''Same as trim_to_sel, but intervening list items within the selected
         range are cut also, leaving only list items that are selected.
         '''
-        if len(self.selection) > 0:
-            self.data = self.selection
+        if len(self.selection) < 1:
+            return None
+        
+        self.data = self.selection

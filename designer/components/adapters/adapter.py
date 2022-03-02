@@ -33,14 +33,31 @@ Arguments:
   assumes that the data items are strings, is used.
 
 
+List Item View Argument Converters
+==================================
+
+.. versionadded:: 1.5
+
+
+The default list item args converter for list adapters is this function
+that takes a string and returns the string as the text argument in a dict,
+along with two properties suited for simple text items with height of 25.
+
+These may be normal functions or, in the case of the default args converter,
+lambdas::
+
+    list_item_args_converter = lambda row_index, x: {'text': x,
+                                                     'size_hint_y': None,
+                                                     'height': 25}
 '''
+list_item_args_converter = lambda row_index, x: {'text': x, 'size_hint_y': None, 'height': 25}
+
 
 __all__ = ('Adapter', )
 
+from kivy.lang import Builder
 from kivy.event import EventDispatcher
 from kivy.properties import ObjectProperty
-from kivy.lang import Builder
-from components.adapters.args_converters import list_item_args_converter
 
 
 class Adapter(EventDispatcher):
@@ -48,7 +65,6 @@ class Adapter(EventDispatcher):
     :class:`~kivy.uix.abstractview.AbstractView` or one of its subclasses,
     such as :class:`~kivy.uix.listview.ListView`.
     '''
-
     data = ObjectProperty(None)
     '''
     The data for which a view is to be constructed using either the cls or
@@ -67,7 +83,6 @@ class Adapter(EventDispatcher):
     :data:`data` is an :class:`~kivy.properties.ObjectProperty`, default
     to None.
     '''
-
     cls = ObjectProperty(None)
     '''
     A class for instantiating a given view item. (Use this or template).
@@ -75,7 +90,6 @@ class Adapter(EventDispatcher):
     :data:`cls` is an :class:`~kivy.properties.ObjectProperty`, default
     to None.
     '''
-
     template = ObjectProperty(None)
     '''
     A kv template for instantiating a given view item. (Use this or cls).
@@ -83,7 +97,6 @@ class Adapter(EventDispatcher):
     :data:`template` is an :class:`~kivy.properties.ObjectProperty`, default
     to None.
     '''
-
     args_converter = ObjectProperty(None)
     '''
     A function that prepares an args dict for the cls or kv template to build
@@ -95,7 +108,6 @@ class Adapter(EventDispatcher):
     :data:`args_converter` is an :class:`~kivy.properties.ObjectProperty`,
     default to None.
     '''
-
     def __init__(self, **kwargs):
 
         if 'data' not in kwargs:
@@ -107,13 +119,12 @@ class Adapter(EventDispatcher):
                 raise Exception(msg)
             elif not kwargs['cls']:
                 raise Exception('adapter: a cls or template must be defined')
-        else:
-            if 'template' in kwargs:
+        elif 'template' in kwargs:
                 if not kwargs['template']:
                     msg = 'adapter: a cls or template must be defined'
                     raise Exception(msg)
-            else:
-                raise Exception('adapter: a cls or template must be defined')
+        else:
+            raise Exception('adapter: a cls or template must be defined')
 
         if 'args_converter' in kwargs:
             self.args_converter = kwargs['args_converter']
@@ -134,5 +145,4 @@ class Adapter(EventDispatcher):
         if self.cls:
             instance = self.cls(**item_args)
             return instance
-        else:
-            return Builder.template(self.template, **item_args)
+        return Builder.template(self.template, **item_args)
