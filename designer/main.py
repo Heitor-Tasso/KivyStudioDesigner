@@ -79,7 +79,7 @@ class ProgramDesigner(App):
             data = data.decode(get_fs_encoding())
         resource_add_path(data)
 
-        ExceptionManager.add_handler(DesignerException())
+        # ExceptionManager.add_handler(DesignerException())
 
         modules = (
             ('Playground', 'components.playground'),

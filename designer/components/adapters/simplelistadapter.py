@@ -59,6 +59,7 @@ class SimpleListAdapter(Adapter):
     # Returns a view instance for an item.
     def get_view(self, index):
         item = self.get_data_item(index)
+        print('ITEM simplelistadapter -> ', item)
         if item is None:
             return None
 

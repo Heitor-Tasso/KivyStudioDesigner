@@ -110,7 +110,6 @@ class AddFileDialog(BoxLayout):
 
         target_folder = self.text_folder.text
         folder = os.path.join(self.project.path, target_folder)
-
         if not os.path.exists(folder):
             os.mkdir(folder)
 

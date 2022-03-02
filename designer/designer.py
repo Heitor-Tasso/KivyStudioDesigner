@@ -45,6 +45,7 @@ class Designer(FloatLayout):
     '''Designer is the Main Window class of Kivy Designer
        :data:`message` is a :class:`~kivy.properties.StringProperty`
     '''
+    
     spec_editor = ObjectProperty(None)
     '''Instance of
         :class:`~designer.components.buildozer_spec_editor.BuildozerSpecEditor`
@@ -257,12 +258,11 @@ class Designer(FloatLayout):
         '''Event Handler for 'on_config_change'
            event of self.designer_settings.
         '''
-        #return None
         Clock.unschedule(self.save_project)
         getdefault = self.designer_settings.config_parser.getdefault
         
         Clock.schedule_interval(self.save_project,
-            (int(getdefault('global', 'auto_save_time', 5)) * 60),
+            (int(getdefault('global', 'auto_save_time', 5))*60),
         )
 
         max_lines = int(getdefault('global', 'num_max_kivy_console', 200))
@@ -295,10 +295,16 @@ class Designer(FloatLayout):
 
         for btn, menu in zip(btns, menus):
             actn_btn = self.ids.get(f'actn_btn_{btn}')
-            setattr(actn_btn, varible, value) if actn_btn is not None else error(btn)
+            if actn_btn is not None:
+                setattr(actn_btn, varible, value)
+            else:
+                error(btn)
 
             actn_menu = self.ids.get(f'actn_menu_{menu}')
-            setattr(actn_menu, varible, value) if actn_menu is not None else error(menu)
+            if actn_menu is not None:
+                setattr(actn_menu, varible, value)
+            else:
+                error(menu)
 
     def on_statusbar_height(self, *args):
         '''Callback for statusbar.height
@@ -647,8 +653,9 @@ class Designer(FloatLayout):
     def action_btn_run_module_pressed(self, *args):
         if self.modulescontview is None:
             self.modulescontview = ModulesContView()
-            self.modulescontview.bind(
-                on_module=lambda *a, **w: self.ids.toll_bar_top.action_btn_clean_pressed('run', *a, **w))
+
+            pressed = self.ids.toll_bar_top.action_btn_clean_pressed
+            self.modulescontview.bind(on_module=lambda *a, **w: pressed('run', *a, **w))
 
         self.actionbar.add_widget(self.modulescontview)
 

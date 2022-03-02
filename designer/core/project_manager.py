@@ -467,7 +467,9 @@ class Project(EventDispatcher):
                     continue
             
                 content = code.text
-                open(fname, 'w', encoding='utf-8').write(content)
+                with open(fname, 'w', encoding='utf-8') as file:
+                    file.write(content)
+                    file.close()
                 code.saved = True
         except IOError as e:
             return False
@@ -497,7 +499,10 @@ class ProjectManager(EventDispatcher):
     def open_project(self, path):
         '''Opens a Python project by path, and returns the Project instance
         '''
+        print('Abrindo projeto')
+
         if self.projects is None:
+            print('Não foi possivel abrir o projeto!!')
             return None
         
         if os.path.isfile(path):
@@ -512,6 +517,7 @@ class ProjectManager(EventDispatcher):
         p.open()
         self.projects[path] = p
         self.current_project = p
+        print('Abriu projeto com sucesso!!')
         return self.projects[path]
 
     def close_current_project(self):

@@ -244,6 +244,7 @@ class ListAdapter(Adapter, EventDispatcher):
         item views in sync with the data.
         '''
         item = self.get_data_item(index)
+        print('ITEM listadapter -> ', item)
         if item is None:
             return None
 
@@ -444,7 +445,6 @@ class ListAdapter(Adapter, EventDispatcher):
             return None
 
         last_sel_index = max(map(lambda x: x.index, self.selection))
-        print('last_sel_index', last_sel_index)
         self.data = self.data[:last_sel_index+1]
 
     def trim_to_sel(self, *args):

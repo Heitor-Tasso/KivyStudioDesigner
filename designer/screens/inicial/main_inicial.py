@@ -278,6 +278,8 @@ class ToolBarTopDesigner(DesignerActionView):
         if exit_on_save:
             self.designer._perform_quit()
             return None
+        
+        print('salvando e abrindo -> ', proj_dir)
         self._perform_open(proj_dir)
 
     def action_btn_settings_pressed(self, *args):
@@ -347,8 +349,6 @@ class ToolBarTopDesigner(DesignerActionView):
     def action_btn_save_as_pressed(self, exit_on_save=False, *args):
         '''Event Handler when ActionButton "Save As" is pressed.
         '''
-        if self.popup:
-            return False
         
         proj = self.designer.project_manager.current_project
         def_path = os.path.expanduser('~')
@@ -462,24 +462,28 @@ class ToolBarTopDesigner(DesignerActionView):
         _confirm_dlg_save = ConfirmationDialogSave(
             'Your project is not saved.\nWhat would you like to do?'
         )
+
         def save_and_open(*args):
             self.action_btn_save_pressed()
             self._show_new_dialog()
+        
         _confirm_dlg_save.bind(
             on_save=save_and_open,
             on_cancel=self.close_popup,
-            on_dont_save=self._show_new_dialog)
+            on_dont_save=self._show_new_dialog,
+        )
 
         self.popup = Popup(
             title='New', content=_confirm_dlg_save,
             size_hint=(None, None), size=('300pt', '150pt'),
             auto_dismiss=False)
         self.popup.open()
+
         return True
     
     def _show_new_dialog(self, *args):
         if self.popup:
-            return False
+            self.popup.dismiss()
 
         if self._new_dialog is None:
             self._new_dialog = NewProjectDialog()
@@ -556,6 +560,7 @@ class ToolBarTopDesigner(DesignerActionView):
             buildozer.write(line)
         buildozer.close()
 
+        print('Abrindo -> ', new_proj_dir)
         self._perform_open(new_proj_dir, True)
         self.designer.project_manager.current_project.new_project = True
         self.designer.project_manager.current_project.saved = False
@@ -564,6 +569,8 @@ class ToolBarTopDesigner(DesignerActionView):
     def _perform_open(self, file_path, new_project=False):
         '''To open a project given by file_path
         '''
+        print('INICIANDO projeto -> def _perform_open: ', file_path, new_project)
+
         self.designer.project_watcher.stop_watching()
         show_message('Project loaded successfully', 5, 'info')
         self.designer.cleanup()
@@ -572,6 +579,7 @@ class ToolBarTopDesigner(DesignerActionView):
 
         project = self.designer.project_manager.open_project(file_path)
         if project is None:
+            print('Não foi possivel iniciar!!')
             return None
             
         self.designer.project_watcher.start_watching(file_path)
@@ -599,4 +607,5 @@ class ToolBarTopDesigner(DesignerActionView):
         run_command = self.designer.ui_creator.kivy_console.run_command
         Clock.schedule_once(partial(run_command, f'cd {file_path}'), 1)
         self.designer.designer_git.load_repo(file_path)
+        print('Iniciu com sucesso!!')
 
