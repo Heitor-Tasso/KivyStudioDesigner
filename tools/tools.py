@@ -198,7 +198,8 @@ class DesignerTools(EventDispatcher):
         '''Runs the GUI to create a setup.py file
         '''
         d = get_designer()
-        if d.popup:
+        toll_bar_top = d.ids.toll_bar_top
+        if toll_bar_top.popup:
             return False
         proj_dir = get_current_project().path
         designer_content = self.designer.designer_content
@@ -209,19 +210,19 @@ class DesignerTools(EventDispatcher):
             return False
 
         content = ToolSetupPy(path=setup_path)
-        d.popup = Popup(
+        toll_bar_top.popup = Popup(
             title='Create setup.py', content=content,
             size_hint=(None, None), size=(dp(550), dp(350)),
             auto_dismiss=False)
 
-        content.bind(on_cancel=d.close_popup)
+        content.bind(on_cancel=toll_bar_top.close_popup)
 
         def on_create(*args):
             designer_content.update_tree_view(get_current_project())
-            d.close_popup()
+            toll_bar_top.close_popup()
 
         content.bind(on_create=on_create)
-        d.popup.open()
+        toll_bar_top.popup.open()
 
     @ignore_proj_watcher
     def create_gitignore(self):
@@ -255,7 +256,8 @@ class DesignerTools(EventDispatcher):
             _perform_buildozer_init
         '''
         d = get_designer()
-        if d.popup:
+        toll_bar_top = d.ids.toll_bar_top
+        if toll_bar_top.popup:
             return False
         proj_dir = get_current_project().path
         spec_file = os.path.join(proj_dir, 'buildozer.spec')
@@ -264,14 +266,14 @@ class DesignerTools(EventDispatcher):
             msg = 'The buildozer.spec file already exist.\nDo you want to create a new spec?'
             confirm_dlg = ConfirmationDialog(message=msg)
             
-            d.popup = Popup(
+            toll_bar_top.popup = Popup(
                 title='Buildozer init', content=confirm_dlg,
                 size_hint=(None, None), size=('250pt', '150pt'),
                 auto_dismiss=False)
             confirm_dlg.bind(
                 on_ok=self._perform_buildozer_init,
-                on_cancel=d.close_popup)
-            d.popup.open()
+                on_cancel=toll_bar_top.close_popup)
+            toll_bar_top.popup.open()
             return None
         
         self._perform_buildozer_init()

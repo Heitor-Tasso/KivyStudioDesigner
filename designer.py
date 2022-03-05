@@ -4,6 +4,7 @@ from utils.utils import (
     get_config_dir, show_alert,
     ignore_proj_watcher, update_info,
     show_error_console, show_message,
+    correct_path,
 )
 
 from uix.confirmation_dialog import ConfirmationDialog, ConfirmationDialogSave
@@ -17,7 +18,6 @@ from core.project_settings import ProjectSettings
 from utils.toolbox_widgets import toolbox_widgets
 from core.recent_manager import RecentManager
 from core.settings import DesignerSettings
-from tools.bug_reporter import BugReporterApp
 from core.undo_manager import UndoManager
 from tools.tools import DesignerTools
 from core.shortcuts import Shortcuts
@@ -26,12 +26,12 @@ from core.builder import Profiler
 from kivy.app import App
 from kivy.clock import Clock
 from kivy.uix.popup import Popup
-from kivy.core.window import Window
+from kivy.lang.builder import Builder
 from kivy.uix.carousel import Carousel
 from kivy.uix.tabbedpanel import TabbedPanel
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import ScreenManager
-from kivy.base import ExceptionHandler, ExceptionManager
+
 from kivy.properties import (
     BooleanProperty, ListProperty,
     ObjectProperty, StringProperty,
@@ -39,6 +39,9 @@ from kivy.properties import (
 
 import os, shutil, traceback
 from functools import partial
+
+
+Builder.load_file(correct_path('designer.kv'))
 
 
 class Designer(FloatLayout):
@@ -282,6 +285,10 @@ class Designer(FloatLayout):
         self.start_page.parent = None
         self.add_widget(self.designer_content, 1)
         self.disable_actn('disable', False)
+
+        # print(self.project_manager.current_project)
+        # print(dir(self.project_manager.current_project))
+        # return None
         self.proj_settings = ProjectSettings(
             project=self.project_manager.current_project)
         self.proj_settings.load_proj_settings()
@@ -685,25 +692,3 @@ class Designer(FloatLayout):
 
         self.ui_creator.playground.sandbox.error_active = False
 
-class DesignerException(ExceptionHandler):
-
-    raised_exception = False
-    '''Indicates if the BugReporter has already raised some exception
-    '''
-
-    def handle_exception(self, inst):
-        if self.raised_exception:
-            return ExceptionManager.PASS
-
-        # App.get_running_app().stop()
-        if isinstance(inst, KeyboardInterrupt):
-            return ExceptionManager.PASS
-
-        for child in Window.children:
-            Window.remove_widget(child)
-
-        self.raised_exception = True
-        Window.fullscreen = False
-        print(traceback.format_exc())
-        BugReporterApp(traceback=traceback.format_exc()).run()
-        return ExceptionManager.PASS

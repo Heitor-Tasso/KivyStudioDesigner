@@ -1,0 +1,43 @@
+#: import hex utils.colors.hex
+#: import KivyLexer kivy.extras.highlight.KivyLexer
+#: import ContextMenu uix.contextual.ContextMenu
+#: import ToolBarTopDesigner screens.inicial.main_inicial.ToolBarTopDesigner
+
+<DesignerButton@Button+Label>:
+    size_hint_y: None
+    height: designer_height
+
+<DesignerListItemButton@ListItemButton>:
+    size_hint: 1, None
+    size: ((self.texture_size[0]+sp(32)), designer_height)
+    selected_color: [1, 1, 1, 1]
+    deselected_color: [0.8, 0.8, 0.8, 0.5]
+
+<Designer>:
+    statusbar: statusbar
+    actionbar: actionbar
+    start_page: start_page.__self__
+    designer_git: toll_bar_top.ids.git_tools
+
+    ActionBar:
+        id: actionbar
+        pos_hint: {'top': 1}
+        on_height: root.on_height()
+        ToolBarTopDesigner:
+            id:toll_bar_top
+
+    DesignerStartPage:
+        id: start_page
+        size_hint_y: None
+        height: root.height - actionbar.height - statusbar.height
+        top: root.height - actionbar.height
+        on_open_down: toll_bar_top.action_btn_open_pressed()
+        on_new_down: toll_bar_top.action_btn_new_project_pressed()
+        on_help: toll_bar_top.show_help()
+
+    StatusBar:
+        id: statusbar
+        size_hint_y: None
+        on_height: root.on_statusbar_height()
+        height: '20pt'
+        pos_hint: {'y': 0}

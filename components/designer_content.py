@@ -406,7 +406,8 @@ class DesignerTabbedPanel(TabbedPanel):
         :param instance: tab instance
         '''
         d = get_designer()
-        if d.popup:
+        toll_bar_top = d.ids.toll_bar_top
+        if toll_bar_top.popup:
             return False
 
         self.switch_to(instance)
@@ -421,15 +422,15 @@ class DesignerTabbedPanel(TabbedPanel):
                 size=('200pt', '150pt'))
 
             def close_tab(*args):
-                d.close_popup()
+                toll_bar_top.close_popup()
                 self._perform_close_tab(instance)
 
             confirm_dlg.bind(
                 on_ok=close_tab,
-                on_cancel=d.close_popup)
+                on_cancel=toll_bar_top.close_popup)
             
             popup.open()
-            d.popup = popup
+            toll_bar_top.popup = popup
             return None
         
         Clock.schedule_once(partial(self._perform_close_tab, instance))

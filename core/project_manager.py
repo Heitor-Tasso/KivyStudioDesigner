@@ -484,7 +484,7 @@ class ProjectManager(EventDispatcher):
     '''An instance of the current project.
        :data:`current_project` is a :class:`~kivy.properties.ObjectProperty`
     '''
-    projects = DictProperty(None)
+    projects = DictProperty({})
     '''A map of opened projects
        :data:`projects` is a :class:`~kivy.properties.DictProperty`
     '''
@@ -500,11 +500,6 @@ class ProjectManager(EventDispatcher):
         '''Opens a Python project by path, and returns the Project instance
         '''
         print('Abrindo projeto')
-
-        if self.projects is None:
-            print('Não foi possivel abrir o projeto!!')
-            return None
-        
         if os.path.isfile(path):
             path = os.path.dirname(path)
 

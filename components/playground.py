@@ -492,7 +492,8 @@ class Playground(ScatterPlane):
         '''Event handler to playground widget selector press
         '''
         d = get_designer()
-        if d.popup:
+        toll_bar_top = d.ids.toll_bar_top
+        if toll_bar_top.popup:
             return False
         
         widgets = get_current_project().app_widgets
@@ -513,21 +514,21 @@ class Playground(ScatterPlane):
         popup_width = min(0.95 * Window.width, dp(500))
         popup_height = min(0.95 * Window.height, dp(500))
         
-        d.popup = Popup(
+        toll_bar_top.popup = Popup(
             content=content, title='Playground - Edit Widget',
             size_hint=(None, None), size=(popup_width, popup_height),
             auto_dismiss=False)
 
         content.bind(
             on_apply=self._perform_select_root_widget,
-            on_cancel=d.close_popup)
+            on_cancel=toll_bar_top.close_popup)
 
         content.selected_items = [self.root_name]
         if self.root_app_widget and self.root_app_widget.is_root:
             content.selected_items = ['Root - ' + self.root_name]
         
         content.show_items()
-        d.popup.open()
+        toll_bar_top.popup.open()
 
     def _perform_select_root_widget(self, instance, selected_item, *args):
         '''On Playground edit item selection
@@ -557,7 +558,8 @@ class Playground(ScatterPlane):
             kv lang text
         '''
         d = get_designer()
-        if d.popup:
+        toll_bar_top = d.ids.toll_bar_top
+        if toll_bar_top.popup:
             # if has a popup, it's not using playground
             return False
         
@@ -584,20 +586,20 @@ class Playground(ScatterPlane):
                 self._perform_load_widget(widget_name, True)
 
             def dont_save(*args):
-                d.close_popup()
+                toll_bar_top.close_popup()
                 self._perform_load_widget(widget_name, True)
 
             _confirm_dlg.bind(
                 on_save=save_and_load,
                 on_dont_save=dont_save,
-                on_cancel=d.close_popup)
+                on_cancel=toll_bar_top.close_popup)
 
-            d.popup = Popup(
+            toll_bar_top.popup = Popup(
                 title='Change Widget', content=_confirm_dlg,
                 size_hint=(None, None), size=('400pt', '150pt'),
                 auto_dismiss=False)
             
-            d.popup.open()
+            toll_bar_top.popup.open()
             return None
         
         self._perform_load_widget(widget_name, update_kv_lang)

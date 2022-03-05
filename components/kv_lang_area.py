@@ -526,7 +526,7 @@ class KVLangArea(DesignerCodeInput):
 
     def get_property_value(self, widget, prop):
         self._reload = False
-        instance = isinstance(widget.properties()[prop], StringProperty)
+        instance = isinstance(widget.properties().get(prop), StringProperty)
         value = ''
 
         if prop[:3] != 'on_' and not instance and value == '':

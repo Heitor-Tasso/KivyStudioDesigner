@@ -209,7 +209,8 @@ class PropertyOptions(PropertyBase, Label):
         '''Display the option chooser
         '''
         d = get_designer()
-        if d.popup:
+        toll_bar_top = d.ids.toll_bar_top
+        if toll_bar_top.popup:
             return False
         
         if self.collide_point(*touch.pos):
@@ -229,7 +230,7 @@ class PropertyOptions(PropertyBase, Label):
             popup_width = min(0.95 * Window.width, dp(500))
             popup_height = min(0.95 * Window.height, dp(500))
 
-            d.popup = Popup(
+            toll_bar_top.popup = Popup(
                 content=self._chooser,
                 title=f'Property Options - {self.propname}',
                 size_hint=(None, None), auto_dismiss=False,
@@ -237,9 +238,9 @@ class PropertyOptions(PropertyBase, Label):
 
             self._chooser.bind(
                     on_apply=self._on_options,
-                    on_cancel=d.close_popup)
+                    on_cancel=toll_bar_top.close_popup)
 
-            d.popup.open()
+            toll_bar_top.popup.open()
             return True
         return False
 

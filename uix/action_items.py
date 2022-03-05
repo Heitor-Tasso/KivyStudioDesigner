@@ -106,7 +106,6 @@ Builder.load_string("""
     width: designer_action_width
     height: '48sp'
     background_normal: theme_atlas('action_bar')
-    text_size: (self.width - sp(24), self.size[1])
     valign: 'middle'
 
 <DesignerActionGroup>:

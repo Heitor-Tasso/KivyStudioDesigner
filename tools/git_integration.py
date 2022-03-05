@@ -20,6 +20,7 @@ from git.exc import InvalidGitRepositoryError
 from kivy.properties import BooleanProperty, ObjectProperty, StringProperty
 from kivy.core.window import Window
 from kivy.uix.label import Label
+from kivy.uix.actionbar import ActionButton
 from kivy.uix.popup import Popup
 from kivy.clock import Clock
 from kivy.metrics import dp
@@ -101,7 +102,6 @@ class DesignerGit(DesignerActionSubMenu):
             self.is_repo = True
             branch_name = self.repo.active_branch.name
             self.dispatch('on_branch', branch_name)
-
             if os.name in ('posix', 'nt'):
                 script = os.path.join(get_kd_dir(), 'tools', 'ssh-agent', 'ssh.sh')
                 self.repo.git.update_environment(GIT_SSH_COMMAND=script)
@@ -193,19 +193,20 @@ class DesignerGit(DesignerActionSubMenu):
         '''Git commit
         '''
         d = get_designer()
-        if d.popup:
+        toll_bar_top = d.ids.toll_bar_top
+        if toll_bar_top.popup:
             return False
         
         input_dlg = InputDialog('Commit message: ')
-        d.popup = Popup(
+        toll_bar_top.popup = Popup(
             title='Git Commit', content=input_dlg, auto_dismiss=False,
             size_hint=(None, None), size=('300pt', '150pt'),
         )
         input_dlg.bind(
             on_confirm=self._perform_do_commit,
-            on_cancel=d.close_popup,
+            on_cancel=toll_bar_top.close_popup,
         )
-        d.popup.open()
+        toll_bar_top.popup.open()
         return True
 
     @ignore_proj_watcher
@@ -230,7 +231,8 @@ class DesignerGit(DesignerActionSubMenu):
         '''Git select files from a list to add
         '''
         d = get_designer()
-        if d.popup:
+        toll_bar_top = d.ids.toll_bar_top
+        if toll_bar_top.popup:
             return False
 
         files = self.repo.untracked_files
@@ -253,10 +255,10 @@ class DesignerGit(DesignerActionSubMenu):
 
         content.bind(
             on_apply=self._perform_do_add,
-            on_cancel=d.close_popup)
+            on_cancel=toll_bar_top.close_popup)
 
         content.show_items()
-        d.popup = popup
+        toll_bar_top.popup = popup
         popup.open()
 
     @ignore_proj_watcher
@@ -274,7 +276,8 @@ class DesignerGit(DesignerActionSubMenu):
         '''Shows a list of git branches and allow to change the current one
         '''
         d = get_designer()
-        if d.popup:
+        toll_bar_top = d.ids.toll_bar_top
+        if toll_bar_top.popup:
             return False
 
         branches = []
@@ -297,11 +300,11 @@ class DesignerGit(DesignerActionSubMenu):
 
         content.bind(
             on_apply=self._perform_do_branches,
-            on_cancel=d.close_popup)
+            on_cancel=toll_bar_top.close_popup)
 
         content.selected_items = [self.repo.active_branch.name]
         content.show_items()
-        d.popup = popup
+        toll_bar_top.popup = popup
         popup.open()
 
     @ignore_proj_watcher
@@ -381,7 +384,8 @@ class DesignerGit(DesignerActionSubMenu):
         If there is not remote, shows an alert
         '''
         d = get_designer()
-        if d.popup:
+        toll_bar_top = d.ids.toll_bar_top
+        if toll_bar_top.popup:
             return False
         
         if not self.validate_remote():
@@ -411,11 +415,11 @@ class DesignerGit(DesignerActionSubMenu):
 
         content.bind(
             on_apply=self._perform_do_push,
-            on_cancel=d.close_popup)
+            on_cancel=toll_bar_top.close_popup)
 
         content.selected_items = [remotes[0]]
         content.show_items()
-        d.popup = popup
+        toll_bar_top.popup = popup
         popup.open()
 
     def _perform_do_push(self, instance, remotes, *args):
@@ -457,7 +461,8 @@ class DesignerGit(DesignerActionSubMenu):
         If there is not remote, shows an alert
         '''
         d = get_designer()
-        if d.popup:
+        toll_bar_top = d.ids.toll_bar_top
+        if toll_bar_top.popup:
             return False
 
         if not self.validate_remote():
@@ -490,11 +495,11 @@ class DesignerGit(DesignerActionSubMenu):
 
         content.bind(
             on_apply=self._perform_do_pull,
-            on_cancel=d.close_popup)
+            on_cancel=toll_bar_top.close_popup)
 
         content.selected_items = [remotes[0]]
         content.show_items()
-        d.popup = popup
+        toll_bar_top.popup = popup
         popup.open()
 
     def _perform_do_pull(self, instance, remotes, *args):

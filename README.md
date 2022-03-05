@@ -40,7 +40,7 @@ On OS X you might need to use the `kivy` command instead of `python` if you are 
 
 If you're successful, you'll see something like this:
 
-![ScreenShot](kivy_designer.png)
+![ScreenShot](assets/kivy_designer.png)
 
 License
 -------

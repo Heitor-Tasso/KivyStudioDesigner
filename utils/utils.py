@@ -3,17 +3,17 @@
 '''
 
 from kivy.properties import BooleanProperty, ListProperty, StringProperty
+from kivy.factory import Factory, FactoryException
 from kivy.event import EventDispatcher
-from kivy.factory import Factory
 from kivy.uix.widget import Widget
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.app import App
 
-from __init__ import init_file
+from __init__ import __init_file__
 import functools
 import inspect
-import os, sys
+import os, sys, traceback
 
 def theme_atlas(theme):
     return f'atlas://data/images/defaulttheme/{theme}'
@@ -27,7 +27,7 @@ def correct_path(path_filename:str):
     return ''.join([bar_init] + path + [new_str[-1]])
 
 def get_path(local):
-    return correct_path(f'{os.path.split(init_file)[0]}/{local}')
+    return correct_path(f'{os.path.split(__init_file__)[0]}/{local}')
 
 def icons(name, ext='.png'):
     return get_path(f'assets/icons/{name}{ext}')
@@ -49,6 +49,12 @@ def profiles_path(name='', ext='.ini'):
         return get_path(f'tools/profiles/{name}{ext}')
     else:
         return get_path('tools/profiles')
+
+def settings_path(name='', ext='.json'):
+    if name != '':
+        return get_path(f'tools/settings/{name}{ext}')
+    else:
+        return get_path('tools/settings')
 
 def utils_source_rst(name, ext='.rst'):
     return get_path(f'utils/source/{name}{ext}')
@@ -171,7 +177,7 @@ def get_config_dir():
 def get_kd_dir():
     '''Return kivy designer source/binaries folder
     '''
-    _dir = os.path.dirname(init_file)
+    _dir = os.path.dirname(__init_file__)
     if isinstance(_dir, bytes):
         _dir = _dir.decode(get_fs_encoding())
     return _dir
@@ -249,21 +255,31 @@ def get_app_widget(target, **default_args):
     :param target: instance of designer.project_manager.AppWidget
     '''
     d = get_designer()
+    print('target => ', target)
+    print('default_args -> ', default_args)
+    print('target.name -> ', target.name)
+    
     if target.is_dynamic:
         name = target.name.split('@')[0]
         with d.ui_creator.playground.sandbox:
             return Factory.get(name)(**default_args)
     elif target.is_root:
         return target.instance
-    else:
-        classes = inspect.getmembers(sys.modules[target.module_name],
-                                     inspect.isclass)
-        for klass_name, klass in classes:
-            if issubclass(klass, Widget) and klass_name == target.name:
-                with d.ui_creator.playground.sandbox:
-                    return klass(**default_args)
+    
+    classes = inspect.getmembers(sys.modules[target.module_name], inspect.isclass)
+    for klass_name, klass in classes:
+        if not issubclass(klass, Widget) and klass_name != target.name:
+            continue
 
-        return None
+        with d.ui_creator.playground.sandbox:
+            try:
+                return klass(**default_args)
+            except FactoryException as err:
+                print(f'[ERRO ] Não foi possivel encontrar widget: {klass_name}')
+                
+                print(f"ERROR: {repr(err)}")
+                return None
+    return None
 
 
 def widget_contains(container, child):

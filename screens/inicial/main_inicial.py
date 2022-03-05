@@ -578,19 +578,16 @@ class ToolBarTopDesigner(DesignerActionView):
             file_path = os.path.dirname(file_path)
 
         project = self.designer.project_manager.open_project(file_path)
-        if project is None:
-            print('Não foi possivel iniciar!!')
-            return None
             
         self.designer.project_watcher.start_watching(file_path)
         self.designer.designer_content.update_tree_view(project)
         if not new_project:
             self.designer.recent_manager.add_path(project.path)
-
+        
         for widget in toolbox_widgets[:]:
             if widget[1] == 'custom':
                 toolbox_widgets.remove(widget)
-
+        
         self.designer._add_designer_content()
         app_widgets = self.designer.project_manager.current_project.app_widgets
         if app_widgets:
@@ -606,6 +603,7 @@ class ToolBarTopDesigner(DesignerActionView):
 
         run_command = self.designer.ui_creator.kivy_console.run_command
         Clock.schedule_once(partial(run_command, f'cd {file_path}'), 1)
+        # return None
         self.designer.designer_git.load_repo(file_path)
         print('Iniciu com sucesso!!')
 

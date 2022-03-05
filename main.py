@@ -1,67 +1,51 @@
+__all__ = ['ProgramDesigner', ]
+
+from kivy.config import Config
+Config.set('graphics', 'maxfps', '100')
+
+from designer import Designer
 from uix.sandbox import DesignerSandbox
-from designer import DesignerException, Designer
 from utils.toolbox_widgets import toolbox_widgets
 from components.playground import PlaygroundDragElement
 from utils.utils import get_config_dir, get_fs_encoding, show_message
 
 from kivy.app import App
+from kivy.metrics import dp
 from kivy.factory import Factory
 from kivy.uix.widget import Widget
-from kivy.lang.builder import Builder
+from kivy.core.window import Window
 from kivy.graphics import Color, Line
 from kivy.base import ExceptionManager
 from kivy.resources import resource_add_path
+from tools.bug_reporter import BugReporterApp
+from kivy.base import ExceptionHandler, ExceptionManager
 from kivy.properties import BooleanProperty, ObjectProperty
 
-import os
+import os, traceback
 
-Builder.load_string("""
 
-#: import hex utils.colors.hex
-#: import KivyLexer kivy.extras.highlight.KivyLexer
-#: import ContextMenu uix.contextual.ContextMenu
-#: import ToolBarTopDesigner screens.inicial.main_inicial.ToolBarTopDesigner
+class DesignerException(ExceptionHandler):
 
-<DesignerButton@Button+Label>:
-    size_hint_y: None
-    height: designer_height
+    raised_exception = False
+    '''Indicates if the BugReporter has already raised some exception
+    '''
+    def handle_exception(self, inst):
+        if self.raised_exception:
+            return ExceptionManager.PASS
 
-<DesignerListItemButton@ListItemButton>:
-    size_hint: 1, None
-    size: ((self.texture_size[0]+sp(32)), designer_height)
-    selected_color: [1, 1, 1, 1]
-    deselected_color: [0.8, 0.8, 0.8, 0.5]
+        # App.get_running_app().stop()
+        if isinstance(inst, KeyboardInterrupt):
+            return ExceptionManager.PASS
 
-<Designer>:
-    statusbar: statusbar
-    actionbar: actionbar
-    start_page: start_page.__self__
-    designer_git: toll_bar_top.ids.git_tools
+        for child in Window.children:
+            Window.remove_widget(child)
 
-    ActionBar:
-        id: actionbar
-        pos_hint: {'top': 1}
-        on_height: root.on_height()
-        ToolBarTopDesigner:
-            id:toll_bar_top
+        self.raised_exception = True
+        Window.fullscreen = False
+        print(traceback.format_exc())
+        BugReporterApp(traceback=traceback.format_exc()).run()
+        return ExceptionManager.PASS
 
-    DesignerStartPage:
-        id: start_page
-        size_hint_y: None
-        height: root.height - actionbar.height - statusbar.height
-        top: root.height - actionbar.height
-        on_open_down: toll_bar_top.action_btn_open_pressed()
-        on_new_down: toll_bar_top.action_btn_new_project_pressed()
-        on_help: toll_bar_top.show_help()
-
-    StatusBar:
-        id: statusbar
-        size_hint_y: None
-        on_height: root.on_statusbar_height()
-        height: '20pt'
-        pos_hint: {'y': 0}
-
-""")
 
 class ProgramDesigner(App):
 
@@ -122,8 +106,8 @@ class ProgramDesigner(App):
         self.root.proj_tree_view = self.root.designer_content.tree_view
         self.root.statusbar.playground = playground
         playground.undo_manager = self.root.undo_manager
-
         eventviewer.designer_tabbed_panel = self.root.designer_content.tab_pannel
+        
         self.root.statusbar.bind(
             height=self.root.on_statusbar_height)
         self.root.actionbar.bind(
@@ -181,12 +165,14 @@ class ProgramDesigner(App):
         default_args = {}
         extra_args = {}
         for options in toolbox_widgets:
-            if widget_name == options[0]:
-                if len(options) > 2:
-                    default_args = options[2].copy()
-                if len(options) > 3:
-                    extra_args = options[3].copy()
-                break
+            if widget_name != options[0]:
+                continue
+
+            if len(options) > 2:
+                default_args = options[2].copy()
+            if len(options) > 3:
+                extra_args = options[3].copy()
+            break
         
         _drag_element = self.root.ui_creator.playground.get_playground_drag_element
         container = _drag_element(instance, widget_name, touch, default_args, extra_args)
@@ -222,7 +208,7 @@ class ProgramDesigner(App):
         else:
             with widget.canvas.after:
                 color = Color(0.42, 0.62, 0.65)
-                line = Line(points=points, close=True, width=2.0)
+                line = Line(points=points, close=True, width=dp(2))
             self._widget_focused = [widget, color, line]
 
         self.root.ui_creator.playground.clicked = True

@@ -3,7 +3,7 @@ __all__ = ['ProjectSettings', ]
 from kivy.config import ConfigParser
 from kivy.uix.settings import Settings
 from kivy.properties import ObjectProperty
-from utils.utils import get_kd_data_dir, ignore_proj_watcher, profiles_path
+from utils.utils import settings_path, ignore_proj_watcher, profiles_path
 
 import os
 from textwrap import dedent
@@ -22,18 +22,22 @@ class ProjectSettings(Settings):
     '''Config Parser for this class. Instance
        of :class:`kivy.config.ConfigParser`
     '''
+    def __init__(self, project, *args, **kargs):
+        self.project = project
+        super().__init__(*args, **kargs)
 
     def load_proj_settings(self):
         '''This function loads project settings
         '''
         self.config_parser = ConfigParser()
-        file_path = os.path.join(self.project.path, PROJ_CONFIG)
+        
+        file_path = profiles_path('config')
         if not os.path.exists(file_path):
             if not os.path.exists(os.path.dirname(file_path)):
                 os.makedirs(os.path.dirname(file_path))
 
             CONFIG_TEMPLATE = dedent('''
-                [proj_name]
+                [proj name]
                 name = Project
 
                 [arguments]
@@ -48,13 +52,15 @@ class ProjectSettings(Settings):
             f.close()
 
         self.config_parser.read(file_path)
-        settings_dir = os.path.join(get_kd_data_dir(), 'settings')
+
+        print("FILE -> ", file_path)
+        print('FIRST -> ', settings_path('proj_settings_shell_env'))
+        print("SECOND -> ", settings_path('proj_settings_proj_prop'))
 
         self.add_json_panel('Shell Environment', self.config_parser,
-                            os.path.join(settings_dir, 'proj_settings_shell_env.json'))
-        
+                            settings_path('proj_settings_shell_env'))       
         self.add_json_panel('Project Properties', self.config_parser,
-                            os.path.join(settings_dir, 'proj_settings_proj_prop.json'))
+                            settings_path('proj_settings_proj_prop'))
 
     @ignore_proj_watcher
     def on_config_change(self, *args):

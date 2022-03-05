@@ -535,7 +535,8 @@ class ContextSubMenu(MenuButton):
             self.attached_menu.content.add_widget(self.container)
             self.container.bind(height=self.on_container_height)
 
-        for widget, index in self._list_children:
+        childs = self._list_children.copy()
+        for widget, index in childs:
             self.container.add_widget(widget, index)
             widget.cont_menu = self.cont_menu
             widget.bind(height=self.on_child_height)
