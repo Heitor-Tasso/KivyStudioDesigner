@@ -11,7 +11,7 @@ from kivy.clock import Clock
 from kivy.uix.button import Button
 from kivy.uix.dropdown import DropDown
 from kivy.uix.textinput import TextInput
-from kivy.properties import BooleanProperty, ObjectProperty, StringProperty
+from kivy.properties import ObjectProperty, StringProperty
 
 from textwrap import dedent
 import re
@@ -32,7 +32,7 @@ class EventHandlerTextInput(TextInput):
     '''Reference to KVLangArea
        :data:`kv_code_input` is a :class:`~kivy.properties.ObjectProperty`
     '''
-    text_inserted = BooleanProperty(None)
+    text_inserted = ObjectProperty(None)
     '''Specifies whether text has been inserted or not
        :data:`text_inserted` is a :class:`~kivy.properties.BooleanProperty`
     '''

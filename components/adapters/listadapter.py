@@ -57,8 +57,8 @@ from kivy.event import EventDispatcher
 from kivy.lang import Builder
 from kivy.properties import (
     ListProperty,  DictProperty,
-    BooleanProperty, OptionProperty,
-    NumericProperty,
+    OptionProperty, NumericProperty,
+    ObjectProperty,
 )
 
 import inspect
@@ -125,7 +125,7 @@ class ListAdapter(Adapter, EventDispatcher):
     :data:`selection_mode` is an :class:`~kivy.properties.OptionProperty`,
     default to 'single'.
     '''
-    propagate_selection_to_data = BooleanProperty(False)
+    propagate_selection_to_data = ObjectProperty(False)
     '''Normally, data items are not selected/deselected, because the data items
     might not have an is_selected boolean property -- only the item view for a
     given data item is selected/deselected, as part of the maintained selection
@@ -160,7 +160,7 @@ class ListAdapter(Adapter, EventDispatcher):
     :class:`~kivy.properties.BooleanProperty`,
     default to False.
     '''
-    allow_empty_selection = BooleanProperty(True)
+    allow_empty_selection = ObjectProperty(True)
     '''The allow_empty_selection may be used for cascading selection between
     several list views, or between a list view and an observing view. Such
     automatic maintainence of selection is important for all but simple

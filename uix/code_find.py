@@ -1,6 +1,6 @@
 __all__ = ['CodeInputFind', ]
 
-from kivy.properties import BooleanProperty, ObjectProperty, StringProperty
+from kivy.properties import ObjectProperty, StringProperty
 from kivy.uix.boxlayout import BoxLayout
 from kivy.lang.builder import Builder
 
@@ -87,12 +87,12 @@ class CodeInputFind(BoxLayout):
     :data:`txt_query` is a :class:`~kivy.properties.ObjectProperty`
     '''
 
-    use_regex = BooleanProperty(False)
+    use_regex = ObjectProperty(False)
     '''Filter search with regex
         :data:`use_regex` is a :class:`~kivy.properties.BooleanProperty`
     '''
 
-    case_sensitive = BooleanProperty(False)
+    case_sensitive = ObjectProperty(False)
     '''Filter search with case sensitive text
         :data:`case_sensitive` is a :class:`~kivy.properties.BooleanProperty`
     '''

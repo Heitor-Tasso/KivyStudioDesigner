@@ -10,7 +10,7 @@ from kivy.lang.builder import Builder
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.behaviors import ButtonBehavior
 from kivy.uix.actionbar import ActionButton, ActionGroup, ActionItem
-from kivy.properties import BooleanProperty, ObjectProperty, StringProperty
+from kivy.properties import ObjectProperty, StringProperty
 
 import weakref
 
@@ -149,7 +149,7 @@ class ActionCheckButton(ActionItem, FloatLayout):
        :data:`_label` is a :class:`~kivy.properties.ObjectProperty`
     '''
 
-    checkbox_active = BooleanProperty(True)
+    checkbox_active = ObjectProperty(True)
     '''boolean indicating the checkbox.active state
         :data:`active` is a :class:`~kivy.properties.BooleanProperty`
     '''
@@ -159,7 +159,7 @@ class ActionCheckButton(ActionItem, FloatLayout):
     :data:`group` is a :class:`~kivy.properties.ObjectProperty`
     '''
 
-    allow_no_selection = BooleanProperty(True)
+    allow_no_selection = ObjectProperty(True)
     '''This specifies whether the checkbox in group allows
         everything to be deselected.
     :data:`allow_no_selection` is a :class:`~kivy.properties.BooleanProperty`
@@ -174,7 +174,7 @@ class ActionCheckButton(ActionItem, FloatLayout):
            of CheckBox.
         '''
         if not self.disabled and self.collide_point(*touch.pos):
-            self.checkbox._toggle_active()
+            self.checkbox.active = True
 
     def on_active(self, instance, value, *args):
         '''Default handler for 'on_active' event.
@@ -195,12 +195,12 @@ class DesignerActionProfileCheck(ActionCheckButton):
 
 class DesignerActionGroup(ActionGroup):
 
-    to_open = BooleanProperty(False)
+    to_open = ObjectProperty(False)
     '''To keep check of whether to open the dropdown list or not.
     :attr:`to_open` is a :class:`~kivy.properties.BooleanProperty`,
     defaults to False.
     '''
-    hovered = BooleanProperty(False)
+    hovered = ObjectProperty(False)
     '''To keep check of hover over each instance of DesignerActionGroup.
     :attr:`hovered` is a :class:`~kivy.properties.BooleanProperty`,
     defaults to False.

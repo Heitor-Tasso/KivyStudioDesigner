@@ -176,8 +176,8 @@ from kivy.metrics import dp, sp
 
 from kivy.properties import (
     NumericProperty, StringProperty,
-    BooleanProperty, ListProperty,
     OptionProperty, DictProperty,
+    ListProperty, ObjectProperty,
 )
 
 from .tools import gettext_
@@ -433,7 +433,7 @@ class XAuthorization(XForm):
     :attr:`password` is a :class:`~kivy.properties.StringProperty` and defaults
     to ''.
     '''
-    autologin = BooleanProperty(False, allownone=True)
+    autologin = ObjectProperty(False)
     '''This property represents default value for the CheckBox
     "Login automatically". For initialization only.
 

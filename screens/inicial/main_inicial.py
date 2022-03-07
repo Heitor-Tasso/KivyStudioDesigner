@@ -569,6 +569,9 @@ class ToolBarTopDesigner(DesignerActionView):
     def _perform_open(self, file_path, new_project=False):
         '''To open a project given by file_path
         '''
+        if file_path == '' or file_path is None:
+            return None
+        
         print('INICIANDO projeto -> def _perform_open: ', file_path, new_project)
 
         self.designer.project_watcher.stop_watching()

@@ -7,7 +7,7 @@ from kivy.app import App
 from kivy.core.window import Window
 from kivy.lang.builder import Builder
 from kivy.uix.scrollview import ScrollView
-from kivy.properties import BooleanProperty, ObjectProperty
+from kivy.properties import ObjectProperty
 
 import jedi
 
@@ -65,16 +65,16 @@ class PyScrollView(ScrollView):
     '''(internal) Bubble to display completions suggestion
        :data:`line_number` is a :class:`~kivy.properties.ObjectProperty`
     '''
-    is_bubble_visible = BooleanProperty(False)
+    is_bubble_visible = False
     '''(internal) If bubble is visible in the screen
        :data:`line_number` is a :class:`~kivy.properties.ObjectProperty`
     '''
-    show_line_number = BooleanProperty(True)
+    show_line_number = ObjectProperty(True)
     '''Display line number on left
        :data:`show_line_number` is a :class:`~kivy.properties.BooleanProperty`
        and defaults to True
     '''
-    use_autocompletion = BooleanProperty(True)
+    use_autocompletion = ObjectProperty(True)
     '''Use autocompletion
        :data:`use_autocompletion` is a :class:`~kivy.properties.BooleanProperty`
        and defaults to True

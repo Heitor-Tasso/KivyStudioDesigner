@@ -16,9 +16,10 @@ from kivy.uix.popup import Popup
 from kivy.metrics import dp
 
 from kivy.properties import (
-    BooleanProperty, ListProperty,
     NumericProperty, ObjectProperty,
-    OptionProperty, StringProperty)
+    OptionProperty, StringProperty,
+    ListProperty,
+)
 
 
 Builder.load_string("""
@@ -124,7 +125,7 @@ class PropertyBase(object):
     '''It is the old value of the property
        :data:`oldvalue` is a :class:`~kivy.properties.ObjectProperty`
     '''
-    have_error = BooleanProperty(False)
+    have_error = ObjectProperty(False)
     '''It specifies whether there have been an error in setting new value
        to property
        :data:`have_error` is a :class:`~kivy.properties.BooleanProperty`
@@ -133,7 +134,7 @@ class PropertyBase(object):
     '''It is the type of property.
        :data:`proptype` is a :class:`~kivy.properties.StringProperty`
     '''
-    record_to_undo = BooleanProperty(False)
+    record_to_undo = False
     '''It specifies whether the property change has to be recorded to undo.
        It is used when :class:`~designer.core.undo_manager.UndoManager` undoes
        or redoes the property change.
@@ -367,7 +368,7 @@ class PropertyViewer(ScrollView):
                 proptype='ListProperty',
                 kv_code_input=self.kv_code_input,
             )
-        elif isinstance(prop, BooleanProperty):
+        elif isinstance(prop, bool):
             wid = PropertyBoolean(
                 propwidget=self.widget, propname=name,
                 proptype='BooleanProperty',

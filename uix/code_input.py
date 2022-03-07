@@ -5,7 +5,7 @@ from utils.utils import get_current_project, get_designer, show_alert
 from kivy import Config
 from kivy.uix.codeinput import CodeInput
 from kivy.utils import get_color_from_hex
-from kivy.properties import BooleanProperty, StringProperty
+from kivy.properties import StringProperty, ObjectProperty
 
 import re
 from pygments import styles
@@ -19,12 +19,12 @@ class DesignerCodeInput(CodeInput):
     '''
     __events__ = ('on_show_edit',)
 
-    saved = BooleanProperty(True)
+    saved = ObjectProperty(True)
     '''Indicates if the current file is saved or not
         :data:`saved` is a :class:`~kivy.properties.BooleanProperty`
     and defaults to True
     '''
-    error = BooleanProperty(False)
+    error = ObjectProperty(False)
     '''Indicates if the current file contains any type of error
         :data:`error` is a :class:`~kivy.properties.BooleanProperty`
     and defaults to False
@@ -34,7 +34,7 @@ class DesignerCodeInput(CodeInput):
         :data:`path` is a :class:`~kivy.properties.StringProperty`
     and defaults to ''
     '''
-    clicked = BooleanProperty(False)
+    clicked = ObjectProperty(False)
     '''If clicked is True, then it confirms that this widget has been clicked.
        The one checking this property, should set it to False.
        :data:`clicked` is a :class:`~kivy.properties.BooleanProperty`

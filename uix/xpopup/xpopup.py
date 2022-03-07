@@ -41,7 +41,7 @@ be normalized to the size of the app window)::
     popup.open()
 """
 
-from kivy.properties import NumericProperty, BooleanProperty
+from kivy.properties import NumericProperty, ObjectProperty
 from kivy.uix.popup import Popup
 
 __author__ = 'ophermit'
@@ -64,7 +64,7 @@ class XPopup(Popup):
     :attr:`min_height` is a :class:`~kivy.properties.NumericProperty` and
     defaults to None.
     '''
-    fit_to_window = BooleanProperty(False)
+    fit_to_window = ObjectProperty(False)
     '''This property determines if the pop-up larger than app window is
     automatically fit to app window.
 

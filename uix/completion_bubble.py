@@ -8,7 +8,7 @@ from kivy.uix.button import Button
 from kivy.uix.bubble import Bubble
 from kivy.core.window import Window
 from kivy.uix.floatlayout import FloatLayout
-from kivy.properties import BooleanProperty, ObjectProperty, StringProperty
+from kivy.properties import ObjectProperty, StringProperty
 from kivy.uix.widget import Widget
 
 Builder.load_string('''
@@ -74,7 +74,7 @@ class SuggestionItem(ListItemButton):
 
 class CompletionListView(ListView):
 
-    scrolled = BooleanProperty(False)
+    scrolled = False
     '''(internal) Identify if the user had scrolled the list with the mouse
     '''
     def _scroll(self, scroll_y):

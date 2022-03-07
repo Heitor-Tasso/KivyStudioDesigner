@@ -17,7 +17,7 @@ os.environ["GIT_PYTHON_REFRESH"] = "quiet"
 from git import GitCommandError, RemoteProgress, Repo
 from git.exc import InvalidGitRepositoryError
 
-from kivy.properties import BooleanProperty, ObjectProperty, StringProperty
+from kivy.properties import ObjectProperty, StringProperty
 from kivy.core.window import Window
 from kivy.uix.label import Label
 from kivy.uix.actionbar import ActionButton
@@ -66,7 +66,7 @@ class GitRemoteProgress(RemoteProgress):
 
 class DesignerGit(DesignerActionSubMenu):
 
-    is_repo = BooleanProperty(False)
+    is_repo = ObjectProperty(False)
     '''Indicates if it's representing a valid git repository
     :data:`is_repo` is a :class:`~kivy.properties.BooleanProperty`, defaults
        to False.

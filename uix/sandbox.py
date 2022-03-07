@@ -2,7 +2,6 @@ __all__ = ['DesignerSandbox', ]
 
 from kivy.clock import Clock
 from kivy.lang import Builder
-from kivy.properties import BooleanProperty
 from kivy.uix.sandbox import Sandbox, sandbox
 
 class DesignerSandbox(Sandbox):
@@ -12,7 +11,7 @@ class DesignerSandbox(Sandbox):
     '''
     __events__ = ('on_getting_exception',)
     
-    error_active = BooleanProperty(False)
+    error_active = False
     '''If True, automatically show the error tab on getting an Exception
     '''
 

@@ -11,7 +11,7 @@ from kivy.lang.builder import Builder
 from kivy.uix.carousel import Carousel
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.screenmanager import ScreenManager
-from kivy.properties import BooleanProperty, ObjectProperty, StringProperty
+from kivy.properties import ObjectProperty, StringProperty
 
 from kivy.uix.tabbedpanel import (
     TabbedPanel, TabbedPanelContent,
@@ -48,7 +48,7 @@ class KVLangAreaScroll(ScrollView):
        :data:`line_number` is a :class:`~kivy.properties.ObjectProperty`
     '''
 
-    show_line_number = BooleanProperty(True)
+    show_line_number = ObjectProperty(True)
     '''Display line number on left
        :data:`show_line_number` is a :class:`~kivy.properties.BooleanProperty`
        and defaults to True
@@ -95,12 +95,12 @@ class KVLangArea(DesignerCodeInput):
     '''KVLangArea is the CodeInput for editing kv lang. It emits on_show_edit
        event, when clicked.
     '''
-    have_error = BooleanProperty(False)
+    have_error = ObjectProperty(False)
     '''This property specifies whether KVLangArea has encountered an error
        in reload in the edited text by user or not.
        :data:`can_place` is a :class:`~kivy.properties.BooleanProperty`
     '''
-    _reload = BooleanProperty(False)
+    _reload = ObjectProperty(False)
     '''Specifies whether to reload kv or not.
        :data:`_reload` is a :class:`~kivy.properties.BooleanProperty`
     '''

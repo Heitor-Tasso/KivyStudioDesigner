@@ -4,7 +4,7 @@ __all__ = [
     'ContextSubMenu', ]
 
 from kivy.uix.tabbedpanel import TabbedPanel, TabbedPanelContent, TabbedPanelHeader
-from kivy.properties import BooleanProperty, NumericProperty, ObjectProperty
+from kivy.properties import NumericProperty, ObjectProperty
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.actionbar import ActionView
@@ -101,7 +101,7 @@ class MenuBubble(Bubble):
 class MenuHeader(TabbedPanelHeader):
     '''MenuHeader class. To be used as default TabbedHeader.
     '''
-    show_arrow = BooleanProperty(False)
+    show_arrow = ObjectProperty(False)
     '''Specifies whether to show arrow or not.
        :data:`show_arrow` is a :class:`~kivy.properties.BooleanProperty`,
        default to True
@@ -168,12 +168,12 @@ class ContextMenu(TabbedPanel):
        The method :meth:`open` will automatically set that property, while
        :meth:`dismiss` will set back to None.
     '''
-    auto_width = BooleanProperty(True)
+    auto_width = True
     '''By default, the width of the ContextMenu will be the same
        as the width of the attached widget. Set to False if you want
        to provide your own width.
     '''
-    dismiss_on_select = BooleanProperty(True)
+    dismiss_on_select = ObjectProperty(True)
     '''By default, the ContextMenu will be automatically dismissed
     when a selection have been done. Set to False to prevent the dismiss.
 
@@ -475,7 +475,7 @@ class ContextSubMenu(MenuButton):
        :data:`container` is a :class:`~kivy.properties.ObjectProperty`, default
        to :class:`~kivy.uix.boxlayout.BoxLayout`.
     '''
-    show_arrow = BooleanProperty(False)
+    show_arrow = ObjectProperty(False)
     '''(internal) To specify whether ">" arrow image should be shown in the
        header or not. If there exists a child menu then arrow image will be
        shown otherwise not.
@@ -511,6 +511,9 @@ class ContextSubMenu(MenuButton):
     def remove_children(self):
         '''Clear _list_children[]
         '''
+        if self.container is None:
+            return None
+        
         for child, index in self._list_children:
             self.container.remove_widget(child)
         self._list_children = []

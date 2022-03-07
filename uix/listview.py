@@ -574,7 +574,6 @@ from uix.abstractview import AbstractView
 from kivy.properties import (
     ObjectProperty, DictProperty,
     NumericProperty, ListProperty,
-    BooleanProperty,
 )
 
 from kivy.lang import Builder
@@ -598,7 +597,7 @@ class SelectableView(object):
     to -1.
     '''
 
-    is_selected = BooleanProperty(False)
+    is_selected = ObjectProperty(False)
     '''A SelectableView instance carries this property, which should be kept
     in sync with the equivalent property in the data item it represents.
 
@@ -879,7 +878,7 @@ class ListView(AbstractView, EventDispatcher):
     default to [].
     '''
 
-    scrolling = BooleanProperty(False)
+    scrolling = ObjectProperty(False)
     '''If the scroll_to() method is called while scrolling operations are
     happening, a call recursion error can occur. scroll_to() checks to see that
     scrolling is False before calling populate(). scroll_to() dispatches a

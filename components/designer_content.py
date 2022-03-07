@@ -18,9 +18,7 @@ from kivy.uix.tabbedpanel import (
     TabbedPanel, TabbedPanelHeader,
     TabbedPanelItem)
 
-from kivy.properties import (
-    BooleanProperty, ObjectProperty,
-    OptionProperty, StringProperty)
+from kivy.properties import ObjectProperty, OptionProperty, StringProperty
 
 from functools import partial
 import os
@@ -153,7 +151,7 @@ class DesignerContent(FloatLayout):
        :class:`~designer.components.designer_content.DesignerTabbedPanel`.
        :data:`tab_pannel` is a :class:`~kivy.properties.ObjectProperty`
     '''
-    in_find = BooleanProperty(False)
+    in_find = ObjectProperty(False)
     '''This property indicates if the find menu is activated
         :data:`in_find` is a :class:`~kivy.properties.BooleanProperty` and
         defaults to False
@@ -462,11 +460,11 @@ class DesignerTabbedPanelItem(TabbedPanelItem):
 class DesignerCloseableTab(TabbedPanelHeader):
     '''Custom TabbedPanelHeader with close button
     '''
-    has_modification = BooleanProperty(False)
+    has_modification = ObjectProperty(False)
     '''Indicates if this tab has unsaved content
         :data:`has_modification` is a :class:`~kivy.properties.BooleanProperty`
     '''
-    has_error = BooleanProperty(False)
+    has_error = ObjectProperty(False)
     '''Indicates if this tab has error
         :data:`has_error` is a :class:`~kivy.properties.BooleanProperty`
     '''

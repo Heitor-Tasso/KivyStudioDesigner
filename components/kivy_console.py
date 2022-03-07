@@ -95,9 +95,8 @@ from kivy.compat import PY2
 from kivy.metrics import dp
 
 from kivy.properties import (
-    BooleanProperty, DictProperty,
-    ListProperty, NumericProperty,
-    ObjectProperty,
+    DictProperty, ListProperty,
+    NumericProperty, ObjectProperty,
 )
 
 from pygments.lexers.shell import BashSessionLexer
@@ -144,7 +143,7 @@ class KivyConsole(GridLayout):
     commands
 
     '''
-    readonly = BooleanProperty(False)
+    readonly = ObjectProperty(False)
     '''This defines whether a person can enter commands in the console
 
     :data:`readonly` is an :class:`~kivy.properties.BooleanProperty`,
@@ -195,7 +194,7 @@ class KivyConsole(GridLayout):
     :data:`textcache` is a :class:`~kivy.properties.ListProperty`,
     Default to ''
     '''
-    shell = BooleanProperty(False)
+    shell = ObjectProperty(False)
     '''Indicates the whether system shell is used to run the commands
 
     :data:`shell` is a :class:`~kivy.properties.BooleanProperty`,
@@ -584,18 +583,18 @@ class KivyConsole(GridLayout):
         # defocused
         Window.unbind(on_key_down=self.on_key_down)
         
-        if self.txtinput_command_line_refocus:
-            self.txtinput_command_line_refocus = False
-            if self.txtinput_command_line.get_root_window():
-                self.txtinput_command_line.focus = True
+        # if self.txtinput_command_line_refocus:
+        #     self.txtinput_command_line_refocus = False
+        #     if self.txtinput_command_line.get_root_window():
+        #         self.txtinput_command_line.focus = True
             
-            self.txtinput_command_line.scroll_x = 0
+        #     self.txtinput_command_line.scroll_x = 0
         
-        if self.txtinput_run_command_refocus:
-            self.txtinput_run_command_refocus = False
-            instance.focus = True
-            instance.scroll_x = 0
-            instance.text = ''
+        # if self.txtinput_run_command_refocus:
+        #     self.txtinput_run_command_refocus = False
+        #     instance.focus = True
+        #     instance.scroll_x = 0
+        #     instance.text = ''
 
     def add_to_cache(self, _string):
         self.textcache.append(_string)

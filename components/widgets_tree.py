@@ -8,7 +8,7 @@ from kivy.lang.builder import Builder
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.treeview import TreeViewLabel
 from kivy.uix.tabbedpanel import TabbedPanel
-from kivy.properties import BooleanProperty, ObjectProperty
+from kivy.properties import ObjectProperty
 
 
 Builder.load_string("""
@@ -59,7 +59,7 @@ class WidgetsTree(ScrollView):
        This TreeView is responsible for showing Root Widget's Tree.
        :data:`tree` is a :class:`~kivy.properties.ObjectProperty`
     '''
-    dragging = BooleanProperty(False)
+    dragging = False
     '''Specifies whether a node is dragged or not.
        :data:`dragging` is a :class:`~kivy.properties.BooleanProperty`
     '''

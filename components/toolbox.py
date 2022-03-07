@@ -2,7 +2,6 @@ __all__ = ['ToolboxCategory', 'ToolboxButton', 'Toolbox']
 
 from utils.toolbox_widgets import toolbox_widgets
 
-from kivy.metrics import pt
 from kivy.clock import Clock
 from kivy.factory import Factory
 from kivy.uix.button import Button
@@ -27,7 +26,7 @@ Builder.load_string("""
 <ToolboxCategory>:
     gridlayout: gridlayout
     size_hint_y: None
-    height: '22pt'
+    height: '22dp'
     title: self.title[0].upper() + self.title[1:]
     ScrollView:
         pos: root.pos
@@ -36,15 +35,17 @@ Builder.load_string("""
         GridLayout:
             id: gridlayout
             cols: 1
-            # orientation: 'vertical'
-            padding: '5sp'
-            spacing: '3sp'
+            padding: '5dp'
+            spacing: '3dp'
             size_hint_y: None
-            height: max(self.parent.height, self.minimum_height)
+            height: self.minimum_height + dp(40)
+            Widget:
+                size_hint_y:None
+                height: '40dp'
 
 <ToolboxButton>:
     size_hint_y: None
-    height: '22pt'
+    height: '52dp'
     font_size: '10pt'
     on_press_and_touch: app.create_draggable_element(self, self.text, args[1])
 
@@ -160,7 +161,3 @@ class Toolbox(BoxLayout):
         grid = self.custom_category.gridlayout
         for widget in custom_widgets:
             grid.add_widget(ToolboxButton(text=widget[0]))
-
-        # Setting appropriate height to gridlayout to enable scrolling
-        grid.size_hint_y = None
-        grid.height = ((len(grid.children)+5)*pt(22))

@@ -2,7 +2,7 @@
    module of Kivy Designer.
 '''
 
-from kivy.properties import BooleanProperty, ListProperty, StringProperty
+from kivy.properties import ListProperty, StringProperty, ObjectProperty
 from kivy.factory import Factory, FactoryException
 from kivy.event import EventDispatcher
 from kivy.uix.widget import Widget
@@ -13,7 +13,7 @@ from kivy.app import App
 from __init__ import __init_file__
 import functools
 import inspect
-import os, sys, traceback
+import os, sys
 
 def theme_atlas(theme):
     return f'atlas://data/images/defaulttheme/{theme}'
@@ -76,7 +76,7 @@ class FakeSettingList(EventDispatcher):
     to [].
     '''
 
-    allow_custom = BooleanProperty(False)
+    allow_custom = ObjectProperty(False)
     '''Allow/disallow a custom item to the list
     :attr:`allow_custom` is a :class:`~kivy.properties.BooleanProperty`
     and defaults to False

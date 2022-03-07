@@ -14,9 +14,8 @@ from kivy.lang import Builder
 from kivy.clock import Clock
 
 from kivy.properties import (
-    BooleanProperty, DictProperty,
     ListProperty, ObjectProperty,
-    StringProperty,
+    StringProperty, DictProperty,
 )
 
 import re
@@ -53,7 +52,7 @@ class ProjectWatcher(EventDispatcher):
        are any changes. It can currently handle only one directory at
        a time.
     '''
-    _active = BooleanProperty(True)
+    _active = ObjectProperty(True)
     '''Indicates if the watchdog can dispatch events
        :data:`active` is a :class:`~kivy.properties.BooleanProperty`
     '''
@@ -72,6 +71,9 @@ class ProjectWatcher(EventDispatcher):
     def start_watching(self, path):
         '''To start watching project_dir.
         '''
+        if path == '' or path is None:
+            return None
+
         self._path = path
         self._observer = Observer()
         self._handler = ProjectEventHandler(project_watcher=self)
@@ -152,7 +154,7 @@ class AppWidget(EventDispatcher):
        :data:`py_path` is a :class:`~kivy.properties.StringProperty` and
        default to ''
     '''
-    is_root = BooleanProperty(False)
+    is_root = ObjectProperty(False)
     '''Indicates if this widget is a root/default kivy widget or not
         :data:`is_root` is a :class:`~kivy.properties.BooleanProperty` and
         defaults to False
@@ -163,7 +165,7 @@ class AppWidget(EventDispatcher):
     data:`instance` is a :class:`~kivy.properties.ObjectProperty` and
         defaults to None
     '''
-    is_dynamic = BooleanProperty(False)
+    is_dynamic = ObjectProperty(False)
     '''Indicates if this widget is a dynamic widget or not
         :data:`is_dynamic` is a :class:`~kivy.properties.BooleanProperty` and
         defaults to False
@@ -179,12 +181,12 @@ class Project(EventDispatcher):
     '''Project path.
        :data:`path` is a :class:`~kivy.properties.StringProperty`
     '''
-    saved = BooleanProperty(True)
+    saved = ObjectProperty(True)
     '''Indicates if the project was saved. The project is seted as saved when
         oppened
        :data:`saved` is a :class:`~kivy.properties.BooleanProperty`
     '''
-    new_project = BooleanProperty(False)
+    new_project = ObjectProperty(False)
     '''Indicates if it's a new project.
        :data:`new_project` is a :class:`~kivy.properties.BooleanProperty`
     '''
@@ -212,7 +214,8 @@ class Project(EventDispatcher):
         '''Opens then project
         '''
         self.saved = True
-        self.get_files()
+        if not self.get_files():
+            return None
         self.parse()
 
     def get_files(self, path=None, force_reload=True):
@@ -222,6 +225,8 @@ class Project(EventDispatcher):
         '''
         if path is None:
             path = self.path
+        if path == '':
+            return []
 
         if not force_reload:
             return self.file_list
@@ -249,7 +254,8 @@ class Project(EventDispatcher):
         '''Parse project files to analyse python and kv files
         '''
         if reload_files:
-            self.get_files()
+            if not self.get_files():
+                return None
 
         # reset caches
         self.kv_list = []
@@ -340,6 +346,7 @@ class Project(EventDispatcher):
         :param src: kv string
         :return boolean indicating if succeed in parsing the file
         '''
+        print('parser_kv -> ', path)
         self._clean_old_kv(path)
         root = None
         try:
@@ -390,6 +397,7 @@ class Project(EventDispatcher):
     def parse_py(self, path):
         '''Parses a Python file and load it.
         '''
+        print('parse_py -> ', path)
         rel_path = path.replace(self.path, '')
         # creates a name to the import based in the file name and its path
         module_name = 'KDImport' + ''.join([x.replace('.py', '').capitalize()
@@ -488,7 +496,7 @@ class ProjectManager(EventDispatcher):
     '''A map of opened projects
        :data:`projects` is a :class:`~kivy.properties.DictProperty`
     '''
-    project_manager = BooleanProperty(True)
+    project_manager = ObjectProperty(True)
     '''Auto save the project
         :data:`project_manager` is a :class:`~kivy.properties.BooleanProperty`
     '''
@@ -499,6 +507,9 @@ class ProjectManager(EventDispatcher):
     def open_project(self, path):
         '''Opens a Python project by path, and returns the Project instance
         '''
+        if path == '' or path is None:
+            return None
+        
         print('Abrindo projeto')
         if os.path.isfile(path):
             path = os.path.dirname(path)

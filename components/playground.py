@@ -1,5 +1,6 @@
 __all__ = ['PlaygroundDragElement', 'Playground']
 
+from matplotlib.pyplot import draw
 from core.undo_manager import WidgetDragOperation, WidgetOperation
 from uix.confirmation_dialog import ConfirmationDialogSave
 from uix.settings import SettingListContent
@@ -34,9 +35,8 @@ from kivy.uix.screenmanager import Screen, ScreenManager
 from kivy.uix.filechooser import FileChooserIconView, FileChooserListView
 
 from kivy.properties import (
-    BooleanProperty, ListProperty,
+    ListProperty, StringProperty,
     ObjectProperty, OptionProperty,
-    StringProperty,
 )
 
 import re
@@ -97,7 +97,7 @@ class PlaygroundDragElement(BoxLayout):
     '''Widget where widget is to be added.
        :data:`target` a :class:`~kivy.properties.ObjectProperty`
     '''
-    can_place = BooleanProperty(False)
+    can_place = ObjectProperty(False)
     '''Whether widget can be added or not.
        :data:`can_place` is a :class:`~kivy.properties.BooleanProperty`
     '''
@@ -220,7 +220,7 @@ class PlaygroundDragElement(BoxLayout):
 
         # update dragging position
         self.center_x = touch.x
-        self.y = touch.y + 20
+        self.y = touch.y + dp(20)
 
         # the widget where it will be added
         target = None
@@ -414,7 +414,7 @@ class Playground(ScatterPlane):
     '''
     tree = ObjectProperty()
 
-    clicked = BooleanProperty(False)
+    clicked = ObjectProperty(False)
     '''This property represents whether
        :class:`~designer.components.playground.Playground`
         has been clicked or not
@@ -435,7 +435,7 @@ class Playground(ScatterPlane):
        :class:`~designer.components.ui_creator.UICreator`'s WidgetTree.
        :data:`widgettree` is a :class:`~kivy.properties.ObjectProperty`
     '''
-    from_drag = BooleanProperty(False)
+    from_drag = ObjectProperty(False)
     '''Specifies whether a widget is dragged or a new widget is added.
        :data:`from_drag` is a :class:`~kivy.properties.BooleanProperty`
     '''
@@ -446,11 +446,11 @@ class Playground(ScatterPlane):
        drag_operation[2] is the index of widget in parent's children property.
        :data:`drag_operation` is a :class:`~kivy.properties.ListProperty`
     '''
-    _touch_still_down = BooleanProperty(False)
+    _touch_still_down = ObjectProperty(False)
     '''Specifies whether touch is still down or not.
        :data:`_touch_still_down` is a :class:`~kivy.properties.BooleanProperty`
     '''
-    dragging = BooleanProperty(False)
+    dragging = ObjectProperty(False)
     '''Specifies whether currently dragging is performed or not.
        :data:`dragging` is a :class:`~kivy.properties.BooleanProperty`
     '''
@@ -650,7 +650,8 @@ class Playground(ScatterPlane):
         proj = get_current_project()
         # copy of initial widgets
         widgets = dict(proj.app_widgets)
-    
+        print('proj -> ', proj)
+        print('Widgets -> ', widgets)
         try:
             if force:
                 proj.parse()
@@ -1232,9 +1233,9 @@ class Playground(ScatterPlane):
             self.selected_widget.parent.remove_widget(self.selected_widget)
             drag_elem = App.get_running_app().create_draggable_element(
                 None, '', self.touch, self.selected_widget)
-
-            drag_elem.drag_type = 'dragndrop'
-            drag_elem.drag_parent = self.drag_operation[1]
+            if drag_elem is not None:
+                drag_elem.drag_type = 'dragndrop'
+                drag_elem.drag_parent = self.drag_operation[1]
             self.dragging = True
             self.from_drag = True
             App.get_running_app().focus_widget(None)

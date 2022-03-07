@@ -52,8 +52,8 @@ from kivy.factory import Factory
 from kivy.metrics import dp
 
 from kivy.properties import (
-    BooleanProperty, ListProperty,
-    StringProperty, NumericProperty,
+    ListProperty, StringProperty,
+    NumericProperty, ObjectProperty,
 )
 
 from .tools import gettext_
@@ -67,7 +67,7 @@ class XBase(XPopup):
     """XBase class. See module documentation for more information.
     """
 
-    auto_open = BooleanProperty(True)
+    auto_open = ObjectProperty(True)
     '''This property determines if the pop-up is automatically
     opened when the instance was created. Otherwise use :meth:`XBase.open`
 
@@ -91,13 +91,13 @@ class XBase(XPopup):
 
     size_hint_x = NumericProperty(.6, allownone=True)
     size_hint_y = NumericProperty(.3, allownone=True)
-    auto_dismiss = BooleanProperty(False)
+    auto_dismiss = False
     '''Overrides properties from :class:`~kivy.uix.popup.Popup`
     '''
 
     min_width = NumericProperty(dp(300), allownone=True)
     min_height = NumericProperty(dp(150), allownone=True)
-    fit_to_window = BooleanProperty(True)
+    fit_to_window = True
     '''Overrides properties from :class:`XPopup`
     '''
 

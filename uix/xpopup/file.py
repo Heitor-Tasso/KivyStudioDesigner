@@ -124,7 +124,7 @@ from kivy.uix.textinput import TextInput
 from kivy.properties import (
     StringProperty, NumericProperty,
     ListProperty, OptionProperty,
-    BooleanProperty, ObjectProperty,
+    ObjectProperty,
 )
 
 from os import path, makedirs
@@ -162,10 +162,10 @@ class XFilePopup(XBase):
 
     Binded to :attr:`~kivy.uix.filechooser.FileChooser.selection`
     '''
-    multiselect = BooleanProperty(False)
+    multiselect = False
     '''Binded to :attr:`~kivy.uix.filechooser.FileChooser.multiselect`
     '''
-    dirselect = BooleanProperty(False)
+    dirselect = False
     '''Binded to :attr:`~kivy.uix.filechooser.FileChooser.dirselect`
     '''
     filters = ListProperty()

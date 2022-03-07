@@ -32,10 +32,7 @@ from kivy.uix.tabbedpanel import TabbedPanel
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.screenmanager import ScreenManager
 
-from kivy.properties import (
-    BooleanProperty, ListProperty,
-    ObjectProperty, StringProperty,
-)
+from kivy.properties import ListProperty, ObjectProperty, StringProperty
 
 import os, shutil, traceback
 from functools import partial
@@ -97,7 +94,7 @@ class Designer(FloatLayout):
     '''Reference of :class:`~designer.core.project_settings.ProjectSettings`.
        :data:`proj_settings` is a :class:`~kivy.properties.ObjectProperty`
     '''
-    _proj_modified_outside = BooleanProperty(False)
+    _proj_modified_outside = ObjectProperty(False)
     '''Specifies whether current project has been changed outside Kivy Designer
        :data:`_proj_modified_outside` is a
        :class:`~kivy.properties.BooleanProperty`

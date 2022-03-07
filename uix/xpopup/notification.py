@@ -166,9 +166,8 @@ from kivy.clock import Clock
 from kivy.metrics import dp
 
 from kivy.properties import (
-    BooleanProperty, NumericProperty,
-    ListProperty, StringProperty,
-    BoundedNumericProperty,
+    ListProperty, StringProperty, ObjectProperty,
+    BoundedNumericProperty, NumericProperty,
 )
 
 from .tools import gettext_
@@ -199,7 +198,7 @@ class XNotifyBase(XBase):
 
     :attr:`text` is a :class:`~kivy.properties.StringProperty`.
     '''
-    dont_show_value = BooleanProperty(None, allownone=True)
+    dont_show_value = ObjectProperty(None)
     '''This property represents a state of checkbox 'Do not show this message'.
     To enable checkbox, set this property to True or False.
 

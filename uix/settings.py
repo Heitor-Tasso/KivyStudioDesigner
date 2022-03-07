@@ -16,9 +16,8 @@ from kivy.lang import Builder
 from kivy.metrics import dp
 
 from kivy.properties import (
-    BooleanProperty, DictProperty,
     ListProperty, ObjectProperty,
-    StringProperty,
+    StringProperty, DictProperty,
 )
 
 Builder.load_string("""
@@ -69,7 +68,7 @@ Builder.load_string("""
         text_size: self.size
         shorten: True
         valign: 'middle'
-        on_press: root.item_check._toggle_active()
+        on_press: root.item_check.active = True
 
 <SettingListContent>:
     item_list: item_list
@@ -284,7 +283,7 @@ class SettingListCheckItem(BoxLayout):
     '''Instance of checkbox. :attr:`item_check` is a
         :class:`~kivy.properties.ObjectProperty` and defaults to None
     '''
-    active = BooleanProperty(False)
+    active = ObjectProperty(False)
     '''Alias to the checkbox active state.
     :attr:`checked` is a :class:`~kivy.properties.BooleanProperty` and
     defaults to False
@@ -401,7 +400,7 @@ class SettingList(SettingItem):
     :attr:`items` is a :class:`~kivy.properties.ListProperty` and defaults
     to [].
     '''
-    allow_custom = BooleanProperty(False)
+    allow_custom = ObjectProperty(False)
     '''Allow/disallow a custom item to the list
     :attr:`allow_custom` is a :class:`~kivy.properties.BooleanProperty`
     and defaults to False
@@ -457,27 +456,27 @@ class SettingList(SettingItem):
 
 class SettingShortcutContent(BoxLayout):
 
-    has_ctrl = BooleanProperty(False)
+    has_ctrl = ObjectProperty(False)
     '''Indicates if should listen the Ctrl key
     :attr:`has_ctrl` is a :class:`~kivy.properties.BooleanProperty`
     and defaults to False
     '''
-    has_shift = BooleanProperty(False)
+    has_shift = ObjectProperty(False)
     '''Indicates if should listen the Shift key
     :attr:`has_shift` is a :class:`~kivy.properties.BooleanProperty`
     and defaults to False
     '''
-    has_alt = BooleanProperty(False)
+    has_alt = ObjectProperty(False)
     '''Indicates if should listen the Alt key
     :attr:`has_alt` is a :class:`~kivy.properties.BooleanProperty`
     and defaults to False
     '''
-    listen_key = BooleanProperty(False)
+    listen_key = ObjectProperty(False)
     '''Indicates if should listen the keyboard
     :attr:`listen_key` is a :class:`~kivy.properties.BooleanProperty`
     and defaults to False
     '''
-    valid = BooleanProperty(True)
+    valid = ObjectProperty(True)
     '''(internal) Indicates if the shortcut is valid
     :attr:`valid` is a :class:`~kivy.properties.BooleanProperty`
     and defaults to True

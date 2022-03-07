@@ -19,7 +19,7 @@ from kivy.base import ExceptionManager
 from kivy.resources import resource_add_path
 from tools.bug_reporter import BugReporterApp
 from kivy.base import ExceptionHandler, ExceptionManager
-from kivy.properties import BooleanProperty, ObjectProperty
+from kivy.properties import ObjectProperty
 
 import os, traceback
 
@@ -52,7 +52,7 @@ class ProgramDesigner(App):
     widget_focused = ObjectProperty(allownone=True)
     '''Currently focused widget
     '''
-    started = BooleanProperty(False)
+    started = False
     '''Indicates if has finished the build()
     '''
     title = 'Kivy Designer'
