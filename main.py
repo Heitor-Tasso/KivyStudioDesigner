@@ -90,8 +90,7 @@ class ProgramDesigner(App):
             ('PlaygroundSizeSelector', 'components.playground_size_selector'),
             ('CodeInputFind', 'uix.code_find'),
         )
-        for file in modules:
-            classname, module = file
+        for classname, module in modules:
             Factory.register(classname, module=module)
 
         self._widget_focused = None

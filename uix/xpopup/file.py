@@ -162,10 +162,10 @@ class XFilePopup(XBase):
 
     Binded to :attr:`~kivy.uix.filechooser.FileChooser.selection`
     '''
-    multiselect = False
+    multiselect = ObjectProperty(False)
     '''Binded to :attr:`~kivy.uix.filechooser.FileChooser.multiselect`
     '''
-    dirselect = False
+    dirselect = ObjectProperty(False)
     '''Binded to :attr:`~kivy.uix.filechooser.FileChooser.dirselect`
     '''
     filters = ListProperty()

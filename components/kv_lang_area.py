@@ -536,6 +536,9 @@ class KVLangArea(DesignerCodeInput):
         path_to_widget.reverse()
         # Go to the line where widget is declared
         lines = re.sub(r'#.+', '', self.text).splitlines()
+        if not lines:
+            return ''
+        
         total_lines = len(lines)
         root_name = self.playground.root_name
         total_lines = len(lines)
@@ -549,7 +552,6 @@ class KVLangArea(DesignerCodeInput):
 
         widget_lineno = self._find_widget_place(path_to_widget, lines,
                                                 total_lines, root_lineno + 1)
-        
         widget_line = lines[widget_lineno]
         indent = get_indentation(widget_line)
         prop_found = False
@@ -804,10 +806,10 @@ class KVLangArea(DesignerCodeInput):
                     line = line[:colon_pos].lstrip()
                     if child_count == path[path_index]:
                         path_index += 1
-                        indent = (_indent+4)
+                        indent = (_indent + 4)
                         child_count = 0
                     else:
                         child_count += 1
             else:
                 child_count += 1
-        return (lineno-1)
+        return (lineno - 1)

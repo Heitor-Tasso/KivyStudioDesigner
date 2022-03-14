@@ -281,6 +281,7 @@ class Designer(FloatLayout):
         self.remove_widget(self.start_page)
         self.start_page.parent = None
         self.add_widget(self.designer_content, 1)
+        self.on_height() # Change content height to ocupate the space
         self.disable_actn('disable', False)
 
         # print(self.project_manager.current_project)
@@ -325,6 +326,7 @@ class Designer(FloatLayout):
             return None
 
         h = (self.height-self.actionbar.height-self.statusbar.height)
+        print('NOVO TAMANHO -> ', h)
         self.designer_content.height = h
         self.designer_content.y = self.statusbar.height
 
