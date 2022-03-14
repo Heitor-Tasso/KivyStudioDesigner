@@ -19,7 +19,10 @@ from kivy.properties import (
 )
 
 import re
-import imp
+try:
+    from imp import new_module
+except ModuleNotFoundError:
+    from types import ModuleType as new_module
 import ast
 import os, sys
 import inspect
@@ -418,7 +421,7 @@ class Project(EventDispatcher):
             del sys.modules[module_name]
 
         # imports the new python
-        module = imp.new_module(module_name)
+        module = new_module(module_name)
         try:
             exec_(compile(p, os.path.basename(path), 'exec'), module.__dict__)
         except Exception as e:

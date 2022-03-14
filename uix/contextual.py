@@ -15,7 +15,6 @@ from kivy.uix.image import Image
 from kivy.lang import Builder
 from kivy.clock import Clock
 from kivy.metrics import dp
-from sympy import maximum
 
 Builder.load_string("""
 #: import theme_atlas utils.utils.theme_atlas

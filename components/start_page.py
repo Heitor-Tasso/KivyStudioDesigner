@@ -206,7 +206,7 @@ class RecentFilesBox(ScrollView):
         '''Event Handler for 'on_release' of an event.
         '''
         d = get_designer()
-        d._perform_open(instance.path)
+        d.ids.toll_bar_top._perform_open(instance.path)
 
 class DesignerStartPage(BoxLayout):
 
