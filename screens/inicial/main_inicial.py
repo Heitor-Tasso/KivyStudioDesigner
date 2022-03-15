@@ -7,7 +7,7 @@ from uix.confirmation_dialog import ConfirmationDialogSave
 from utils.toolbox_widgets import toolbox_widgets
 from core.project_settings import ProjectSettings
 from kivy.clock import Clock
-from functools import partial
+
 from uix.contextual import DesignerActionView
 from components.dialogs.help import HelpDialog
 from uix.input_dialog import InputDialog
@@ -261,7 +261,7 @@ class ToolBarTopDesigner(DesignerActionView):
         self.designer.designer_content.parent = None
         self.designer.add_widget(self.start_page, 1)
 
-        self.disable_actn('disable', True)
+        self.disable_actn('disabled', True)
         self.project_manager.close_current_project()
         self.project_watcher.stop_watching()
 
@@ -605,7 +605,7 @@ class ToolBarTopDesigner(DesignerActionView):
                 self.designer.ui_creator.playground.no_widget()
 
         run_command = self.designer.ui_creator.kivy_console.run_command
-        Clock.schedule_once(partial(run_command, f'cd {file_path}'), 1)
+        Clock.schedule_once(lambda *a: run_command(f'cd {file_path}'), 1)
         # return None
         self.designer.designer_git.load_repo(file_path)
         print('Iniciu com sucesso!!')

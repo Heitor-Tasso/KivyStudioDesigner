@@ -9,8 +9,6 @@ from kivy.uix.boxlayout import BoxLayout
 from uix.listview import ListItemButton
 from kivy.lang.builder import Builder
 
-from functools import partial
-
 Builder.load_string("""
 
 #: import hex utils.colors.hex
@@ -117,12 +115,12 @@ class RecentDialog(BoxLayout):
     def on_select_button(self, *args):
         '''Event handler for 'on_release' event of select_button.
         '''
-        self.select_button.bind(on_press=partial(self.dispatch, 'on_select'))
+        self.select_button.bind(on_press=lambda *a: self.dispatch('on_select'))
 
     def on_cancel_button(self, *args):
         '''Event handler for 'on_release' event of cancel_button.
         '''
-        self.cancel_button.bind(on_press=partial(self.dispatch, 'on_cancel'))
+        self.cancel_button.bind(on_press=lambda *a: self.dispatch('on_cancel'))
 
     def on_select(self, *args):
         '''Default event handler for 'on_select' event.

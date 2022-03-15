@@ -23,7 +23,6 @@ from kivy.properties import ObjectProperty
 
 import os, traceback
 
-
 class DesignerException(ExceptionHandler):
 
     raised_exception = False

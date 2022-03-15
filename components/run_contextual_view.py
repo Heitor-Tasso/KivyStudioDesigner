@@ -10,8 +10,6 @@ from kivy.properties import ObjectProperty
 from kivy.uix.actionbar import ContextualActionView
 
 import webbrowser
-from functools import partial
-
 
 Builder.load_string("""
 
@@ -148,7 +146,7 @@ class ModulesContView(ContextualActionView):
     def on_webdebugger(self, *args):
         '''when running from webdebugger'''
         self.dispatch('on_module', mod='webdebugger', data=[])
-        Clock.schedule_once(partial(webbrowser.open, 'http://localhost:5000/'), 5)
+        Clock.schedule_once(lambda *a: webbrowser.open('http://localhost:5000/'), 5)
 
 class ModScreenContView(ContextualActionView):
 

@@ -4,8 +4,6 @@ from kivy.uix.actionbar import ActionButton, ContextualActionView
 from kivy.properties import ObjectProperty
 from kivy.lang.builder import Builder
 
-from functools import partial
-
 Builder.load_string("""
 
 <EditContView>:
@@ -75,10 +73,10 @@ class EditContView(ContextualActionView):
         if show:
             self.action_btn_next_screen = ActionButton(text="Next Screen")
             self.action_btn_next_screen.bind(
-                on_press=partial(self.dispatch, 'on_next_screen'))
+                on_press=lambda *a: self.dispatch('on_next_screen'))
             self.action_btn_prev_screen = ActionButton(text="Previous Screen")
             self.action_btn_prev_screen.bind(
-                on_press=partial(self.dispatch, 'on_prev_screen'))
+                on_press=lambda *a: self.dispatch('on_prev_screen'))
 
             self.add_widget(self.action_btn_next_screen)
             self.add_widget(self.action_btn_prev_screen)
@@ -88,7 +86,7 @@ class EditContView(ContextualActionView):
         '''
         if self.action_btn_find is None:
             find = ActionButton(text='Find')
-            find.bind(on_release=partial(self.dispatch, 'on_find'))
+            find.bind(on_release=lambda *a: self.dispatch('on_find'))
             self.action_btn_find = find
 
         if show:

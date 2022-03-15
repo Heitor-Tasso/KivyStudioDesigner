@@ -165,7 +165,7 @@ class DesignerTools(EventDispatcher):
             wdg = playground.root
 
         name = datetime.datetime.now().strftime("%m-%d-%Y_%H-%M-%S.png")
-        if wdg.id:
+        if hasattr(wdg, 'id'):
             name = f'{wdg.id} _ {name}'
         wdg.export_to_png(os.path.join(proj_dir, name))
         status.show_message(f'Image saved at {name}', 5, 'info')

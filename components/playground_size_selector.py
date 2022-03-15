@@ -9,8 +9,6 @@ from kivy.uix.accordion import AccordionItem
 from kivy.uix.togglebutton import ToggleButton
 from kivy.properties import ObjectProperty, OptionProperty, StringProperty
 
-from functools import partial
-
 Builder.load_string("""
 
 <PlaygroundSizeSelector>:
@@ -86,9 +84,8 @@ class PlaygroundSizeSelector(Button):
             `~designer.components.playground_size_selector.PlaygroundSizeView`
         '''
         self.view.size_hint = None, None
-        self.view.width = self.get_root_window().width / 2.
-        self.view.height = self.get_root_window().height / 2.
-        self.view.attach_to = self
+        self.view.width = self.get_root_window().width / 2.0
+        self.view.height = self.get_root_window().height / 2.0
         self.view.open()
 
 class PlaygroundSizeView(ModalView):
@@ -190,7 +187,7 @@ class PlaygroundSizeView(ModalView):
                 btntext = f"{name}\n[color=777777][size={int(btn.font_size*0.8)}]{size[0]}x{size[1]}[/size][/color]"
                 btn.text = btntext
                 
-                btn.bind(on_press=partial(self.set_size, size))
+                btn.bind(on_press=lambda *a: self.set_size(size))
                 grid.add_widget(btn)
                 self._buttons[name] = btn
 

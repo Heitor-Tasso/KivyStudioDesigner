@@ -160,7 +160,7 @@ class ContextMenu(TabbedPanel):
        :data:`header_cls` is a :class:`~kivy.properties.ObjectProperty`,
        default to :class:`MenuHeader`.
     '''
-    attach_to = ObjectProperty(allownone=True)
+    attach_to = ObjectProperty(None)
     '''(internal) Property that will be set to the widget on which the
        drop down list is attached to.
 
@@ -597,7 +597,7 @@ class ContextSubMenu(MenuButton):
 
         Clock.schedule_once(self._scroll, 0.1)
 
-    def _scroll(self, dt):
+    def _scroll(self, *args):
         '''To scroll ContextMenu's strip to appropriate place.
         '''
         self.cont_menu._reposition()

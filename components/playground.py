@@ -1,6 +1,5 @@
 __all__ = ['PlaygroundDragElement', 'Playground']
 
-from matplotlib.pyplot import draw
 from core.undo_manager import WidgetDragOperation, WidgetOperation
 from uix.confirmation_dialog import ConfirmationDialogSave
 from uix.settings import SettingListContent
@@ -40,7 +39,7 @@ from kivy.properties import (
 )
 
 import re
-import os, io, functools
+import os
 
 Builder.load_string("""
 
@@ -932,6 +931,8 @@ class Playground(ScatterPlane):
             parent = widget.parent
             if parent is None and hasattr(widget, 'KD__last_parent'):
                 parent = widget.KD__last_parent
+            elif parent is None:
+                return None
             
             if isinstance(parent.parent, Carousel):
                 parent.parent.remove_widget(widget)
@@ -1212,9 +1213,8 @@ class Playground(ScatterPlane):
             # some widgets not allow index
             self.drag_operation[1].add_widget(self.drag_operation[0])
 
-        Clock.schedule_once(functools.partial(
-            App.get_running_app().focus_widget,
-            self.drag_operation[0]), 0.01)
+        focus = App.get_running_app().focus_widget
+        Clock.schedule_once(lambda *a: focus(self.drag_operation[0]), 0.01)
         self.drag_operation = []
 
     def start_widget_dragging(self, *args):

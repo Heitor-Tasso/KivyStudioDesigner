@@ -100,7 +100,6 @@ from kivy.properties import (
 )
 
 from pygments.lexers.shell import BashSessionLexer
-from functools import partial
 import os, sys, subprocess
 import _thread as thread
 import shlex
@@ -294,7 +293,7 @@ class KivyConsole(GridLayout):
         self.txtinput_history_box.text = ''
         self.textcache = ['']
 
-    def _initialize(self, dt):
+    def _initialize(self, *args):
         '''Set console default variable values
         '''
         self.txtinput_history_box.lexer = BashSessionLexer()
@@ -327,9 +326,9 @@ class KivyConsole(GridLayout):
             Clock.schedule_once(mte, -1)
 
     def _focus(self, widg, t_f=True):
-        Clock.schedule_once(partial(self._deffered_focus, widg, t_f))
+        Clock.schedule_once(lambda *a: self._deffered_focus(widg, t_f))
 
-    def _deffered_focus(self, widg, t_f, dt):
+    def _deffered_focus(self, widg, t_f):
         if widg.get_root_window():
             widg.focus = t_f
 
@@ -680,7 +679,7 @@ class KivyConsole(GridLayout):
                     popen_stdout_r = popen.stdout.readline
                     popen_stdout_flush = popen.stdout.flush
                     txt = popen_stdout_r()
-                    plat = platform()
+                    plat = platform
                     
                     while txt:
                         # skip flush on android
@@ -853,8 +852,7 @@ class std_in_out(object):
                     # run command
                     self.write(txt_line)
                 else:
-                    Clock.schedule_once(
-                        partial(self.update_cache, txt_line), 0)
+                    Clock.schedule_once(lambda *a: self.update_cache(txt_line), 0)
                     self.flush()
                 txt_line = ''
         

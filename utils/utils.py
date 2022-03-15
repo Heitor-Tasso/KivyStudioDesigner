@@ -255,9 +255,9 @@ def get_app_widget(target, **default_args):
     :param target: instance of designer.project_manager.AppWidget
     '''
     d = get_designer()
-    print('target => ', target)
-    print('default_args -> ', default_args)
-    print('target.name -> ', target.name)
+    print(
+        f'''def get_app_widget ->
+        [ target={target}, default_args={default_args}, target.name={target.name} ]''')
     
     if target.is_dynamic:
         name = target.name.split('@')[0]

@@ -964,7 +964,7 @@ class ListView(AbstractView, EventDispatcher):
             self._wstart = istart
             self._wend = iend + 10
 
-    def _spopulate(self, *dt):
+    def _spopulate(self, *args):
         self.populate()
 
     def populate(self, istart=None, iend=None):

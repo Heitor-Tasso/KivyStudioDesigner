@@ -349,7 +349,6 @@ class DesignerGit(DesignerActionSubMenu):
 
         d = get_designer()
         panel = d.designer_content.tab_pannel
-        inputs = d.code_inputs
 
         # check if diff is visible on tabbed panel.
         # if so, update the text content

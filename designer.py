@@ -35,8 +35,6 @@ from kivy.uix.screenmanager import ScreenManager
 from kivy.properties import ListProperty, ObjectProperty, StringProperty
 
 import os, shutil, traceback
-from functools import partial
-
 
 Builder.load_file(correct_path('designer.kv'))
 
@@ -282,7 +280,7 @@ class Designer(FloatLayout):
         self.start_page.parent = None
         self.add_widget(self.designer_content, 1)
         self.on_height() # Change content height to ocupate the space
-        self.disable_actn('disable', False)
+        self.disable_actn('disabled', False)
 
         # print(self.project_manager.current_project)
         # print(dir(self.project_manager.current_project))
@@ -294,18 +292,19 @@ class Designer(FloatLayout):
         Clock.schedule_once(self.load_view_settings)
 
     def disable_actn(self, varible, value):
+        print(f'def disable_actn -> [ varible={varible}, value={value}] ')
         error = lambda x: print(f'Dont work -> {x} !! def _add_designer_content !!')
         btns = ('new_file', 'save', 'save_as', 'close_proj')
         menus = ('view', 'proj', 'run', 'tools')
-
+        
         for btn, menu in zip(btns, menus):
-            actn_btn = self.ids.get(f'actn_btn_{btn}')
+            actn_btn = self.ids.toll_bar_top.ids.get(f'actn_btn_{btn}')
             if actn_btn is not None:
                 setattr(actn_btn, varible, value)
             else:
                 error(btn)
 
-            actn_menu = self.ids.get(f'actn_menu_{menu}')
+            actn_menu = self.ids.toll_bar_top.ids.get(f'actn_menu_{menu}')
             if actn_menu is not None:
                 setattr(actn_menu, varible, value)
             else:
@@ -339,7 +338,7 @@ class Designer(FloatLayout):
             return None
 
         msg = 'Project modified outside Kivy Designer'
-        Clock.schedule_once(partial(show_message, msg, 5, 'error'))
+        Clock.schedule_once(lambda *a: show_message(msg, 5, 'error'))
         if self.ids.toll_bar_top.popup:
             return None
 
@@ -399,7 +398,7 @@ class Designer(FloatLayout):
                 on_next_screen=self._next_screen,
                 on_prev_screen=self._prev_screen,
                 on_touch_up=self.on_editcontview_release,
-                on_find=partial(self.designer_content.show_findmenu, True))
+                on_find=lambda *a: self.designer_content.show_findmenu(True))
 
         self.actionbar.add_widget(self.editcontview)
         widget = self.ui_creator.propertyviewer.widget
@@ -590,7 +589,8 @@ class Designer(FloatLayout):
                     'copy', 'paste', 'delete',
                     'select_all',
         """
-        do_set = {'cut', 'copy',' paste', 'delete', 'select_all'}
+        print(f'def action_btn_pressed -> [ action={action}, args={args}]')
+        do_set = {'cut', 'copy','paste', 'delete', 'select_all'}
         schedule_set = {'select_all'}
 
         if self._edit_selected == 'Play':

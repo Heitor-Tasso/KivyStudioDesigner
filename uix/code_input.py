@@ -84,7 +84,6 @@ class DesignerCodeInput(CodeInput):
             return None
         
         self.saved = False
-        d = get_designer()
         get_current_project().saved = False
 
     def find_next(self, search, use_regex=False, case=False):

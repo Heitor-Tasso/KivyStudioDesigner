@@ -62,7 +62,7 @@ class InfoBubble(Bubble):
         anim.cancel_all(self)
         anim.start(self)
 
-    def hide(self, *dt):
+    def hide(self, *args):
         ''' Auto fade out the Bubble
         '''        
         anim = Animation(opacity=0, d=0.75)

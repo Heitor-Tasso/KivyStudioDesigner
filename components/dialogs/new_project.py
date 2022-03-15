@@ -9,9 +9,6 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import ObjectProperty
 from kivy.uix.scrollview import ScrollView
 
-from functools import partial
-
-
 NEW_PROJECTS = {
 
     'FloatLayout': ('template_floatlayout_kv', 'template_floatlayout_py'),    
@@ -230,9 +227,9 @@ class NewProjectDialog(BoxLayout):
     def on_select_button(self, *args):
         '''Event Handler for 'on_release' of select button.
         '''
-        self.select_button.bind(on_press=partial(self.dispatch, 'on_select'))
+        self.select_button.bind(on_press=lambda *a: self.dispatch('on_select'))
 
     def on_cancel_button(self, *args):
         '''Event Handler for 'on_release' of cancel button.
         '''
-        self.cancel_button.bind(on_press=partial(self.dispatch, 'on_cancel'))
+        self.cancel_button.bind(on_press=lambda *a: self.dispatch('on_cancel'))

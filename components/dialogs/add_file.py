@@ -104,6 +104,7 @@ class AddFileDialog(BoxLayout):
     def _perform_add_file(self):
         '''To copy file from its original path to new path
         '''
+        print('def _perform_add_file -> Adicionando arquivo')
         if self.text_file.text == '':
             self.lbl_error.text = "Select the File"
             return None

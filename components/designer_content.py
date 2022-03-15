@@ -20,7 +20,6 @@ from kivy.uix.tabbedpanel import (
 
 from kivy.properties import ObjectProperty, OptionProperty, StringProperty
 
-from functools import partial
 import os
 
 SUPPORTED_EXT = ('.py', '.py2', '.kv', '.py3', '.txt', '.diff', )
@@ -176,7 +175,7 @@ class DesignerContent(FloatLayout):
 
     def __init__(self, **kwargs):
         super(DesignerContent, self).__init__(**kwargs)
-        self.find_tool.bind(on_close=partial(self.show_findmenu, False))
+        self.find_tool.bind(on_close=lambda *a: self.show_findmenu(False))
         self.find_tool.bind(on_next=self.find_tool_next)
         self.find_tool.bind(on_prev=self.find_tool_prev)
         self.focus_code_input = Clock.create_trigger(self._focus_input)
@@ -303,7 +302,7 @@ class DesignerContent(FloatLayout):
         '''Event handler to tab selection changes
         '''
         self.show_findmenu(False)
-        Clock.schedule_once(partial(self._selected_content, tabbed_panel))
+        Clock.schedule_once(lambda *a: self._selected_content(tabbed_panel))
 
     def _selected_content(self, tabbed_panel, *args):
         '''Called after updating tab content
@@ -431,7 +430,7 @@ class DesignerTabbedPanel(TabbedPanel):
             toll_bar_top.popup = popup
             return None
         
-        Clock.schedule_once(partial(self._perform_close_tab, instance))
+        Clock.schedule_once(lambda *a: self._perform_close_tab(instance))
 
     def _perform_close_tab(self, tab, *args):
         # remove code_input from list

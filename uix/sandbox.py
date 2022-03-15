@@ -45,9 +45,9 @@ class DesignerSandbox(Sandbox):
         pass
 
     @sandbox
-    def _clock_sandbox(self, dt):
+    def _clock_sandbox(self, *args):
         pass
 
     @sandbox
-    def _clock_sandbox_draw(self, dt):
+    def _clock_sandbox_draw(self, *args):
         pass

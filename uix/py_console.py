@@ -13,7 +13,6 @@ from kivy.properties import ListProperty, NumericProperty, ObjectProperty
 from pygments.lexers.python import PythonConsoleLexer
 from kivy.animation import Animation
 from rlcompleter import Completer
-from functools import partial
 import sys, threading, time
 import code
 
@@ -77,7 +76,7 @@ class Shell(code.InteractiveConsole):
     def write(self, data):
         '''write data to show as output on the screen.
         '''
-        Clock.schedule_once(partial(self.root.show_output, data), 0)
+        Clock.schedule_once(lambda *a: self.root.show_output(data), 0)
 
     def raw_input(self, prompt=""):
         '''To show prompt and get required data from user.
@@ -211,7 +210,7 @@ class InteractiveShellInput(CodeInput):
 
                 self.select_text(self._cursor_pos, (self._cursor_pos+len(txt)))
                 self.delete_selection()
-                Clock.schedule_once(partial(self.insert_text, suggestion))
+                Clock.schedule_once(lambda *a: self.insert_text(suggestion))
                 return False
 
         elif keycode[0] == 13:
@@ -308,7 +307,7 @@ class PythonConsole(BoxLayout):
         '''
         self._thread.start()
 
-    def show_output(self, data, dt):
+    def show_output(self, data, *args):
         '''Show output to user.
         '''
         self.text_input.show_output(data)
