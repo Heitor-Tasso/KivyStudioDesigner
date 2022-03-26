@@ -209,7 +209,8 @@ class ProfileSettings(Settings):
         self.DEFAULT_PROFILES = profiles_path()
         
         if not os.path.exists(self.PROFILES_PATH):
-            shutil.copytree(self.DEFAULT_PROFILES, self.PROFILES_PATH)
+            shutil.copytree(self.DEFAULT_PROFILES, self.PROFILES_PATH,
+                ignore=shutil.ignore_patterns('config.ini'))
 
         self.update_panel()
 
