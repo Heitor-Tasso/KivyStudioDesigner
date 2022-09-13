@@ -254,24 +254,24 @@ if __name__ == '__main__':
     from textwrap import dedent
     import jedi
 
-    Builder.load_string(dedent('''
-        <Test>:
-            background_normal: ''
-            background_color: [1, 0, 1, 1]
-            canvas.before:
-                Color:
-                    rgba: [1, 1, 1, 0.8]
-                Rectangle:
-                    pos: self.pos
-                    size: self.size
-            Button:
-                text: 'Toggle Completion Menu'
-                size_hint: None, None
-                width: '250dp'
-                height: '50dp'
-                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
-                on_press: root.show_bubble()
-    '''))
+    Builder.load_string("""
+<Test>:
+    background_normal: ''
+    background_color: [1, 0, 1, 1]
+    canvas.before:
+        Color:
+            rgba: [1, 1, 1, 0.8]
+        Rectangle:
+            pos: self.pos
+            size: self.size
+    Button:
+        text: 'Toggle Completion Menu'
+        size_hint: None, None
+        width: '250dp'
+        height: '50dp'
+        pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+        on_press: root.show_bubble()
+    """)
 
     class Test(FloatLayout):
         def __init__(self, **kwargs):

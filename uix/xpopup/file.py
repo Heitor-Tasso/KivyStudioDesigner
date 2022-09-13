@@ -179,11 +179,11 @@ class XFilePopup(XBase):
     '''Binded to :attr:`~kivy.uix.filechooser.FileChooser.view_mode`
     '''
     def _get_body(self):
-        self.browser = Builder.load_string(dedent('''\
-            FileChooser:
-                FileChooserIconLayout
-                FileChooserListLayout
-        '''))
+        self.browser = Builder.load_string("""
+FileChooser:
+    FileChooserIconLayout:
+    FileChooserListLayout:
+        """)
 
         self.browser.path = self.path
         self.browser.multiselect = self.multiselect

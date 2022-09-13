@@ -189,8 +189,13 @@ class ProgramDesigner(App):
         '''
         if self._widget_focused and (widget is None or self._widget_focused[0] != widget):
             fwidget = self._widget_focused[0]
-            for instr in self._widget_focused[1:]:
-                fwidget.canvas.after.remove(instr)
+            fwidget.canvas.after.clear()
+            # fwidget.canvas.clear()
+            fwidget.canvas.before.clear()
+            # !! Get ERROR factory because class not exist !!
+            # for instr in self._widget_focused[1:]:
+            #     print('Removendo -=-=> ', instr)
+            #     fwidget.canvas.after.remove(instr)
             self._widget_focused = []
 
         self.widget_focused = widget
@@ -204,9 +209,11 @@ class ProgramDesigner(App):
             line = self._widget_focused[2]
             line.points = points
         else:
-            with widget.canvas.after:
-                color = Color(0.42, 0.62, 0.65)
-                line = Line(points=points, close=True, width=dp(2))
+            canvas_after = widget.canvas.after
+            color = Color(0.42, 0.62, 0.65)
+            canvas_after.add(color)
+            line = Line(points=points, close=True, width=dp(2))
+            canvas_after.add(line)
             self._widget_focused = [widget, color, line]
 
         self.root.ui_creator.playground.clicked = True

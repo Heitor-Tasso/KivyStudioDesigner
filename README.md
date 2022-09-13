@@ -12,7 +12,7 @@ Installation
 
 To install the prerequisites, run:
 
-    pip install -Ur requirements.txt
+    pip install -r requirements.txt
 
 With the prerequisites installed, you can use the designer:
 

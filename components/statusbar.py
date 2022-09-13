@@ -84,11 +84,11 @@ Builder.load_string("""
             shorten_from: 'left'
 
 <StatusNavBarButton>:
-    text: getattr(root.node, '__class__').__name__
+    text: getattr(self.node, '__class__').__name__
     font_size: '10pt'
     width: (self.texture_size[0]+dp(20))
     size_hint_x: None
-    on_release: app.focus_widget(root.node)
+    on_release: app.focus_widget(self.node)
 
 <StatusNavBarSeparator>:
     text: '>'
@@ -102,7 +102,7 @@ class StatusNavBarButton(Button):
     '''StatusNavBarButton is a :class:`~kivy.uix.button` representing
        the Widgets in the Widget hierarchy of currently selected widget.
     '''
-    node = ObjectProperty()
+    node = ObjectProperty(None)
 
 class StatusNavBarSeparator(Label):
     '''StatusNavBarSeparator :class:`~kivy.uix.label.Label`

@@ -120,9 +120,9 @@ class PropOperation(OperationBase):
         '''
         self.prop.record_to_undo = False
         if isinstance(self.prop, TextInput):
-            self.prop.text = value
+            self.prop.text = str(value)
         elif isinstance(self.prop, CheckBox):
-            self.prop.active = value
+            self.prop.active = bool(value)
 
     def do_redo(self):
         '''Override of :class:`OperationBase`.do_redo.

@@ -287,7 +287,7 @@ class PlaygroundDragElement(BoxLayout):
                 target.add_widget(self.widget)
             
             App.get_running_app().focus_widget(target)
-
+            
         self.playground.sandbox.error_active = False
         return True
 
@@ -1232,13 +1232,18 @@ class Playground(ScatterPlane):
 
             self.selected_widget.parent.remove_widget(self.selected_widget)
             drag_elem = App.get_running_app().create_draggable_element(
-                None, '', self.touch, self.selected_widget)
+                instance=None, widget_name='',
+                touch=self.touch, widget=self.selected_widget)
             if drag_elem is not None:
                 drag_elem.drag_type = 'dragndrop'
                 drag_elem.drag_parent = self.drag_operation[1]
             self.dragging = True
             self.from_drag = True
-            App.get_running_app().focus_widget(None)
+            print('|| ANTES DE CHAMAR FOCUS ||')
+            print('drag_elem -=> ', drag_elem)
+            print('self.selected_widget -=> ', self.selected_widget)
+            print('------------------------------------------------')
+            App.get_running_app().focus_widget(self.selected_widget)
 
     def on_touch_down(self, touch):
         '''An override of ScatterPlane's on_touch_down.

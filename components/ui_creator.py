@@ -20,7 +20,7 @@ Builder.load_string("""
     splitter_property: splitter_property
     splitter_widget_tree: splitter_widget_tree
     propertyviewer: propertyviewer
-    playground: playground
+    playground: playground.__self__
     widgettree: widgettree
     error_console: error_console
     kivy_console: kivy_console
@@ -179,7 +179,7 @@ Builder.load_string("""
                                 width: sp(52)
 
                             PlaygroundSizeSelector:
-                                playground: playground
+                                playground: playground.__self__
 
                         BoxLayout:
                             size_hint_y: None
@@ -259,7 +259,7 @@ Builder.load_string("""
 
                             WidgetsTree:
                                 id: widgettree
-                                playground: playground
+                                playground: playground.__self__
 
                         Splitter:
                             id: splitter_property
