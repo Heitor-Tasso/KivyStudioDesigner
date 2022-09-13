@@ -126,6 +126,7 @@ class ProgramDesigner(App):
         self.bind(widget_focused=eventviewer.setter('widget'))
             
         self.focus_widget(playground.root)
+        print('Config dir -> ', get_config_dir())
         if not os.path.exists(get_config_dir()):
             os.mkdir(get_config_dir())
 
